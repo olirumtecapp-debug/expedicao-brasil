@@ -76,7 +76,7 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-100 py-3 text-center text-xs text-gray-400 font-bold">
-        Expedição Brasil &bull; Portal Educacional Cívico, Científico e Factual &bull; <span class="text-indigo-600">História, Geografia, Ciências e Português da Pátria 🇧🇷</span>
+        Expedição Brasil &bull; Portal Educacional Cívico, Científico e Factual &bull; <span class="text-indigo-600">História, Geografia, Ciências, Português e Matemática 🇧🇷</span>
     </footer>
 
     <!-- Modal Container -->
@@ -90,6 +90,39 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        
+        // ==========================================
+        // MINIGAMES E DESAFIOS INTERATIVOS NAS AULAS
+        // ==========================================
+        window.checkMiniGame = function(expectedAnswer) {
+            const inputEl = document.getElementById('minigame-user-input');
+            const feedbackEl = document.getElementById('minigame-feedback');
+            if (!inputEl || !feedbackEl) return;
+            
+            const userVal = inputEl.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            const expVal = String(expectedAnswer).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            
+            if (userVal.includes(expVal) || expVal.includes(userVal) && userVal.length >= 2) {
+                window.soundCorrect();
+                feedbackEl.innerHTML = `
+                    <div class="bg-emerald-100 border-2 border-emerald-400 text-emerald-900 p-3 rounded-xl font-black text-xs flex items-center gap-2 animate-bounce">
+                        <span class="text-xl">🎉</span>
+                        <span>RESPOSTA CORRETA! Você é brilhante! Desafio cumprido com louvor! 🌟 (+10 XP)</span>
+                    </div>
+                `;
+                inputEl.disabled = true;
+                inputEl.className = "w-full md:w-1/2 px-4 py-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 font-black text-emerald-900 focus:outline-none text-sm";
+            } else {
+                window.soundWrong();
+                feedbackEl.innerHTML = `
+                    <div class="bg-rose-100 border border-rose-300 text-rose-800 p-2.5 rounded-xl font-bold text-xs flex items-center gap-2">
+                        <span>🤔</span>
+                        <span>Quase lá! Tente novamente ou use a dica acima!</span>
+                    </div>
+                `;
+            }
+        };
 
         // ==========================================
         // 1. ÁUDIO & SÍNTESE DE VOZ (Web Audio / TTS)
@@ -264,10 +297,10 @@
                 id: 'matematica',
                 name: 'Matemática & Finanças',
                 icon: '📐',
-                tag: 'Em Breve',
+                tag: 'Novo & Interativo',
                 color: 'from-orange-600 to-amber-800',
-                desc: 'Desafios de Lógica, Geometria e Educação Financeira Inteligente para Crianças.',
-                active: false
+                desc: 'As Quatro Operações, Geometria, História do Real, Poupança e Educação Financeira.',
+                active: true
             }
         ];
 
@@ -308,6 +341,14 @@
                 { id: 'escritor', name: 'Pequeno Escritor', emoji: '📖', desc: 'Amante dos Livros' },
                 { id: 'poeta', name: 'Poeta Mirim', emoji: '✍️', desc: 'Rimador Curioso' },
                 { id: 'curupira', name: 'Curupira Guardião', emoji: '🍃', desc: 'Amigo do Folclore' }
+            ],
+            matematica: [
+                { id: 'pitagoras', name: 'Pitágoras Mirim', emoji: '📐', desc: 'Gênio da Geometria' },
+                { id: 'investidor', name: 'Pequeno Investidor', emoji: '🪙', desc: 'Amigo do Cofrinho' },
+                { id: 'tabuada', name: 'Mestre da Tabuada', emoji: '🧮', desc: 'Calculista Rápido' },
+                { id: 'empreendedor', name: 'Jovem Empreendedor', emoji: '🚀', desc: 'Criador de Projetos' },
+                { id: 'logico', name: 'Mestre da Lógica', emoji: '🧠', desc: 'Resolvedor de Enigmas' },
+                { id: 'cofrinho', name: 'Guardião do Futuro', emoji: '🐖', desc: 'Poupador Consciente' }
             ]
         };
 
@@ -899,6 +940,161 @@
                 ]
             }
 
+        ,
+            matematica: {
+                name: 'Matemática & Finanças',
+                categories: [
+                    {
+                        id: 'quatro_operacoes',
+                        name: 'O Mundo dos Números e as Quatro Operações ➕➖',
+                        icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z',
+                        description: 'Sistema decimal, adição, subtração, multiplicação, tabuada e frações descomplicadas.',
+                        sources: 'Sociedade Brasileira de Educação Matemática (SBEM) e Base Nacional Comum Curricular (BNCC/MEC).',
+                        chapters: [
+                            {
+                                title: '1. A Origem dos Números e o Sistema Decimal 🔢',
+                                content: 'Nosso sistema de numeração é <b>Decimal</b> (base 10) porque nossos ancestrais começaram a contar usando os 10 dedos das mãos! Ele é posicional: 1 dezena vale 10 unidades; 1 centena vale 100 unidades; e 1 milhar vale 1.000 unidades.',
+                                imageUrl: 'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Resolva o desafio rápido: Quanto é 1 Centena (100) + 3 Dezenas (30) + 5 Unidades (5)?', answer: '135', hint: 'Junte 100 + 30 + 5' }
+                            },
+                            {
+                                title: '2. Adição e Subtração: Juntar e Comparar ➕',
+                                content: 'A <b>Adição (+)</b> junta quantidades para obter um total (ex: se você tem 7 figurinhas e ganha mais 5, fica com 12). A <b>Subtração (-)</b> serve para tirar uma parte, descobrir a diferença ou ver quanto falta para chegar a um número.',
+                                imageUrl: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Desafio Mental: Você tinha R$ 50,00 e comprou um livro de R$ 18,00. Quanto sobrou?', answer: '32', hint: 'Faça 50 - 18' }
+                            },
+                            {
+                                title: '3. Multiplicação: A Soma Rápida e a Tabuada ✖️',
+                                content: 'A <b>Multiplicação (x)</b> é a forma inteligente de somar números iguais rapidamente! Por exemplo, em vez de fazer 4 + 4 + 4 + 4 + 4, fazemos simplesmente <b>5 x 4 = 20</b>. A tabuada é a ferramenta dos campeões!',
+                                imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Desafio da Tabuada: Quanto é 7 x 8?', answer: '56', hint: 'Dica: 7 x 7 = 49, some mais 7!' }
+                            },
+                            {
+                                title: '4. Divisão e Frações: A Arte de Compartilhar ➗',
+                                content: 'A <b>Divisão (÷)</b> reparte uma quantidade em partes rigorosamente iguais. Quando dividimos uma pizza em 4 pedaços iguais, cada fatia representa uma <b>Fração</b>: 1/4 (um quarto) do todo!',
+                                imageUrl: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Divisão Justa: Você tem 24 bombons para dividir igualmente entre 4 amigos. Quantos cada um ganha?', answer: '6', hint: 'Divida 24 por 4' }
+                            }
+                        ]
+                    },
+                    {
+                        id: 'geometria_medidas',
+                        name: 'Geometria, Medidas e Formas do Espaço 📐',
+                        icon: 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z',
+                        description: 'Círculos, triângulos, quadrados, sólidos geométricos, metros, litros, quilos e o relógio.',
+                        sources: 'Instituto de Matemática Pura e Aplicada (IMPA) e SBEM.',
+                        chapters: [
+                            {
+                                title: '1. Formas Geométricas Planas 🔺',
+                                content: 'As formas planas possuem 2 dimensões (comprimento e largura): o <b>Triângulo</b> (3 lados), o <b>Quadrado</b> (4 lados iguais), o <b>Retângulo</b> (lados opostos iguais) e o <b>Círculo</b> (perfeitamente redondo, sem vértices).',
+                                imageUrl: 'https://images.unsplash.com/photo-1509869175650-a1d97972541a?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'text', prompt: 'Qual figura geométrica plana possui exatamente 3 lados e 3 pontas (vértices)?', answer: 'triangulo', hint: 'Começa com Tri...' }
+                            },
+                            {
+                                title: '2. Sólidos Geométricos no Cotidiano 📦',
+                                content: 'Os <b>Sólidos Geométricos</b> têm 3 dimensões (altura, largura e profundidade)! Um dado de jogo é um <b>Cubo</b>; uma bola de futebol é uma <b>Esfera</b>; uma lata de refrigerante é um <b>Cilindro</b>; e uma casquinha de sorvete é um <b>Cone</b>.',
+                                imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'text', prompt: 'Qual sólido geométrico tem o formato perfeitamente redondo de uma bola de futebol?', answer: 'esfera', hint: 'Começa com Es...' }
+                            },
+                            {
+                                title: '3. Medidas do Mundo: Metros, Litros e Quilos 📏',
+                                content: 'Para medir distâncias usamos o <b>Metro (m)</b> e centímetro (cm); para pesar massas usamos o <b>Quilo (kg)</b> e grama (g); e para volumes de líquidos usamos o <b>Litro (L)</b> e mililitro (ml). 1 Metro tem 100 cm, e 1 Litro tem 1.000 ml!',
+                                imageUrl: 'https://images.unsplash.com/photo-1588714477688-cf28a50e94f7?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Quantos centímetros (cm) existem em exatamente 2 metros inteiros?', answer: '200', hint: 'Cada 1 metro tem 100 cm' }
+                            },
+                            {
+                                title: '4. O Tempo e o Relógio: Horas e Minutos ⏰',
+                                content: 'O dia tem <b>24 horas</b>, cada hora tem <b>60 minutos</b> e cada minuto tem <b>60 segundos</b>. O ponteiro pequeno marca a hora e o ponteiro grande marca os minutos. Saber gerenciar o tempo é o maior segredo do sucesso!',
+                                imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Quantos minutos existem no total em 2 horas e meia de estudo?', answer: '150', hint: '60 + 60 + 30 minutos' }
+                            }
+                        ]
+                    },
+                    {
+                        id: 'educacao_financeira',
+                        name: 'Educação Financeira: O Real e Compras Conscientes 🪙',
+                        icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                        description: 'Origem do dinheiro, cédulas do Real brasileiro, animais nas notas e cálculo de troco.',
+                        sources: 'Banco Central do Brasil (BCB - Caderno de Educação Financeira) e Comissão de Valores Mobiliários (CVM).',
+                        chapters: [
+                            {
+                                title: '1. A História do Dinheiro: Do Escambo ao Real 💵',
+                                content: 'Antigamente, as pessoas trocavam mercadorias diretamente (chamado de <b>Escambo</b>: trocar um saco de feijão por um cesto de peixes). Para facilitar o comércio, inventaram as moedas de metal e cédulas de papel. No Brasil, nossa moeda oficial é o <b>Real (R$)</b>!',
+                                imageUrl: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'text', prompt: 'Como se chamava a troca direta de mercadorias antes da invenção do dinheiro?', answer: 'escambo', hint: 'Começa com Esc...' }
+                            },
+                            {
+                                title: '2. As Cédulas do Real e a Fauna Brasileira 🐆',
+                                content: 'Você sabia que as notas de Real homenageiam a fauna da nossa pátria? R$ 2 (Tartaruga-marinha), R$ 5 (Garça), R$ 10 (Arara), R$ 20 (Mico-leão-dourado), R$ 50 (Onça-pintada), R$ 100 (Peixe Garoupa) e R$ 200 (Lobo-guará)!',
+                                imageUrl: 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'text', prompt: 'Qual animal majestoso da fauna brasileira estampa a cédula de 50 Reais?', answer: 'onca', hint: 'Maior felino das Américas' }
+                            },
+                            {
+                                title: '3. Preço versus Valor e o Trabalho Honesto 🛒',
+                                content: 'O <b>Preço</b> é a quantia em dinheiro que pagamos por algo na loja. O <b>Valor</b> é a utilidade e a importância que aquilo tem em nossa vida! O dinheiro vem do trabalho honesto e dedicação, por isso devemos utilizá-lo com sabedoria.',
+                                imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Cálculo de Troco: Você comprou um brinquedo de R$ 35,00 e pagou com uma nota de R$ 50,00. Qual o seu troco exato?', answer: '15', hint: 'Faça 50 - 35' }
+                            },
+                            {
+                                title: '4. Compras Inteligentes e Comparação de Preços 🧮',
+                                content: 'Um consumidor inteligente faz <b>pesquisa de preços</b> antes de comprar, evita compras por impulso e sempre pede a nota fiscal. Economizar um pouco em cada compra ajuda a família a realizar grandes conquistas!',
+                                imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Economia Inteligente: A loja A vende um caderno por R$ 22 e a loja B por R$ 15. Quanto você economiza comprando na loja B?', answer: '7', hint: '22 - 15' }
+                            }
+                        ]
+                    },
+                    {
+                        id: 'poupanca_investimentos',
+                        name: 'Poupança, Investimentos e Empreendedorismo Mirim 🏦',
+                        icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
+                        description: 'Necessidade vs desejo, cofrinho, juros compostos simples, bancos e pequenos projetos empreendedores.',
+                        sources: 'Banco Central do Brasil e Sebrae Educação Empreendedora.',
+                        chapters: [
+                            {
+                                title: '1. Necessidade versus Desejo: O Consumo Consciente 🎯',
+                                content: '<b>Necessidade</b> é o que precisamos para viver com saúde e segurança (comida, moradia, remédio, estudo). <b>Desejo</b> é o que queremos por vontade passageira (um doce extra, um brinquedo da moda). Priorizar as necessidades é o segredo da prosperidade!',
+                                imageUrl: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'text', prompt: 'Alimentação e estudo são exemplos de: NECESSIDADE ou DESEJO?', answer: 'necessidade', hint: 'O que é fundamental para viver' }
+                            },
+                            {
+                                title: '2. O Poder do Cofrinho e Guardar com Disciplina 🐖',
+                                content: 'Quem guarda sempre tem! Se você poupar uma pequena moeda todos os dias, no final do ano terá uma quantia expressiva acumulada para comprar algo que realmente sonha sem precisar fazer dívidas.',
+                                imageUrl: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Desafio do Cofrinho: Se você guardar R$ 3,00 por dia durante 10 dias seguidos, quanto terá poupado?', answer: '30', hint: 'Multiplique 3 x 10' }
+                            },
+                            {
+                                title: '3. Como Funcionam os Bancos e a Poupança 📈',
+                                content: 'Os <b>Bancos</b> guardam nosso dinheiro em contas seguras. Quando colocamos dinheiro na <b>Conta Poupança</b> ou em investimentos seguros do Tesouro, o dinheiro rende <b>Juros</b>, ou seja, cresce sozinho com o tempo enquanto fica guardado!',
+                                imageUrl: 'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'calc', prompt: 'Rendimento: Você guardou R$ 100 e no final do ano ganhou R$ 8 de juros. Qual seu saldo final?', answer: '108', hint: 'Some 100 + 8' }
+                            },
+                            {
+                                title: '4. O Pequeno Empreendedor: Realizando Projetos 🚀',
+                                content: '<b>Empreender</b> é transformar ideias em soluções úteis para as pessoas: criar uma horta comunitária, organizar uma feira de livros usados ou inventar um jogo divertido. O empreendedor planeja com coragem, ética e determinação!',
+                                imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&auto=format&fit=crop&q=80',
+                                miniGame: { type: 'text', prompt: 'Qual palavra representa a atitude de criar soluções, planejar e realizar projetos com coragem?', answer: 'empreendedorismo', hint: 'Começa com Empreen...' }
+                            }
+                        ]
+                    }
+                ],
+                questions: [
+                    { category: 'quatro_operacoes', text: 'Quantas unidades formam exatamente 3 Dezenas?', options: ['13 unidades', '30 unidades', '300 unidades', '3 unidades'], correct: 1, explanation: 'Cada dezena vale 10, logo 3 dezenas = 30 unidades.' },
+                    { category: 'quatro_operacoes', text: 'Quanto é o resultado da multiplicação: 6 x 7?', options: ['36', '42', '48', '54'], correct: 1, explanation: 'Pela tabuada, 6 vezes 7 é igual a 42.' },
+                    { category: 'quatro_operacoes', text: 'Se você tem 20 maçãs e divide igualmente entre 5 cestos, quantas maçãs ficam em cada cesto?', options: ['2 maçãs', '4 maçãs', '5 maçãs', '10 maçãs'], correct: 1, explanation: '20 dividido por 5 é igual a 4 maçãs por cesto.' },
+
+                    { category: 'geometria_medidas', text: 'Quantos lados possui uma figura geométrica em formato de TRIÂNGULO?', options: ['4 lados', '3 lados', '5 lados', 'Nenhum lado'], correct: 1, explanation: 'O triângulo é o polígono formado por exatamente 3 lados e 3 vértices.' },
+                    { category: 'geometria_medidas', text: 'Quantos minutos há em 1 hora inteira no relógio?', options: ['100 minutos', '60 minutos', '24 minutos', '12 minutos'], correct: 1, explanation: '1 hora equivale a 60 minutos.' },
+                    { category: 'geometria_medidas', text: 'Quantos centímetros (cm) equivalem a 1 Metro (m)?', options: ['10 cm', '100 cm', '1.000 cm', '50 cm'], correct: 1, explanation: '1 metro é composto por 100 centímetros.' },
+
+                    { category: 'educacao_financeira', text: 'Qual é o nome da moeda oficial do Brasil?', options: ['Dólar', 'Euro', 'Real (R$)', 'Peso'], correct: 2, explanation: 'A moeda oficial do Brasil desde 1994 é o Real (R$).' },
+                    { category: 'educacao_financeira', text: 'Se você compra um lanche de R$ 12,00 e paga com uma nota de R$ 20,00, quanto deve receber de troco?', options: ['R$ 5,00', 'R$ 8,00', 'R$ 10,00', 'R$ 6,00'], correct: 1, explanation: '20 menos 12 é igual a R$ 8,00 de troco.' },
+                    { category: 'educacao_financeira', text: 'Qual animal da fauna brasileira estampa a cédula de R$ 20,00 do Real?', options: ['Onça-Pintada', 'Mico-Leão-Dourado', 'Arara-Vermelha', 'Garça'], correct: 1, explanation: 'A nota de 20 Reais estampa o belo Mico-Leão-Dourado.' },
+
+                    { category: 'poupanca_investimentos', text: 'Qual é a diferença entre NECESSIDADE e DESEJO?', options: ['Não há diferença', 'Necessidade é o que precisamos para viver com saúde (comida, estudo); Desejo é uma vontade passageira', 'Desejo é sempre mais importante que comer', 'Necessidade é comprar brinquedos caros'], correct: 1, explanation: 'Compreender que as necessidades vitais vêm antes dos desejos é a base da educação financeira consciente.' },
+                    { category: 'poupanca_investimentos', text: 'Por que guardar dinheiro na Poupança ou no Cofrinho com disciplina é importante?', options: ['Para não ter dinheiro no futuro', 'Para realizar projetos e compras planejadas sem dívidas', 'Para gastar tudo em doces no mesmo dia', 'Para perder as moedas'], correct: 1, explanation: 'Poupar com disciplina permite alcançar objetivos e ter tranquilidade no futuro.' }
+                ]
+            }
+
         };
 
         // ==========================================
@@ -1269,7 +1465,7 @@
                 </label>
             `).join('');
 
-            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬', portugues: '📖' };
+            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬', portugues: '📖', matematica: '📐' };
             const subIcon = iconMap[currentSubjectId] || '🧭';
 
             let existingStudentsCardsHTML = '';
@@ -1631,6 +1827,28 @@
                                 ${chapter.content}
                             </div>
                             
+                            <!-- Desafio / Minigame Interativo da Aula -->
+                            <div class="bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 border-2 border-amber-300 rounded-3xl p-5 mb-6 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🎮</span>
+                                    <div>
+                                        <h4 class="font-black text-sm text-amber-900 uppercase tracking-wide">Desafio Interativo de Fixação Rápida</h4>
+                                        <p class="text-[11px] text-amber-800">Resolva para testar seu conhecimento e avançar com maestria!</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white/80 p-4 rounded-2xl border border-amber-200 text-xs text-gray-800 font-bold mb-3">
+                                    <p class="mb-2 text-sm text-gray-900">${chapter.miniGame ? chapter.miniGame.prompt : '💡 Desafio da Aula: Qual é o tema central que você acabou de aprender nesta aula?'}</p>
+                                    <p class="text-[11px] text-amber-700 italic font-medium">💡 Dica: ${chapter.miniGame ? chapter.miniGame.hint : 'Consulte os termos em negrito no texto acima!'}</p>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-2 items-center mb-2">
+                                    <input type="text" id="minigame-user-input" class="w-full sm:w-2/3 px-4 py-2.5 rounded-xl border-2 border-amber-200 focus:border-amber-600 focus:outline-none font-bold text-sm bg-white" placeholder="Digite sua resposta aqui...">
+                                    <button onclick="window.checkMiniGame('${chapter.miniGame ? chapter.miniGame.answer : (chapter.title.split(' ')[1] || 'brasil')}')" class="w-full sm:w-1/3 bg-amber-500 hover:bg-amber-600 text-white font-black py-2.5 px-4 rounded-xl shadow transition text-xs flex items-center justify-center gap-1.5">
+                                        <span>Verificar Resposta</span> 🚀
+                                    </button>
+                                </div>
+                                <div id="minigame-feedback" class="mt-2"></div>
+                            </div>
+
                             <!-- Selo de Rigor Factual e Fontes Oficiais -->
                             <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-indigo-50 border-2 border-emerald-200/80 rounded-2xl p-4 mb-8 flex items-start gap-3 shadow-sm">
                                 <span class="text-2xl shrink-0">🏛️</span>
@@ -1851,7 +2069,7 @@
             }).join('');
 
             const averagePercentage = totalPossible > 0 ? Math.round((totalScores / totalPossible) * 100) : 0;
-            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬', portugues: '📖' };
+            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬', portugues: '📖', matematica: '📐' };
             const subIcon = iconMap[currentSubjectId] || '🧭';
 
             window.showModal(`
@@ -2253,6 +2471,9 @@
                     </button>
                     <button onclick="window.changeAdminEditingSubject('portugues')" class="px-4 py-2 rounded-xl text-xs font-black transition ${adminEditingSubject === 'portugues' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-100'}">
                         📖 Português & Literatura
+                    </button>
+                    <button onclick="window.changeAdminEditingSubject('matematica')" class="px-4 py-2 rounded-xl text-xs font-black transition ${adminEditingSubject === 'matematica' ? 'bg-amber-600 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-100'}">
+                        📐 Matemática & Finanças
                     </button>
                 </div>
             `;
