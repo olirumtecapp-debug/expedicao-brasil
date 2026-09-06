@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expedição Brasil - Quiz e Curso EAD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap');
+        body { font-family: 'Nunito', sans-serif; background-color: #f0fdf4; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .bounce-slight { animation: bounceSlight 2s infinite; }
+        @keyframes bounceSlight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        /* Scrollbar customizada para abas do editor */
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a0a0a5; }
+    </style>
+</head>
+<body class="min-h-screen text-gray-800 flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-700 text-white p-4 shadow-md z-10 relative">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.changeState('MENU')">
+                <span class="text-3xl">🇧🇷</span>
+                <h1 class="text-2xl font-black tracking-wide">Expedição Brasil</h1>
+            </div>
+            <div id="user-info" class="hidden font-bold bg-indigo-800 px-4 py-2 rounded-full border border-indigo-500">
+                👤 <span id="current-user-name"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-grow flex items-center justify-center p-4 max-w-6xl mx-auto w-full relative">
+        <!-- Loading State inicial -->
+        <div class="text-center fade-in">
+            <div class="text-6xl animate-bounce mb-4">☁️</div>
+            <h2 class="text-2xl font-bold text-indigo-600">Conectando aos servidores EAD...</h2>
+        </div>
+    </main>
+
+    <!-- Modal Container para Alertas e Confirmações -->
+    <div id="modal-container" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 fade-in">
+        <div id="modal-content" class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
+            <!-- Modal Content -->
+        </div>
+    </div>
+
+    <!-- Script Principal como Módulo para suportar Nuvem (Firebase) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configurações globais fornecidas pelo ambiente EAD
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'expedicao-brasil-ead';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app = null, auth = null, db = null;
+        if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        }
+
+        const initialCourseData = {
+            categories: [
+                { 
+                    id: 'colonia', 
+                    name: 'Brasil Colônia', 
+                    icon: 'M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9',
+                    description: 'O descobrimento, os índios e o açúcar.',
+                    chapters: [
+                        {
+                            title: 'A Chegada dos Portugueses! 🚢',
+                            content: 'Imagina viajar pelo mar em um barco gigante de madeira por meses! Foi assim que Pedro Álvares Cabral chegou ao Brasil no ano de 1500. Eles achavam que estavam indo para as Índias. Quando chegaram, descobriram que a terra já era habitada por milhões de indígenas, que cuidavam muito bem da natureza.',
+                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/A_descoberta_do_Brasil.jpg/800px-A_descoberta_do_Brasil.jpg',
+                        },
+                        {
+                            title: 'O Pau-Brasil e o Açúcar 🌳',
+                            content: 'Os portugueses encontraram uma árvore chamada <b>Pau-Brasil</b>. Foi por causa dela que nosso país ganhou o nome de Brasil! Depois, começaram a plantar Cana-de-Açúcar. O açúcar era tão valioso que era chamado de "Ouro Branco". Infelizmente, muitas pessoas foram trazidas escravizadas da África para trabalhar nessas fazendas.',
+                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Engenho_de_Itamarac%C3%A1_-_Frans_Post.jpg/800px-Engenho_de_Itamarac%C3%A1_-_Frans_Post.jpg',
+                        },
+                        {
+                            title: 'A Corrida do Ouro ✨',
+                            content: 'Muitos anos depois, os Bandeirantes encontraram ouro no meio do Brasil, num lugar que hoje chamamos de Minas Gerais! Cidades lindas com igrejas cheias de ouro foram construídas. Foi nessa época que viveu Aleijadinho, um artista incrível que fazia esculturas de pedra-sabão.',
+                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Lavagem_de_min%C3%A9rio_de_ouro_perto_da_montanha_Ita_Columi.jpg/800px-Lavagem_de_min%C3%A9rio_de_ouro_perto_da_montanha_Ita_Columi.jpg',
+                        }
+                    ]
+                },
+                { 
+                    id: 'imperio', 
+                    name: 'Brasil Império', 
+                    icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+                    description: 'A família real, a independência e os imperadores.',
+                    chapters: [
+                        {
+                            title: 'A Família Real Foge para o Brasil 👑',
+                            content: 'Em 1808, o Rei de Portugal, Dom João VI, teve que fugir da Europa porque Napoleão queria invadir seu país. Ele atravessou o oceano para morar no Brasil! O Brasil, que era só uma colônia, de repente virou a sede de um império inteiro.',
+                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Embarque_da_Fam%C3%ADlia_Real_Portuguesa_para_o_Brasil.jpg/800px-Embarque_da_Fam%C3%ADlia_Real_Portuguesa_para_o_Brasil.jpg',
+                        },
+                        {
+                            title: 'Independência ou Morte! ⚔️',
+                            content: 'O rei voltou para Portugal e deixou seu filho, Dom Pedro I, cuidando do Brasil. Portugal queria o controle de volta, mas Dom Pedro não aceitou! No dia 7 de setembro de 1822, ele gritou <b>"Independência ou Morte!"</b> e o Brasil se tornou um país livre!',
+                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Independ%C3%AAncia_ou_Morte_%28Pedro_Am%C3%A9rico%29.jpg/800px-Independ%C3%AAncia_ou_Morte_%28Pedro_Am%C3%A9rico%29.jpg',
+                        },
+                        {
+                            title: 'A Princesa Isabel 📜',
+                            content: 'Foi durante o reinado de Dom Pedro II que sua filha, a Princesa Isabel, assinou a <b>Lei Áurea</b> em 1888. Essa lei finalmente libertou todas as pessoas escravizadas no Brasil, um momento muito importante da nossa história.',
+                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Assinatura_da_Lei_%C3%81urea.jpg/800px-Assinatura_da_Lei_%C3%81urea.jpg',
+                        }
+                    ]
+                },
+                { 
+                    id: 'republica', 
+                    name: 'Brasil República', 
+                    icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+                    description: 'Presidentes, o café, Brasília e a democracia.',
+                    chapters: [
+                        {
+                            title: 'O Fim do Império 🗳️',
+                            content: 'Em 1889, os militares decidiram que não queriam mais um imperador. Eles queriam uma <b>República</b>. O Marechal Deodoro da Fonseca proclamou a República e passamos a ter Presidentes! Nessa época, o Brasil ficou muito rico vendendo <b>Café</b>.',
+                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Proclama%C3%A7%C3%A3o_da_Rep%C3%BAblica_%28Benedito_Calixto%29.jpg/800px-Proclama%C3%A7%C3%A3o_da_Rep%C3%BAblica_%28Benedito_Calixto%29.jpg',
+                        },
+                        {
+                            title: 'Getúlio e Brasília 🏗️',
+                            content: 'Muitos presidentes passaram, como Getúlio Vargas. Depois, o presidente Juscelino Kubitschek teve uma ideia genial: construir uma capital novinha em folha no meio do nada! Assim nasceu <b>Brasília</b>, uma cidade planejada em formato de avião.',
+                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Brasilia_construction.jpg/800px-Brasilia_construction.jpg',
+                        }
+                    ]
+                }
+            ],
+            questions: [
+                { category: 'colonia', text: 'Qual foi a árvore que deu nome ao nosso país?', options: ['Seringueira', 'Pau-Brasil', 'Ipê', 'Cacau'], correct: 1, explanation: 'O Pau-Brasil soltava uma tinta vermelha valiosa.' },
+                { category: 'colonia', text: 'O que era o "Ouro Branco"?', options: ['Sal', 'Algodão', 'Açúcar', 'Leite'], correct: 2, explanation: 'O açúcar era um artigo de luxo na Europa.' },
+                { category: 'imperio', text: 'Quem gritou "Independência ou Morte"?', options: ['Cabral', 'Princesa Isabel', 'Dom Pedro I', 'Dom Pedro II'], correct: 2, explanation: 'Dom Pedro I separou o Brasil de Portugal.' },
+                { category: 'imperio', text: 'Qual lei libertou os escravizados?', options: ['Lei do Ouro', 'Lei Áurea', 'Lei Livre', 'Lei de Portugal'], correct: 1, explanation: 'Assinada pela Princesa Isabel em 1888.' },
+                { category: 'republica', text: 'Na República, quem governa?', options: ['Rei', 'Imperador', 'Presidente', 'Bandeirante'], correct: 2, explanation: 'O poder vem do povo, que vota no Presidente.' },
+                { category: 'republica', text: 'Qual a capital construída no formato de avião?', options: ['Rio de Janeiro', 'São Paulo', 'Brasília', 'Salvador'], correct: 2, explanation: 'Brasília foi construída por Juscelino Kubitschek.' }
+            ]
+        };
+
+        let appData = {};
+        let currentState = 'MENU';
+        let currentUser = null;
+        let selectedCategoryId = null;
+        let currentChapterIndex = 0;
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let quizAnswers = [];
+        let studentsProgress = {};
+        
+        let adminSelectedCategoryForEdit = null;
+        let adminStudentFilter = 'Todos';
+        let adminModuleFilter = 'Todos';
+
+        const mainContent = document.getElementById('main-content');
+        const modalContainer = document.getElementById('modal-container');
+        const modalContent = document.getElementById('modal-content');
+        const userInfoDisplay = document.getElementById('user-info');
+        const currentUserNameDisplay = document.getElementById('current-user-name');
+
+        window.showModal = function(html) {
+            modalContent.innerHTML = html;
+            modalContainer.classList.remove('hidden');
+        }
+
+        window.hideModal = function() {
+            modalContainer.classList.add('hidden');
+        }
+
+        window.customAlert = function(message) {
+            window.showModal(`
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Aviso</h3>
+                    <p class="text-gray-600 mb-6">${message}</p>
+                    <button onclick="window.hideModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold w-full">OK, Entendi</button>
+                </div>
+            `);
+        }
+
+        window.customConfirm = function(message, onConfirmCallbackStr) {
+            window.showModal(`
+                <div class="text-center">
+                    <div class="text-5xl mb-4">⚠️</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Tem certeza?</h3>
+                    <p class="text-gray-600 mb-6 text-sm">${message}</p>
+                    <div class="flex gap-2 justify-center">
+                        <button onclick="window.hideModal()" class="w-1/2 px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg border border-gray-200">Cancelar</button>
+                        <button onclick="window.hideModal(); ${onConfirmCallbackStr}" class="w-1/2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold shadow-md">Sim, Continuar</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function calculateGrade(score, total) {
+            const percentage = (score / total) * 100;
+            if (percentage >= 90) return { grade: 'A', text: 'Excelente!', color: 'text-green-600' };
+            if (percentage >= 70) return { grade: 'B', text: 'Muito Bom', color: 'text-blue-600' };
+            if (percentage >= 50) return { grade: 'C', text: 'Regular', color: 'text-amber-600' };
+            return { grade: 'D', text: 'Precisa Revisar', color: 'text-red-600' };
+        }
+
+        async function loadCloudData() {
+            if (!auth || !auth.currentUser) return;
+            
+            try {
+                // Carrega o conteúdo do curso
+                const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'course_content', 'main');
+                const docSnap = await getDoc(contentRef);
+                
+                if (docSnap.exists()) {
+                    appData = docSnap.data();
+                } else {
+                    appData = JSON.parse(JSON.stringify(initialCourseData));
+                    await setDoc(contentRef, appData);
+                }
+
+                // Carrega o progresso de todos os alunos
+                await fetchCloudProgress();
+
+            } catch (e) {
+                console.error("Erro na nuvem:", e);
+                appData = JSON.parse(JSON.stringify(initialCourseData));
+            }
+        }
+
+        async function fetchCloudProgress() {
+            if (!auth || !auth.currentUser) return;
+            try {
+                const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress');
+                const snapshot = await getDocs(progressColl);
+                studentsProgress = {};
+                snapshot.forEach(document => {
+                    studentsProgress[document.id] = document.data().progress || {};
+                });
+            } catch(e) {
+                console.error("Erro ao puxar progresso", e);
+            }
+        }
+
+        window.saveCourseDataCloud = async function() {
+            if (!auth || !auth.currentUser) {
+                window.customAlert("Falha na conexão com a Nuvem. Faça login no painel.");
+                return;
+            }
+            const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'course_content', 'main');
+            try {
+                await setDoc(contentRef, appData);
+                window.customAlert("✅ Curso atualizado na nuvem com sucesso! Todos os alunos já podem ver a nova versão.");
+            } catch (e) {
+                window.customAlert("Erro ao salvar na nuvem: " + e.message);
+            }
+        }
+
+        async function updateStudentProgress(studentName, categoryId, chaptersRead, totalChapters, quizScore = null) {
+            // Atualiza memória local rápido
+            if (!studentsProgress[studentName]) studentsProgress[studentName] = {};
+            if (!studentsProgress[studentName][categoryId]) studentsProgress[studentName][categoryId] = { chaptersRead: 0, quizScore: null };
+            
+            if (chaptersRead > studentsProgress[studentName][categoryId].chaptersRead) {
+                 studentsProgress[studentName][categoryId].chaptersRead = chaptersRead;
+            }
+            if (quizScore !== null) {
+                studentsProgress[studentName][categoryId].quizScore = quizScore;
+            }
+            studentsProgress[studentName][categoryId].totalChapters = totalChapters;
+            studentsProgress[studentName][categoryId].lastAccess = new Date().toISOString();
+
+            // Salva na Nuvem silenciosamente
+            if (!auth || !auth.currentUser) return;
+            const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'progress', studentName);
+            try {
+                await setDoc(studentRef, { progress: studentsProgress[studentName] }, { merge: true });
+            } catch (e) {
+                console.error("Erro no envio EAD:", e);
+            }
+        }
+
+        window.resetProgressCloud = async function() {
+            studentsProgress = {};
+            currentUser = null;
+            userInfoDisplay.classList.add('hidden');
+            
+            if (auth && auth.currentUser) {
+                try {
+                    const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress');
+                    const snapshot = await getDocs(progressColl);
+                    // Apaga documento por documento (Padrão Firestore sem BATCH)
+                    for (const document of snapshot.docs) {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'progress', document.id));
+                    }
+                    window.customAlert("Todos os históricos de alunos foram apagados da nuvem.");
+                    window.renderAdminDashboard();
+                } catch(e) {
+                    window.customAlert("Erro ao limpar nuvem.");
+                }
+            }
+        }
+
+        function getStudentProgress(studentName, categoryId) {
+            return studentsProgress[studentName]?.[categoryId] || { chaptersRead: 0, quizScore: null };
+        }
+
+        async function initAppEAD() {
+            if (!app) {
+                console.warn("Sem credenciais do servidor. Rodando offline.");
+                appData = JSON.parse(JSON.stringify(initialCourseData));
+                window.changeState('MENU');
+                return;
+            }
+
+            try {
+                if (authToken) {
+                    await signInWithCustomToken(auth, authToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                if (auth.currentUser) {
+                    await loadCloudData();
+                }
+            } catch (e) {
+                console.error("Falha de autenticação EAD:", e);
+                appData = JSON.parse(JSON.stringify(initialCourseData));
+            }
+            
+            window.changeState('MENU');
+        }
+
+        window.renderMenu = function() {
+            mainContent.innerHTML = `
+                <div class="fade-in text-center flex flex-col items-center bg-white p-8 md:p-12 rounded-3xl shadow-xl border-4 border-indigo-100 max-w-lg w-full">
+                    <div class="text-6xl md:text-8xl mb-6 animate-bounce">🇧🇷</div>
+                    <h2 class="text-3xl md:text-5xl font-black text-gray-800 mb-4 tracking-tight">Expedição Brasil</h2>
+                    <p class="text-gray-500 mb-8 text-lg font-medium">Um curso interativo e divertido sobre a nossa história!</p>
+                    <div class="w-full flex flex-col gap-3">
+                        <button onclick="window.startAppFlow()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-4 px-8 rounded-xl shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl">
+                            Começar a Aprender 🚀
+                        </button>
+                        <button id="admin-login-btn" onclick="window.changeState('ADMIN_LOGIN')" class="hidden w-full bg-gray-50 hover:bg-gray-100 text-gray-600 text-lg font-bold py-3 px-8 rounded-xl border-2 border-gray-100 transition-colors flex justify-center items-center gap-2">
+                            👨‍🏫 Painel do Professor
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.startAppFlow = function() {
+            if (currentUser) {
+                window.changeState('CATEGORY_SELECT');
+            } else {
+                window.showModal(`
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Olá, Explorador! 🧭</h3>
+                    <p class="text-gray-600 mb-4">Qual é o seu nome para registrarmos sua expedição na nuvem?</p>
+                    <input type="text" id="student-name-input" class="w-full px-4 py-3 rounded-lg border-2 border-indigo-200 focus:border-indigo-500 focus:outline-none mb-4 font-bold text-lg" placeholder="Digite seu nome (Ex: João, Maria)...">
+                    <div class="flex gap-2 justify-end">
+                        <button onclick="window.hideModal()" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancelar</button>
+                        <button onclick="window.loginStudent()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold">Começar!</button>
+                    </div>
+                `);
+                setTimeout(() => document.getElementById('student-name-input').focus(), 100);
+            }
+        }
+
+        window.loginStudent = function() {
+            const nameInput = document.getElementById('student-name-input').value.trim();
+            if (nameInput.length < 2) {
+                window.customAlert('Por favor, digite um nome válido com pelo menos 2 letras.');
+                return;
+            }
+            currentUser = nameInput;
+            currentUserNameDisplay.innerText = currentUser;
+            userInfoDisplay.classList.remove('hidden');
+            window.hideModal();
+            window.changeState('CATEGORY_SELECT');
+        }
+
+        window.renderCategorySelect = function() {
+            const categoriesHTML = appData.categories.map(cat => {
+                const prog = getStudentProgress(currentUser, cat.id);
+                const totalChaps = cat.chapters.length;
+                const progressPercent = totalChaps > 0 ? Math.round((prog.chaptersRead / totalChaps) * 100) : 0;
+                
+                const isFinished = totalChaps > 0 && prog.chaptersRead >= totalChaps;
+                const hasQuizScore = prog.quizScore !== null;
+                
+                let actionBtnHTML = '';
+                if (progressPercent > 0 && !isFinished) {
+                    actionBtnHTML = `<button onclick="window.openModule('${cat.id}')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        📖 Continuar (${progressPercent}%)
+                    </button>`;
+                } else if (isFinished) {
+                    actionBtnHTML = `<button onclick="window.openModule('${cat.id}')" class="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        🔁 Revisar Curso
+                    </button>`;
+                } else {
+                     actionBtnHTML = `<button onclick="window.openModule('${cat.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        📖 Iniciar Curso
+                    </button>`;
+                }
+
+                let quizBtnHTML = '';
+                if (isFinished) {
+                    if (hasQuizScore) {
+                        const grade = calculateGrade(prog.quizScore, appData.questions.filter(q=>q.category===cat.id).length);
+                        quizBtnHTML = `<button onclick="window.startQuiz('${cat.id}')" class="w-full bg-green-100 hover:bg-green-200 text-green-800 font-bold py-2 px-3 rounded-lg transition-colors flex flex-col items-center justify-center shadow-sm text-sm border border-green-300">
+                            <span>Refazer Quiz</span>
+                            <span class="text-xs">Nota: ${grade.grade}</span>
+                        </button>`;
+                    } else {
+                        quizBtnHTML = `<button onclick="window.startQuiz('${cat.id}')" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm animate-pulse">
+                            🎮 Fazer Quiz!
+                        </button>`;
+                    }
+                } else {
+                    quizBtnHTML = `<button onclick="window.customAlert('🔒 Quiz Bloqueado! Você precisa ler todos os capítulos deste módulo antes de testar seus conhecimentos.')" class="w-full bg-gray-200 text-gray-500 font-bold py-2 px-3 rounded-lg cursor-not-allowed flex items-center justify-center gap-2">
+                        🔒 Quiz
+                    </button>`;
+                }
+
+                return `
+                    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="bg-indigo-100 text-indigo-600 p-3 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${cat.icon}" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl text-gray-800">${cat.name}</h3>
+                                <p class="text-sm text-gray-500 line-clamp-2">${cat.description}</p>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                          <div class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-auto">
+                            ${actionBtnHTML}
+                            ${quizBtnHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            mainContent.innerHTML = `
+                <div class="fade-in w-full">
+                    <div class="flex justify-between items-center mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <h2 class="text-2xl font-black text-gray-800">Escolha um Módulo</h2>
+                        <button onclick="window.logout()" class="text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg font-bold text-sm transition-colors border border-red-200">
+                            Sair do Aluno
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${categoriesHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.logout = function() {
+            currentUser = null;
+            userInfoDisplay.classList.add('hidden');
+            window.changeState('MENU');
+        }
+
+        window.openModule = function(categoryId) {
+            selectedCategoryId = categoryId;
+            const prog = getStudentProgress(currentUser, categoryId);
+            const category = appData.categories.find(c => c.id === categoryId);
+            if (prog.chaptersRead >= category.chapters.length) {
+                currentChapterIndex = 0; 
+            } else {
+                currentChapterIndex = prog.chaptersRead;
+            }
+            window.changeState('MODULE_VIEW');
+        }
+
+        window.renderModuleView = function() {
+            const category = appData.categories.find(c => c.id === selectedCategoryId);
+            const chapter = category.chapters[currentChapterIndex];
+            
+            let currentRead = currentChapterIndex + 1;
+            updateStudentProgress(currentUser, category.id, currentRead, category.chapters.length);
+
+            const isLast = currentChapterIndex === category.chapters.length - 1;
+
+            mainContent.innerHTML = `
+                <div class="fade-in w-full h-full max-w-4xl mx-auto flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <button onclick="window.changeState('CATEGORY_SELECT')" class="text-gray-500 hover:text-indigo-600 flex items-center gap-1 font-bold bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200">
+                            ← Voltar
+                        </button>
+                        <span class="bg-indigo-100 text-indigo-800 text-sm font-bold px-4 py-1 rounded-full">
+                            ${category.name} (${currentChapterIndex + 1}/${category.chapters.length})
+                        </span>
+                    </div>
+
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-xl flex-grow flex flex-col border-4 border-indigo-50">
+                        <div class="h-48 md:h-72 w-full bg-gray-200 relative group">
+                            <img src="${chapter.imageUrl}" onerror="this.src='https://placehold.co/800x400/e2e8f0/475569?text=Imagem+Nao+Encontrada'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <h2 class="absolute bottom-4 left-6 text-3xl md:text-4xl font-black text-white drop-shadow-md">${chapter.title}</h2>
+                        </div>
+                        <div class="p-6 md:p-10 flex-grow flex flex-col justify-between">
+                            <p class="text-gray-700 text-lg md:text-xl leading-relaxed mb-8">
+                                ${chapter.content}
+                            </p>
+                            
+                            <div class="flex justify-between mt-auto pt-4 border-t border-gray-100">
+                                ${currentChapterIndex > 0 ? 
+                                    `<button onclick="window.prevChapter()" class="text-gray-500 hover:text-indigo-600 font-bold px-4 py-2 flex items-center gap-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition">
+                                        ← Voltar Aula
+                                    </button>` : '<div></div>'
+                                }
+                                
+                                ${isLast ? 
+                                    `<button onclick="window.changeState('CATEGORY_SELECT')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-8 py-3 rounded-xl shadow-md transform transition hover:-translate-y-1">
+                                        Terminar Módulo! 🌟
+                                    </button>` :
+                                    `<button onclick="window.nextChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-md transform transition hover:-translate-y-1">
+                                        Próxima Aula →
+                                    </button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.nextChapter = function() { currentChapterIndex++; window.renderModuleView(); }
+        window.prevChapter = function() { currentChapterIndex--; window.renderModuleView(); }
+
+        window.startQuiz = function(categoryId) {
+            selectedCategoryId = categoryId;
+            quizQuestions = appData.questions.filter(q => q.category === categoryId);
+            quizQuestions.sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            quizAnswers = [];
+            window.changeState('QUIZ');
+        }
+
+        window.renderQuiz = function() {
+            const q = quizQuestions[currentQuestionIndex];
+            const category = appData.categories.find(c => c.id === selectedCategoryId);
+
+            mainContent.innerHTML = `
+                <div class="fade-in w-full max-w-2xl bg-white rounded-3xl p-6 md:p-10 shadow-xl border-4 border-teal-50">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                        <span class="text-teal-600 font-black tracking-widest uppercase text-sm">${category.name}</span>
+                        <span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-bold text-sm">
+                            Pergunta ${currentQuestionIndex + 1} de ${quizQuestions.length}
+                        </span>
+                    </div>
+                    
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 leading-snug">${q.text}</h2>
+                    
+                    <div class="space-y-4" id="options-container">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="window.answerQuestion(${i})" class="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-teal-500 hover:bg-teal-50 text-gray-700 font-semibold text-lg transition-all transform hover:-translate-y-1">
+                                <span class="inline-block w-8 h-8 bg-gray-100 text-center rounded-full mr-3 leading-8 font-bold text-gray-500">${String.fromCharCode(65 + i)}</span>
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.answerQuestion = function(selectedIndex) {
+            const q = quizQuestions[currentQuestionIndex];
+            const isCorrect = selectedIndex === q.correct;
+            
+            quizAnswers.push({ question: q, selected: selectedIndex, isCorrect: isCorrect });
+
+            const optionsHTML = q.options.map((opt, i) => {
+                let btnClass = "w-full text-left p-4 rounded-xl border-2 font-semibold text-lg flex items-center justify-between ";
+                if (i === q.correct) {
+                    btnClass += "bg-green-100 border-green-500 text-green-800";
+                } else if (i === selectedIndex && !isCorrect) {
+                    btnClass += "bg-red-100 border-red-500 text-red-800";
+                } else {
+                    btnClass += "bg-gray-50 border-gray-200 text-gray-400 opacity-50";
+                }
+                
+                let icon = "";
+                if (i === q.correct) icon = "✅";
+                if (i === selectedIndex && !isCorrect) icon = "❌";
+
+                return `
+                    <div class="${btnClass}">
+                        <div><span class="font-bold mr-2">${String.fromCharCode(65 + i)})</span> ${opt}</div>
+                        <div class="text-2xl">${icon}</div>
+                    </div>
+                `;
+            }).join('');
+
+            const category = appData.categories.find(c => c.id === selectedCategoryId);
+
+            mainContent.innerHTML = `
+                <div class="fade-in w-full max-w-2xl bg-white rounded-3xl p-6 md:p-10 shadow-xl border-4 ${isCorrect ? 'border-green-100' : 'border-red-100'}">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                        <span class="text-teal-600 font-black tracking-widest uppercase text-sm">${category.name}</span>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 leading-snug">${q.text}</h2>
+                    <div class="space-y-3 mb-8">${optionsHTML}</div>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-r-lg mb-8">
+                        <h4 class="font-bold text-blue-800 flex items-center gap-2 mb-1">
+                            <span class="text-xl">💡</span> Você Sabia?
+                        </h4>
+                        <p class="text-blue-900">${q.explanation}</p>
+                    </div>
+                    <button onclick="window.nextQuestion()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg text-lg transform transition hover:-translate-y-1">
+                        ${currentQuestionIndex < quizQuestions.length - 1 ? 'Próxima Pergunta →' : 'Ver Resultado Final 🏆'}
+                    </button>
+                </div>
+            `;
+        }
+
+        window.nextQuestion = function() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) window.renderQuiz();
+            else window.finishQuiz();
+        }
+
+        window.finishQuiz = function() {
+            const score = quizAnswers.filter(a => a.isCorrect).length;
+            const total = quizQuestions.length;
+            const category = appData.categories.find(c => c.id === selectedCategoryId);
+            
+            updateStudentProgress(currentUser, selectedCategoryId, category.chapters.length, category.chapters.length, score);
+            const grade = calculateGrade(score, total);
+
+            mainContent.innerHTML = `
+                <div class="fade-in w-full max-w-2xl bg-white rounded-3xl p-8 md:p-12 shadow-xl border-4 border-indigo-100 text-center">
+                    <div class="text-7xl mb-6 bounce-slight">${score > total/2 ? '🎉' : '📚'}</div>
+                    <h2 class="text-4xl font-black text-gray-800 mb-2">Quiz Concluído!</h2>
+                    <p class="text-xl text-gray-500 mb-8">Você terminou o desafio de <b>${category.name}</b></p>
+                    
+                    <div class="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
+                        <div class="text-5xl font-black ${grade.color} mb-2">${score} / ${total}</div>
+                        <div class="text-xl font-bold text-gray-700 uppercase tracking-widest">Acertos</div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <span class="text-gray-500 font-bold mr-2">Nota no Relatório:</span>
+                            <span class="text-2xl font-black ${grade.color}">${grade.grade} - ${grade.text}</span>
+                        </div>
+                    </div>
+                    <button onclick="window.changeState('CATEGORY_SELECT')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-4 rounded-xl shadow-lg transform transition hover:-translate-y-1">
+                        Voltar para o Menu
+                    </button>
+                </div>
+            `;
+        }
+
+        window.renderAdminLogin = function() {
+            mainContent.innerHTML = `
+                <div class="fade-in w-full max-w-md bg-white rounded-3xl p-8 shadow-xl border-4 border-gray-800">
+                    <div class="text-center mb-8">
+                        <div class="text-5xl mb-4">👨‍🏫</div>
+                        <h2 class="text-2xl font-black text-gray-800">Painel do Professor</h2>
+                        <p class="text-gray-500 text-sm mt-1">Gestão de Conteúdo e Relatórios EAD</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Login</label>
+                            <input type="text" id="admin-user" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-gray-800 focus:outline-none bg-gray-50 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Senha</label>
+                            <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-gray-800 focus:outline-none bg-gray-50 font-mono">
+                        </div>
+                        <button onclick="window.handleAdminLogin()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 rounded-xl transition-colors mt-6 shadow-md">
+                            Entrar no Sistema
+                        </button>
+                        <button onclick="window.changeState('MENU')" class="w-full text-gray-500 hover:text-gray-800 font-bold py-2 mt-2">
+                            Cancelar e Voltar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.handleAdminLogin = function() {
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+            if (user === 'admplus' && pass === '16Bl33@p') {
+                window.changeState('ADMIN_DASHBOARD');
+            } else {
+                window.customAlert('Credenciais incorretas. Tente novamente.');
+            }
+        }
+
+        window.updateFilter = function(type, value) {
+            if (type === 'student') adminStudentFilter = value;
+            if (type === 'module') adminModuleFilter = value;
+            window.renderAdminDashboard();
+        }
+        
+        window.refreshDashboard = async function() {
+            await fetchCloudProgress();
+            window.renderAdminDashboard();
+        }
+
+        window.renderAdminDashboard = function() {
+            let reportRows = [];
+            let uniqueStudents = new Set();
+            let uniqueModules = new Set();
+            
+            for (const [studentName, catData] of Object.entries(studentsProgress)) {
+                uniqueStudents.add(studentName);
+                for (const [catId, data] of Object.entries(catData)) {
+                    const category = appData.categories.find(c => c.id === catId);
+                    if (!category) continue;
+                    uniqueModules.add(category.name);
+                    
+                    const totalChaps = category.chapters.length;
+                    const progressPercent = totalChaps > 0 ? Math.round((data.chaptersRead / totalChaps) * 100) : 0;
+                    const totalQs = appData.questions.filter(q => q.category === catId).length;
+                    
+                    let quizText = `<span class="text-gray-400">Pendente</span>`;
+                    if (data.quizScore !== null) {
+                        const grade = calculateGrade(data.quizScore, totalQs);
+                        quizText = `<span class="font-bold ${grade.color}">${data.quizScore}/${totalQs} (Nota ${grade.grade})</span>`;
+                    }
+                    const dateStr = data.lastAccess ? new Date(data.lastAccess).toLocaleDateString('pt-BR') : '-';
+
+                    reportRows.push({ student: studentName, category: category.name, progress: progressPercent, quiz: quizText, date: dateStr });
+                }
+            }
+
+            reportRows.reverse();
+
+            let filteredRows = reportRows;
+            if (adminStudentFilter !== 'Todos') filteredRows = filteredRows.filter(r => r.student === adminStudentFilter);
+            if (adminModuleFilter !== 'Todos') filteredRows = filteredRows.filter(r => r.category === adminModuleFilter);
+
+            const rowsHtml = filteredRows.length > 0 ? filteredRows.map(row => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <td class="py-3 px-4 font-bold text-gray-800">${row.student}</td>
+                    <td class="py-3 px-4 text-gray-600">${row.category}</td>
+                    <td class="py-3 px-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-24 bg-gray-200 rounded-full h-2"><div class="bg-indigo-600 h-2 rounded-full" style="width: ${row.progress}%"></div></div>
+                            <span class="text-xs font-bold">${row.progress}%</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">${row.quiz}</td>
+                    <td class="py-3 px-4 text-sm text-gray-500">${row.date}</td>
+                </tr>
+            `).join('') : `<tr><td colspan="5" class="py-8 text-center text-gray-500 font-bold">Nenhum dado encontrado EAD.</td></tr>`;
+
+            const studentOptions = ['Todos'].concat(Array.from(uniqueStudents)).map(s => `<option value="${s}" ${adminStudentFilter === s ? 'selected' : ''}>${s}</option>`).join('');
+            const moduleOptions = ['Todos'].concat(Array.from(uniqueModules)).map(m => `<option value="${m}" ${adminModuleFilter === m ? 'selected' : ''}>${m}</option>`).join('');
+
+            mainContent.innerHTML = `
+                <div class="fade-in w-full max-w-6xl flex h-[80vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+                    <div class="w-64 bg-gray-900 text-gray-300 flex flex-col shrink-0">
+                        <div class="p-6 text-center border-b border-gray-800">
+                            <div class="text-4xl mb-2">👨‍🏫</div>
+                            <h2 class="font-black text-white tracking-wide">EAD Admin</h2>
+                        </div>
+                        <nav class="flex-grow p-4 space-y-2">
+                            <button onclick="window.changeState('ADMIN_DASHBOARD')" class="w-full text-left px-4 py-3 bg-gray-800 text-white rounded-xl font-bold flex items-center gap-2">
+                                📊 Relatórios Nuvem
+                            </button>
+                            <button onclick="window.changeState('ADMIN_EDITOR')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2 text-gray-300">
+                                📝 Editar Curso/Quiz
+                            </button>
+                        </nav>
+                        <div class="p-4 border-t border-gray-800">
+                            <button onclick="window.customConfirm('Você irá apagar os dados da NUVEM permanentemente!', 'window.resetProgressCloud()')" class="w-full text-left px-4 py-3 text-red-400 hover:bg-red-900/30 hover:text-red-300 rounded-xl transition flex items-center gap-2 font-bold mb-2">
+                                🗑️ Zerar Turma
+                            </button>
+                            <button onclick="window.changeState('MENU')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2">
+                                🚪 Sair do Painel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow bg-gray-50 flex flex-col relative overflow-hidden">
+                        <div class="p-8 border-b border-gray-200 bg-white flex justify-between items-end shrink-0">
+                            <div>
+                                <h2 class="text-3xl font-black text-gray-800">Boletim Geral (Nuvem)</h2>
+                                <p class="text-gray-500">Acompanhe as notas salvas no Firebase.</p>
+                            </div>
+                            <button onclick="window.refreshDashboard()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition shadow-sm border border-indigo-200">
+                                🔄 Atualizar da Nuvem
+                            </button>
+                        </div>
+                        
+                        <div class="p-8 flex-grow overflow-auto">
+                            <div class="grid grid-cols-2 gap-4 mb-6 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Filtrar por Aluno</label>
+                                    <select onchange="window.updateFilter('student', this.value)" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 font-bold text-gray-700 cursor-pointer focus:border-indigo-500 focus:outline-none">
+                                        ${studentOptions}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Filtrar por Módulo</label>
+                                    <select onchange="window.updateFilter('module', this.value)" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 font-bold text-gray-700 cursor-pointer focus:border-indigo-500 focus:outline-none">
+                                        ${moduleOptions}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-gray-100 text-gray-500 text-xs uppercase tracking-wider">
+                                            <th class="py-3 px-4 font-black">Aluno</th>
+                                            <th class="py-3 px-4 font-black">Módulo Estudado</th>
+                                            <th class="py-3 px-4 font-black">Progresso do Curso</th>
+                                            <th class="py-3 px-4 font-black">Nota do Quiz</th>
+                                            <th class="py-3 px-4 font-black">Data Acesso</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${rowsHtml}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.changeEditCategory = function(catId) { adminSelectedCategoryForEdit = catId; window.renderAdminEditor(); }
+        window.updateCategoryData = function(field, value) { const cat = appData.categories.find(c => c.id === adminSelectedCategoryForEdit); if (cat) cat[field] = value; if (field === 'name') window.renderAdminEditor(); }
+        window.updateChapter = function(catId, index, field, value) { const cat = appData.categories.find(c => c.id === catId); cat.chapters[index][field] = value; }
+        window.updateQuestion = function(globalIndex, field, value, optIndex = -1) { if (field === 'options') appData.questions[globalIndex].options[optIndex] = value; else if (field === 'correct') appData.questions[globalIndex].correct = parseInt(value); else appData.questions[globalIndex][field] = value; }
+        
+        window.addCategory = function() {
+            const newId = 'modulo_' + Date.now();
+            appData.categories.push({ id: newId, name: 'Novo Módulo EAD', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', description: 'Descrição do módulo...', chapters: [] });
+            adminSelectedCategoryForEdit = newId;
+            window.renderAdminEditor();
+        }
+
+        window.removeCategory = function() {
+            const index = appData.categories.findIndex(c => c.id === adminSelectedCategoryForEdit);
+            if (index > -1) {
+                appData.categories.splice(index, 1);
+                appData.questions = appData.questions.filter(q => q.category !== adminSelectedCategoryForEdit);
+                adminSelectedCategoryForEdit = appData.categories.length > 0 ? appData.categories[0].id : null;
+                window.renderAdminEditor();
+            }
+        }
+
+        window.addChapter = function(catId) { const cat = appData.categories.find(c => c.id === catId); cat.chapters.push({ title: 'Novo Capítulo', content: 'Escreva a aula aqui...', imageUrl: '' }); window.renderAdminEditor(); }
+        window.removeChapter = function(catId, index) { const cat = appData.categories.find(c => c.id === catId); cat.chapters.splice(index, 1); window.renderAdminEditor(); }
+        window.addQuestion = function(catId) { appData.questions.push({ category: catId, text: 'Nova pergunta?', options: ['Opção A', 'Opção B', 'Opção C', 'Opção D'], correct: 0, explanation: 'Explicação.' }); window.renderAdminEditor(); }
+        window.removeQuestion = function(globalIndex) { appData.questions.splice(globalIndex, 1); window.renderAdminEditor(); }
+
+        window.restoreDefaultData = function() {
+            appData = JSON.parse(JSON.stringify(initialCourseData));
+            window.saveCourseDataCloud();
+            window.renderAdminEditor();
+        }
+
+        window.renderAdminEditor = function() {
+            if (!adminSelectedCategoryForEdit && appData.categories.length > 0) adminSelectedCategoryForEdit = appData.categories[0].id;
+            const category = appData.categories.find(c => c.id === adminSelectedCategoryForEdit);
+            
+            const tabsHTML = appData.categories.map(c => `
+                <button onclick="window.changeEditCategory('${c.id}')" class="whitespace-nowrap px-4 py-3 font-bold rounded-t-xl border-b-4 ${adminSelectedCategoryForEdit === c.id ? 'border-indigo-600 text-indigo-700 bg-indigo-50' : 'border-transparent text-gray-500 hover:bg-gray-100 transition-colors'}">
+                    ${c.name}
+                </button>
+            `).join('') + `
+                <button onclick="window.addCategory()" class="whitespace-nowrap px-4 py-3 font-bold rounded-t-xl border-b-4 border-transparent text-green-600 hover:bg-green-50 transition-colors flex items-center gap-1">
+                    <span class="text-lg">+</span> Módulo EAD
+                </button>
+            `;
+
+            let editorContentHTML = '';
+            if (category) {
+                editorContentHTML = `
+                    <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 mb-8 relative shadow-sm">
+                        <button onclick="window.customConfirm('Você irá apagar ESTE MÓDULO e suas perguntas!', 'window.removeCategory()')" class="absolute top-6 right-6 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg text-sm font-bold border border-transparent hover:border-red-200">
+                            🗑️ Apagar Módulo
+                        </button>
+                        <h3 class="text-lg font-black text-indigo-900 mb-4">⚙️ Configuração Geral</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-indigo-500 uppercase mb-2">Nome</label>
+                                <input type="text" value="${category.name}" onchange="window.updateCategoryData('name', this.value)" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:border-indigo-600 focus:outline-none font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-indigo-500 uppercase mb-2">Descrição Curta</label>
+                                <input type="text" value="${category.description}" onchange="window.updateCategoryData('description', this.value)" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:border-indigo-600 focus:outline-none text-gray-600">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Capítulos -->
+                    <div class="mb-10">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-black text-indigo-900">📖 Aulas do Módulo</h3>
+                            <button onclick="window.addChapter('${category.id}')" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-lg font-bold text-sm">+ Nova Aula</button>
+                        </div>
+                        <div class="bg-gray-100 p-4 md:p-6 rounded-2xl border border-gray-200">
+                            ${category.chapters.length === 0 ? '<p class="text-gray-500 text-center">Nenhuma aula. Adicione uma.</p>' : category.chapters.map((chap, i) => `
+                                <div class="bg-white p-5 rounded-xl border border-gray-200 mb-4 shadow-sm relative">
+                                    <button onclick="window.customConfirm('Excluir aula ${i+1}?', 'window.removeChapter(\\'${category.id}\\', ${i})')" class="absolute top-4 right-4 text-red-500 hover:bg-red-50 p-2 rounded-lg">🗑️</button>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Título</label>
+                                    <input type="text" value="${chap.title}" onchange="window.updateChapter('${category.id}', ${i}, 'title', this.value)" class="w-full md:w-3/4 px-3 py-2 border rounded-lg focus:border-indigo-500 font-bold mb-4">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Link Imagem EAD</label>
+                                    <input type="text" value="${chap.imageUrl}" onchange="window.updateChapter('${category.id}', ${i}, 'imageUrl', this.value)" class="w-full px-3 py-2 border rounded-lg focus:border-indigo-500 text-sm mb-4">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Conteúdo da Aula</label>
+                                    <textarea onchange="window.updateChapter('${category.id}', ${i}, 'content', this.value)" class="w-full px-3 py-2 border rounded-lg focus:border-indigo-500" rows="3">${chap.content}</textarea>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Perguntas -->
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-black text-teal-900">🎮 Quiz do Módulo</h3>
+                            <button onclick="window.addQuestion('${category.id}')" class="bg-teal-100 text-teal-700 hover:bg-teal-200 px-4 py-2 rounded-lg font-bold text-sm">+ Pergunta</button>
+                        </div>
+                        <div class="bg-gray-100 p-4 md:p-6 rounded-2xl border border-gray-200">
+                            ${appData.questions.filter(q => q.category === category.id).length === 0 ? '<p class="text-gray-500 text-center">Nenhuma pergunta para este módulo.</p>' : appData.questions.map((q, globalIndex) => {
+                                if (q.category !== category.id) return '';
+                                return `
+                                    <div class="bg-white p-5 rounded-xl border border-gray-200 mb-4 shadow-sm relative">
+                                        <button onclick="window.customConfirm('Excluir pergunta?', 'window.removeQuestion(${globalIndex})')" class="absolute top-4 right-4 text-red-500 hover:bg-red-50 p-2 rounded-lg">🗑️</button>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pergunta</label>
+                                        <input type="text" value="${q.text}" onchange="window.updateQuestion(${globalIndex}, 'text', this.value)" class="w-full px-3 py-2 border rounded-lg font-bold mb-4">
+                                        <div class="grid md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Alternativas</label>
+                                                ${q.options.map((opt, optIndex) => `
+                                                    <div class="flex items-center gap-2 mb-2">
+                                                        <span class="font-bold text-gray-400 w-6">${String.fromCharCode(65 + optIndex)})</span>
+                                                        <input type="text" value="${opt}" onchange="window.updateQuestion(${globalIndex}, 'options', this.value, ${optIndex})" class="flex-grow px-3 py-1 border rounded-lg text-sm">
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Alternativa Correta</label>
+                                                <select onchange="window.updateQuestion(${globalIndex}, 'correct', this.value)" class="w-full px-3 py-2 border rounded-lg bg-green-50 text-green-800 font-bold mb-4">
+                                                    ${q.options.map((_, i) => `<option value="${i}" ${q.correct === i ? 'selected' : ''}>Opção ${String.fromCharCode(65 + i)}</option>`).join('')}
+                                                </select>
+                                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Explicação ao errar</label>
+                                                <textarea onchange="window.updateQuestion(${globalIndex}, 'explanation', this.value)" class="w-full px-3 py-2 border rounded-lg text-sm" rows="2">${q.explanation}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                editorContentHTML = `<div class="flex flex-col items-center justify-center h-64 text-gray-400"><span class="text-5xl mb-4">📭</span><p>Nenhum módulo. Crie um novo acima.</p></div>`;
+            }
+
+            mainContent.innerHTML = `
+                <div class="fade-in w-full max-w-6xl flex h-[80vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+                    <div class="w-64 bg-gray-900 text-gray-300 flex flex-col shrink-0">
+                        <div class="p-6 text-center border-b border-gray-800">
+                            <div class="text-4xl mb-2">👨‍🏫</div>
+                            <h2 class="font-black text-white tracking-wide">EAD Admin</h2>
+                        </div>
+                        <nav class="flex-grow p-4 space-y-2">
+                            <button onclick="window.changeState('ADMIN_DASHBOARD')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2 text-gray-300">
+                                📊 Relatórios Nuvem
+                            </button>
+                            <button onclick="window.changeState('ADMIN_EDITOR')" class="w-full text-left px-4 py-3 bg-gray-800 text-white rounded-xl font-bold flex items-center gap-2">
+                                📝 Editar Curso/Quiz
+                            </button>
+                        </nav>
+                        <div class="p-4 border-t border-gray-800">
+                            <button onclick="window.changeState('MENU')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2">
+                                🚪 Sair do Painel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow bg-gray-50 flex flex-col relative overflow-hidden">
+                        <div class="p-6 border-b border-gray-200 bg-white flex justify-between items-center shrink-0 shadow-sm">
+                            <div>
+                                <h2 class="text-3xl font-black text-gray-800">Editor de Conteúdo da Nuvem</h2>
+                                <p class="text-gray-500 text-sm">Atualizações serão enviadas direto para o banco de dados dos alunos.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.customConfirm('Isso apagará suas edições na NUVEM e voltará ao padrão!', 'window.restoreDefaultData()')" class="px-4 py-2 text-red-500 hover:bg-red-50 border border-red-200 rounded-lg font-bold text-sm transition bg-white">
+                                    Restaurar Padrões
+                                </button>
+                                <button onclick="window.saveCourseDataCloud()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 transition shadow-md hover:-translate-y-0.5 border border-indigo-700">
+                                    ☁️ Enviar para Nuvem
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-grow overflow-auto p-4 md:p-8">
+                            <div class="flex border-b border-gray-200 mb-8 overflow-x-auto gap-1 pb-1 custom-scrollbar">
+                                ${tabsHTML}
+                            </div>
+                            ${editorContentHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.changeState = function(newState) {
+            currentState = newState;
+            switch(currentState) {
+                case 'MENU': renderMenu(); break;
+                case 'CATEGORY_SELECT': renderCategorySelect(); break;
+                case 'MODULE_VIEW': renderModuleView(); break;
+                case 'QUIZ': renderQuiz(); break;
+                case 'ADMIN_LOGIN': renderAdminLogin(); break;
+                case 'ADMIN_DASHBOARD': renderAdminDashboard(); break;
+                case 'ADMIN_EDITOR': renderAdminEditor(); break;
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.altKey && event.shiftKey && event.key.toLowerCase() === 'm') {
+                const adminBtn = document.getElementById('admin-login-btn');
+                if (adminBtn) {
+                    adminBtn.classList.toggle('hidden');
+                    mainContent.classList.remove('fade-in');
+                    void mainContent.offsetWidth;
+                    mainContent.classList.add('fade-in');
+                }
+            }
+        });
+
+        // Inicia Conexão e Autenticação Firebase
+        initAppEAD();
+    </script>
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Master Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: #f8fafc;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7); /* slate-800 */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-hover {
+            transition: all 0.2s ease;
+        }
+        
+        .btn-hover:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-hover:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .option-btn {
+            background: rgba(51, 65, 85, 0.6); /* slate-700 */
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: rgba(71, 85, 105, 0.8);
+            border-color: rgba(99, 102, 241, 0.5); /* indigo-500 */
+        }
+
+        .option-btn.correct {
+            background-color: rgba(16, 185, 129, 0.2); /* emerald-500 */
+            border-color: #10b981;
+            color: #34d399;
+        }
+
+        .option-btn.wrong {
+            background-color: rgba(239, 68, 68, 0.2); /* red-500 */
+            border-color: #ef4444;
+            color: #f87171;
+        }
+
+        .cat-card:hover {
+            border-color: currentColor;
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        /* Custom Scrollbar for inner areas if needed */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.5); 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(71, 85, 105, 0.8); 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.8); 
+        }
+
+        #timer-bar {
+            transition: width 1s linear, background-color 0.3s;
+        }
+    </style>
+</head>
+<body class="p-2 md:p-4 h-screen w-screen overflow-hidden">
+
+    <div id="app" class="flex-grow flex flex-col items-center justify-center w-full max-w-4xl mx-auto h-full max-h-full">
+        
+        <!-- ==================== MAIN MENU ==================== -->
+        <div id="main-menu" class="w-full max-w-md glass-panel rounded-3xl p-6 md:p-8 text-center fade-in flex flex-col justify-center">
+            <div class="flex justify-center mb-3">
+                <div class="bg-indigo-500/20 p-3 rounded-2xl">
+                    <i data-lucide="brain-circuit" class="w-10 h-10 text-indigo-400"></i>
+                </div>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-1 md:mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Quiz Master</h1>
+            <p class="text-slate-400 mb-5 md:mb-8 text-sm md:text-base">Teste seus conhecimentos</p>
+            
+            <div class="space-y-3">
+                <button onclick="selectMode('campaign')" class="btn-hover w-full py-3 md:py-4 rounded-2xl font-semibold text-base md:text-lg bg-indigo-600 hover:bg-indigo-500 text-white flex flex-col items-center group">
+                    <span class="flex items-center gap-2"><i data-lucide="map" class="w-5 h-5"></i> Modo Campanha</span>
+                    <span class="text-[10px] md:text-xs font-normal opacity-70 mt-0.5">Jogue tranquilo e acumule pontos</span>
+                </button>
+                
+                <button onclick="selectMode('zen')" class="btn-hover w-full py-3 md:py-4 rounded-2xl font-semibold text-base md:text-lg bg-teal-600 hover:bg-teal-500 text-white flex flex-col items-center">
+                    <span class="flex items-center gap-2"><i data-lucide="leaf" class="w-5 h-5"></i> Modo Zen</span>
+                    <span class="text-[10px] md:text-xs font-normal opacity-70 mt-0.5">Aprenda no seu ritmo, sem pressões</span>
+                </button>
+                
+                <button onclick="selectMode('challenge')" class="btn-hover w-full py-3 md:py-4 rounded-2xl font-semibold text-base md:text-lg bg-rose-600 hover:bg-rose-500 text-white flex flex-col items-center">
+                    <span class="flex items-center gap-2"><i data-lucide="flame" class="w-5 h-5"></i> Modo Desafio</span>
+                    <span class="text-[10px] md:text-xs font-normal opacity-70 mt-0.5">Contra o tempo e com vidas limitadas</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORY SELECTION ==================== -->
+        <div id="category-menu" class="w-full h-full max-h-full flex flex-col glass-panel rounded-3xl p-4 md:p-8 hidden fade-in">
+            <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                <button onclick="showMainMenu()" class="text-slate-400 hover:text-white transition flex items-center gap-1 md:gap-2 text-sm md:text-base">
+                    <i data-lucide="arrow-left" class="w-4 h-4 md:w-5 md:h-5"></i> Voltar
+                </button>
+                <h2 class="text-lg md:text-2xl font-bold text-center">Escolha o Tema</h2>
+                <div class="w-16 md:w-20"></div> <!-- spacer -->
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 flex-auto content-start md:content-center overflow-y-auto min-h-0 p-1">
+                <button onclick="startQuiz('Todas')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-indigo-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="infinity" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Todas</h3></div>
+                </button>
+                
+                <button onclick="startQuiz('Geografia')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-emerald-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="globe-2" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Geografia</h3></div>
+                </button>
+
+                <button onclick="startQuiz('História')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-amber-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="hourglass" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">História</h3></div>
+                </button>
+
+                <button onclick="startQuiz('Ciências')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-cyan-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="microscope" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Ciências</h3></div>
+                </button>
+
+                <button onclick="startQuiz('Entretenimento')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-fuchsia-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="film" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Entreten.</h3></div>
+                </button>
+
+                <button onclick="startQuiz('Tecnologia')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-blue-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="cpu" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Tecnologia</h3></div>
+                </button>
+                
+                <button onclick="startQuiz('Esportes')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-orange-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="medal" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Esportes</h3></div>
+                </button>
+
+                <button onclick="startQuiz('Artes')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-pink-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="palette" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Artes</h3></div>
+                </button>
+
+                <button onclick="startQuiz('Mitologia')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-yellow-300 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="swords" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Mitologia</h3></div>
+                </button>
+                
+                <button onclick="startQuiz('Literatura')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-violet-400 h-full">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Literatura</h3></div>
+                </button>
+                
+                <button onclick="startQuiz('Astronomia')" class="cat-card btn-hover flex flex-col items-center justify-center p-3 md:p-5 rounded-2xl border border-slate-700 text-slate-100 hover:text-indigo-300 h-full col-span-2 md:col-span-1 lg:col-span-2">
+                    <div class="bg-slate-700/50 p-2 md:p-3 rounded-xl mb-2"><i data-lucide="rocket" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="text-center"><h3 class="font-bold text-xs md:text-base leading-tight">Astronomia</h3></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== GAME SCREEN ==================== -->
+        <div id="game-screen" class="w-full max-w-3xl hidden fade-in flex-col h-full max-h-full py-1 min-h-0">
+            
+            <!-- Header Status -->
+            <div class="flex justify-between items-center mb-2 md:mb-4 glass-panel px-4 py-2 md:py-3 rounded-2xl flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <button onclick="showMainMenu()" class="text-slate-400 hover:text-white transition p-1.5 md:p-2 bg-slate-700/50 rounded-lg">
+                        <i data-lucide="x" class="w-4 h-4 md:w-5 md:h-5"></i>
+                    </button>
+                    <div>
+                        <span id="mode-label" class="text-[10px] md:text-xs uppercase tracking-wider font-bold">Modo</span>
+                        <div class="font-semibold text-base md:text-xl leading-none">Pontos: <span id="score" class="text-indigo-400">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="text-right">
+                    <div class="text-xs md:text-sm text-slate-400">Questão <span id="current-q-num" class="text-white font-bold">1</span> / <span id="total-q-num">10</span></div>
+                    <div id="lives-container" class="flex gap-1 justify-end mt-1 hidden text-rose-500">
+                        <!-- Lives injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer Bar -->
+            <div id="timer-container" class="hidden mb-2 md:mb-4 glass-panel rounded-full p-1 flex-shrink-0">
+                <div class="w-full h-2 md:h-3 bg-slate-800 rounded-full overflow-hidden relative">
+                    <div id="timer-bar" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 w-full rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="glass-panel rounded-3xl p-4 md:p-8 mb-2 flex-auto flex flex-col relative overflow-hidden">
+                <!-- Decorative background icon -->
+                <i id="bg-category-icon" data-lucide="help-circle" class="absolute -bottom-10 -right-10 w-48 h-48 md:w-64 md:h-64 text-white opacity-5 pointer-events-none"></i>
+                
+                <div class="relative z-10 w-full h-full flex flex-col overflow-y-auto pr-2 pb-2">
+                    <div class="flex-shrink-0 mb-4">
+                        <span id="category-label" class="inline-flex items-center gap-1 bg-slate-700 text-slate-200 text-[10px] md:text-xs px-2 md:px-3 py-1 rounded-full uppercase tracking-wider font-semibold border border-slate-600">
+                            <i data-lucide="tag" class="w-3 h-3"></i> Categoria
+                        </span>
+                    </div>
+                    
+                    <h2 id="question-text" class="text-lg md:text-3xl lg:text-4xl font-semibold mb-6 leading-tight flex-shrink-0">Carregando pergunta...</h2>
+                    
+                    <div class="flex-auto flex flex-col justify-center">
+                        <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 w-full">
+                            <!-- Options injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Button -->
+            <div id="next-container" class="hidden flex justify-end flex-shrink-0 pb-1">
+                 <button onclick="nextQuestion()" class="btn-hover bg-indigo-600 text-white font-bold py-3 px-6 md:px-8 rounded-xl flex items-center gap-2 text-sm md:text-base w-full md:w-auto justify-center">
+                     Próxima <i data-lucide="arrow-right" class="w-4 h-4 md:w-5 md:h-5"></i>
+                 </button>
+            </div>
+        </div>
+
+        <!-- ==================== GAME OVER SCREEN ==================== -->
+        <div id="game-over-screen" class="w-full max-w-md hidden glass-panel rounded-3xl p-6 md:p-10 text-center fade-in flex flex-col justify-center relative overflow-hidden max-h-full">
+            <div class="absolute inset-0 bg-gradient-to-b from-indigo-600/20 to-transparent"></div>
+            
+            <div class="relative z-10">
+                <i data-lucide="trophy" class="w-12 h-12 md:w-16 md:h-16 text-amber-400 mx-auto mb-4"></i>
+                <h2 class="text-3xl md:text-4xl font-black mb-2">Fim de Jogo!</h2>
+                <p id="game-over-message" class="text-slate-300 mb-6 md:mb-8 text-sm md:text-base">Aqui estão seus resultados</p>
+                
+                <div class="bg-slate-800/80 rounded-2xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-700">
+                    <div class="text-[10px] md:text-xs uppercase tracking-widest text-slate-400 mb-2 font-semibold">Pontuação Final</div>
+                    <div id="final-score" class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">0</div>
+                    <div id="questions-answered-stats" class="text-xs md:text-sm mt-4 text-slate-300">Acertou 0 perguntas de 0</div>
+                </div>
+                
+                <button onclick="showMainMenu()" class="btn-hover w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg bg-slate-700 hover:bg-slate-600 text-white flex justify-center items-center gap-2">
+                    <i data-lucide="home" class="w-4 h-4 md:w-5 md:h-5"></i> Voltar ao Início
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // --- Database of Coherent Questions (Expanded & No Duplicates) ---
+        const questionDB = [
+            // Geografia
+            { q: "Qual o país com a maior área territorial do mundo?", opts: ["Rússia", "Canadá", "China", "Estados Unidos"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Onde se localiza o estreito de Gibraltar?", opts: ["Entre Espanha e Marrocos", "Entre Itália e Grécia", "Entre Inglaterra e França", "Entre Turquia e Bulgária"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Qual é o menor país do mundo em área?", opts: ["Vaticano", "Mônaco", "Nauru", "Tuvalu"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Qual cordilheira separa a Europa da Ásia?", opts: ["Montes Urais", "Alpes", "Cárpatos", "Cáucaso"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Em qual país fica o deserto do Atacama, considerado o mais árido do mundo?", opts: ["Chile", "Peru", "Bolívia", "Argentina"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Qual é a capital da Nova Zelândia?", opts: ["Wellington", "Auckland", "Christchurch", "Hamilton"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Qual o rio mais longo do mundo, atravessando grande parte do norte da África?", opts: ["Rio Nilo", "Rio Amazonas", "Rio Yangtzé", "Rio Mississipi"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Qual é o país mais populoso do mundo (dados de 2024)?", opts: ["Índia", "China", "Estados Unidos", "Indonésia"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "O Monte Everest fica na fronteira de quais dois países?", opts: ["Nepal e China", "Índia e Paquistão", "Butão e China", "Nepal e Índia"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Qual destas capitais europeias NÃO é cortada pelo rio Danúbio?", opts: ["Praga", "Viena", "Budapeste", "Belgrado"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "A ilha de Madagascar fica em qual oceano?", opts: ["Oceano Índico", "Oceano Atlântico", "Oceano Pacífico", "Oceano Ártico"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Qual estado brasileiro tem a maior costa marítima?", opts: ["Bahia", "Rio de Janeiro", "Maranhão", "Ceará"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "O Canal do Panamá liga o Oceano Atlântico a qual outro oceano?", opts: ["Pacífico", "Índico", "Ártico", "Antártico"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Qual é a capital do Canadá?", opts: ["Ottawa", "Toronto", "Vancouver", "Montreal"], ans: 0, cat: "Geografia", icon: "globe-2" },
+            { q: "Em qual país asiático fica a antiga cidade de Petra?", opts: ["Jordânia", "Líbano", "Síria", "Iraque"], ans: 0, cat: "Geografia", icon: "globe-2" },
+
+            // História
+            { q: "Em qual civilização antiga as Grandes Pirâmides de Gizé foram construídas?", opts: ["Egípcia", "Maia", "Mesopotâmica", "Asteca"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Quem foi o líder sul-africano que lutou contra o Apartheid e se tornou presidente após 27 anos de prisão?", opts: ["Nelson Mandela", "Desmond Tutu", "Kofi Annan", "Steve Biko"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Em que ano o homem pisou na lua pela primeira vez durante a missão Apollo 11?", opts: ["1969", "1965", "1971", "1968"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Qual navegador português liderou a expedição que resultou na descoberta do Brasil em 1500?", opts: ["Pedro Álvares Cabral", "Cristóvão Colombo", "Vasco da Gama", "Fernão de Magalhães"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "A Revolução Francesa, marco da Idade Contemporânea, começou com qual evento simbólico?", opts: ["Queda da Bastilha", "Execução de Luís XVI", "Batalha de Waterloo", "Coroação de Napoleão"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Quem foi a primeira mulher a ganhar um Prêmio Nobel e a única a ganhá-lo em duas áreas científicas diferentes?", opts: ["Marie Curie", "Rosalind Franklin", "Ada Lovelace", "Florence Nightingale"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Qual foi o tratado que encerrou oficialmente a Primeira Guerra Mundial?", opts: ["Tratado de Versalhes", "Tratado de Tordesilhas", "Paz de Vestfália", "Tratado de Paris"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Em que ano ocorreu a proclamação da República do Brasil?", opts: ["1889", "1822", "1500", "1930"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Quem pintou a Mona Lisa?", opts: ["Leonardo da Vinci", "Michelangelo", "Raphael", "Donatello"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Qual império construiu a cidade de Machu Picchu?", opts: ["Inca", "Maia", "Asteca", "Olmeca"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "A Guerra Fria foi um conflito político e ideológico principalmente entre quais duas potências?", opts: ["EUA e União Soviética", "EUA e China", "Alemanha e Reino Unido", "Japão e Rússia"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Quem foi o imperador romano famoso por ter supostamente incendiado Roma?", opts: ["Nero", "Júlio César", "Augusto", "Calígula"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Em qual país se originou a Revolução Industrial?", opts: ["Inglaterra", "França", "Estados Unidos", "Alemanha"], ans: 0, cat: "História", icon: "hourglass" },
+            { q: "Qual líder indiano usou a desobediência civil não-violenta para libertar a Índia do domínio britânico?", opts: ["Mahatma Gandhi", "Jawaharlal Nehru", "Subhas Chandra Bose", "B. R. Ambedkar"], ans: 0, cat: "História", icon: "hourglass" },
+
+            // Ciências
+            { q: "Qual é a partícula subatômica com carga elétrica positiva?", opts: ["Próton", "Elétron", "Nêutron", "Quark"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual gás é predominante na atmosfera de Netuno, conferindo-lhe sua cor azulada?", opts: ["Metano", "Hidrogênio", "Hélio", "Amônia"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "A 'Escala Richter' é utilizada para medir a magnitude de qual fenômeno natural?", opts: ["Terremotos", "Tornados", "Radiação", "Pressão atmosférica"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Onde no corpo humano estão localizados os alvéolos, responsáveis pelas trocas gasosas?", opts: ["Pulmões", "Coração", "Cérebro", "Intestino delgado"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual o significado da sigla DNA, a molécula que carrega a informação genética?", opts: ["Ácido Desoxirribonucleico", "Ácido Ribonucleico", "Dióxido de Nitrogênio", "Dinucleotídeo de Adenina"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual é a fórmula química do sal de cozinha (cloreto de sódio)?", opts: ["NaCl", "H2O", "CO2", "HCl"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual é o metal líquido à temperatura ambiente?", opts: ["Mercúrio", "Gálio", "Chumbo", "Alumínio"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "O que o instrumento chamado 'anemômetro' mede?", opts: ["Velocidade do vento", "Pressão atmosférica", "Umidade relativa do ar", "Quantidade de chuva"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual é o osso mais longo do corpo humano?", opts: ["Fêmur", "Tíbia", "Úmero", "Rádio"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Na tabela periódica, qual elemento é representado pelo símbolo 'Fe'?", opts: ["Ferro", "Flúor", "Fósforo", "Frâncio"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual processo as plantas usam para converter luz solar em alimento?", opts: ["Fotossíntese", "Respiração celular", "Transpiração", "Germinação"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual cientista desenvolveu a teoria da relatividade geral?", opts: ["Albert Einstein", "Isaac Newton", "Niels Bohr", "Stephen Hawking"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual é a camada mais externa da Terra?", opts: ["Crosta", "Manto", "Núcleo externo", "Núcleo interno"], ans: 0, cat: "Ciências", icon: "microscope" },
+            { q: "Qual doença é causada por uma deficiência severa de vitamina C?", opts: ["Escorbuto", "Raquitismo", "Beribéri", "Pelagra"], ans: 0, cat: "Ciências", icon: "microscope" },
+
+            // Entretenimento
+            { q: "No filme 'Matrix', qual pílula o personagem Neo escolhe tomar para descobrir a verdade?", opts: ["Vermelha", "Azul", "Verde", "Preta"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Na franquia 'Shrek', como se chamam os filhos bebês do casal Shrek e Fiona?", opts: ["Eles têm trigêmeos (Farkle, Fergus, Felicia)", "Apenas Farkle", "Apenas Fergus e Felicia", "Eles não têm filhos nos filmes"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Qual cantora é amplamente reconhecida pelo título de 'Rainha do Pop'?", opts: ["Madonna", "Beyoncé", "Lady Gaga", "Whitney Houston"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Em qual aclamada série de televisão aparece o personagem Walter White?", opts: ["Breaking Bad", "The Walking Dead", "Mad Men", "The Sopranos"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Quem foi o diretor do aclamado filme de ficção científica 'Jurassic Park' de 1993?", opts: ["Steven Spielberg", "James Cameron", "George Lucas", "Martin Scorsese"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "O personagem 'Goku' é o protagonista de qual famoso anime/mangá?", opts: ["Dragon Ball", "Naruto", "One Piece", "Bleach"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Qual filme de 1997 ganhou 11 Oscars, incluindo Melhor Filme e Melhor Diretor?", opts: ["Titanic", "O Senhor dos Anéis: O Retorno do Rei", "Ben-Hur", "Coração Valente"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "No universo de Harry Potter, qual é o nome do animal de estimação de Hermione Granger?", opts: ["Bichento", "Perebas", "Edwiges", "Trevo"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Qual banda britânica lançou o icônico álbum 'The Dark Side of the Moon' em 1973?", opts: ["Pink Floyd", "The Beatles", "The Rolling Stones", "Led Zeppelin"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Qual herói dos quadrinhos é o alter ego de Peter Parker?", opts: ["Homem-Aranha", "Batman", "Superman", "Homem de Ferro"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Quem compôs a famosa 'Quinta Sinfonia', cujas notas iniciais são amplamente reconhecidas?", opts: ["Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Johann Sebastian Bach", "Piotr Ilitch Tchaikovski"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Na série de jogos 'The Legend of Zelda', qual é o nome do personagem principal controlável?", opts: ["Link", "Zelda", "Ganon", "Navi"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Qual atriz interpretou a Viúva Negra no Universo Cinematográfico da Marvel (UCM)?", opts: ["Scarlett Johansson", "Brie Larson", "Elizabeth Olsen", "Florence Pugh"], ans: 0, cat: "Entretenimento", icon: "film" },
+            { q: "Em qual série os personagens vivem na cidade fictícia de Hawkins?", opts: ["Stranger Things", "Dark", "Riverdale", "Supernatural"], ans: 0, cat: "Entretenimento", icon: "film" },
+
+            // Tecnologia
+            { q: "A empresa Nvidia ganhou destaque mundial inicialmente por produzir qual tipo de componente?", opts: ["Placas de vídeo (GPUs)", "Sistemas Operacionais", "Smartphones", "Navegadores Web"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Qual foi a primeira rede social a atingir a marca de 1 bilhão de usuários ativos mensais?", opts: ["Facebook", "MySpace", "Instagram", "Twitter"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Em informática, o que significa a sigla 'URL'?", opts: ["Uniform Resource Locator (Localizador Padrão de Recursos)", "Universal Routing Link", "Unified Resource Listing", "Uniform Running Language"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Qual grande empresa de tecnologia é responsável pelo desenvolvimento e manutenção do sistema Android?", opts: ["Google", "Apple", "Microsoft", "Samsung"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Qual o nome da primeira e mais famosa criptomoeda, criada por um autor anônimo sob o pseudônimo Satoshi Nakamoto?", opts: ["Bitcoin", "Ethereum", "Dogecoin", "Ripple"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "O que a sigla 'HTML' significa no contexto de desenvolvimento web?", opts: ["HyperText Markup Language", "High-Level Text Machine Language", "Hyperlink and Text Markup Language", "Home Tool Markup Language"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Quem é conhecido como um dos fundadores da Microsoft junto com Bill Gates?", opts: ["Paul Allen", "Steve Wozniak", "Larry Page", "Sergey Brin"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Qual foi o primeiro computador eletrônico de propósito geral?", opts: ["ENIAC", "UNIVAC", "Colossus", "Altair 8800"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Qual empresa desenvolveu o microprocessador, uma inovação fundamental para os computadores pessoais?", opts: ["Intel", "IBM", "AMD", "Motorola"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "O que significa a sigla 'RAM' em termos de hardware de computador?", opts: ["Random Access Memory", "Read-Only Memory", "Real-time Access Mechanism", "Rapid Allocation Module"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Qual é o sistema operacional de código aberto baseado no kernel criado por Linus Torvalds?", opts: ["Linux", "Unix", "FreeBSD", "MS-DOS"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "O que é 'phishing' na segurança da informação?", opts: ["Tentar enganar pessoas para obter dados sensíveis", "Um software de mineração de criptomoedas", "Uma técnica para acelerar a internet", "Um tipo de firewall de rede"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Qual formato de arquivo de imagem é conhecido por suportar animações simples e fundos transparentes (embora de forma limitada em cores)?", opts: ["GIF", "JPEG", "PNG", "BMP"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            { q: "Quem é a atual CEO da AMD (Advanced Micro Devices)?", opts: ["Lisa Su", "Jensen Huang", "Pat Gelsinger", "Tim Cook"], ans: 0, cat: "Tecnologia", icon: "cpu" },
+            
+            // Esportes
+            { q: "Em qual esporte a pontuação máxima de uma jogada é chamada de 'Touchdown'?", opts: ["Futebol Americano", "Rugby", "Basquete", "Beisebol"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Qual seleção nacional venceu a primeira edição da Copa do Mundo FIFA em 1930?", opts: ["Uruguai", "Brasil", "Alemanha", "Argentina"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Em uma partida oficial de vôlei de quadra, quantos pontos são necessários para vencer um set (sem considerar o tie-break ou diferença de dois pontos)?", opts: ["25", "21", "15", "30"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Quem é o atleta jamaicano que detém o recorde mundial dos 100 metros rasos no atletismo?", opts: ["Usain Bolt", "Carl Lewis", "Tyson Gay", "Yohan Blake"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Nas corridas de Fórmula 1, qual bandeira é agitada para indicar que a sessão ou corrida foi encerrada?", opts: ["Quadriculada", "Amarela", "Vermelha", "Verde"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Quantos jogadores de cada time de basquete entram em quadra ao mesmo tempo durante um jogo oficial da NBA?", opts: ["5", "6", "4", "7"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Em qual esporte se usa o termo 'Home Run'?", opts: ["Beisebol", "Críquete", "Golfe", "Tênis"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "O torneio de Wimbledon, um dos mais tradicionais do mundo, é disputado em qual superfície?", opts: ["Grama", "Saibro", "Quadra Dura (Asfalto/Cimento)", "Carpete"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Quem é considerado o 'Rei do Futebol' e venceu três Copas do Mundo com a seleção brasileira?", opts: ["Pelé", "Diego Maradona", "Lionel Messi", "Cristiano Ronaldo"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Na ginástica artística, qual aparelho é disputado exclusivamente por mulheres?", opts: ["Trave de Equilíbrio", "Argolas", "Cavalo com Alças", "Barra Fixa"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Qual país é tradicionalmente o maior campeão do rúgbi masculino, conhecidos como 'All Blacks'?", opts: ["Nova Zelândia", "África do Sul", "Austrália", "Inglaterra"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Em qual arte marcial o objetivo muitas vezes envolve imobilizar o oponente ou finalizá-lo no chão com estrangulamentos ou chaves?", opts: ["Jiu-Jitsu", "Karatê", "Taekwondo", "Boxe"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Michael Phelps é considerado o atleta olímpico mais condecorado de todos os tempos. Em qual esporte ele competiu?", opts: ["Natação", "Atletismo", "Ginástica", "Ciclismo"], ans: 0, cat: "Esportes", icon: "medal" },
+            { q: "Qual é a distância oficial, arredondada, de uma corrida de Maratona?", opts: ["42 km", "21 km", "50 km", "10 km"], ans: 0, cat: "Esportes", icon: "medal" },
+
+            // Artes
+            { q: "Qual famoso pintor espanhol criou a obra 'Guernica', um retrato dos horrores da guerra civil?", opts: ["Pablo Picasso", "Vincent van Gogh", "Salvador Dalí", "Claude Monet"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "A icônica pintura 'Abaporu' é uma das principais obras de qual artista brasileira do movimento modernista?", opts: ["Tarsila do Amaral", "Anita Malfatti", "Lygia Clark", "Beatriz Milhazes"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "Em qual museu internacional a pintura 'Mona Lisa', de Leonardo da Vinci, fica exposta permanentemente?", opts: ["Museu do Louvre (França)", "Museu do Prado (Espanha)", "Metropolitan (EUA)", "Museu Britânico (Inglaterra)"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "Qual escultor renascentista italiano é o criador da estátua de 'Davi' em mármore?", opts: ["Michelangelo", "Donatello", "Bernini", "Rodin"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "Qual movimento artístico do século XX é conhecido por ser focado na exploração dos sonhos e do subconsciente?", opts: ["Surrealismo", "Cubismo", "Impressionismo", "Realismo"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "O quadro 'A Noite Estrelada', famoso por seus céus rodopiantes, foi pintado por qual artista pós-impressionista?", opts: ["Vincent van Gogh", "Claude Monet", "Edvard Munch", "Paul Cézanne"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "A escultura da 'Vênus de Milo', famosa por estar sem os braços, representa qual deusa mitológica?", opts: ["Afrodite", "Atena", "Hera", "Artemis"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "Frida Kahlo, conhecida por seus autorretratos marcantes, era de qual nacionalidade?", opts: ["Mexicana", "Espanhola", "Argentina", "Colombiana"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "O movimento Impressionista deve seu nome a uma obra chamada 'Impressão, nascer do sol'. Quem pintou essa obra?", opts: ["Claude Monet", "Pierre-Auguste Renoir", "Edgar Degas", "Édouard Manet"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "Aleijadinho, importante escultor do Brasil colonial, trabalhava frequentemente com qual material em suas obras monumentais?", opts: ["Pedra-sabão", "Mármore de Carrara", "Bronze", "Granito"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "A 'Capela Sistina' é famosa por seus afrescos no teto. Em qual cidade-estado ela está localizada?", opts: ["Vaticano", "Florença", "Veneza", "Milão"], ans: 0, cat: "Artes", icon: "palette" },
+            { q: "Qual o nome da técnica de pintura onde pigmentos coloridos são aplicados sobre argamassa úmida (fresca)?", opts: ["Afresco", "Aquarela", "Têmpera", "Óleo sobre tela"], ans: 0, cat: "Artes", icon: "palette" },
+
+            // Mitologia
+            { q: "Na hierarquia da mitologia grega, quem é o deus dos mares e dos terremotos?", opts: ["Poseidon", "Zeus", "Hades", "Apolo"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Qual lendário herói grego era invulnerável em todo o corpo, exceto em seu calcanhar?", opts: ["Aquiles", "Hércules (Héracles)", "Perseu", "Teseu"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Na mitologia nórdica, qual é o nome do poderoso martelo empunhado pelo deus Thor?", opts: ["Mjölnir", "Gungnir", "Excalibur", "Aegis"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Na iconografia da mitologia egípcia, o deus Anúbis, associado à mumificação, é frequentemente representado com a cabeça de qual animal?", opts: ["Chacal", "Falcão", "Crocodilo", "Gato"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Qual criatura monstruosa da mitologia grega tinha a capacidade de transformar em pedra qualquer um que a olhasse nos olhos?", opts: ["Medusa", "Hidra de Lerna", "Quimera", "Esfinge"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Na mitologia romana, quem é o deus equivalente a Ares, o deus grego da guerra?", opts: ["Marte", "Júpiter", "Netuno", "Plutão"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Odisseu (ou Ulisses), herói grego, passou 10 anos tentando voltar para sua casa em qual ilha após a Guerra de Troia?", opts: ["Ítaca", "Creta", "Esparta", "Chipre"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Qual era o nome do cão de três cabeças que guardava os portões do submundo (Hades) na mitologia grega?", opts: ["Cérbero", "Ortros", "Argos", "Licaão"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Na mitologia nórdica, como se chama o grande salão em Asgard onde metade dos mortos em batalha vai, sob a liderança de Odin?", opts: ["Valhala", "Helheim", "Folkvangr", "Midgard"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Ícaro, na mitologia grega, morreu após voar muito perto de quê, derretendo as asas feitas por seu pai, Dédalo?", opts: ["Do Sol", "Do Monte Olimpo", "De um vulcão", "Do Deus Apolo"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Na mitologia egípcia, quem era o deus do sol, muitas vezes considerado a divindade mais importante?", opts: ["Rá", "Osíris", "Set", "Hórus"], ans: 0, cat: "Mitologia", icon: "swords" },
+            { q: "Qual deus nórdico é conhecido como o trapaceiro, capaz de mudar de forma e causador de muitos problemas para os outros deuses?", opts: ["Loki", "Balder", "Freyr", "Heimdall"], ans: 0, cat: "Mitologia", icon: "swords" },
+            
+            // Literatura
+            { q: "Quem escreveu o clássico da literatura brasileira 'Dom Casmurro'?", opts: ["Machado de Assis", "José de Alencar", "Graciliano Ramos", "Jorge Amado"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "O romance distópico '1984', que popularizou o conceito de 'Grande Irmão' (Big Brother), foi escrito por quem?", opts: ["George Orwell", "Aldous Huxley", "Ray Bradbury", "Isaac Asimov"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "Qual é a obra épica atribuída ao poeta grego Homero que narra os eventos finais da Guerra de Troia?", opts: ["Ilíada", "Odisseia", "Eneida", "Os Lusíadas"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "Em 'O Pequeno Príncipe', de Antoine de Saint-Exupéry, qual animal pede ao protagonista para ser cativado?", opts: ["A raposa", "A serpente", "A ovelha", "O elefante"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "O cavaleiro andante Dom Quixote de la Mancha e seu escudeiro Sancho Pança são criações de qual escritor espanhol?", opts: ["Miguel de Cervantes", "Gabriel García Márquez", "Lope de Vega", "Federico García Lorca"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "A famosa peça de teatro onde ocorrem as falas 'Ser ou não ser, eis a questão' é de autoria de quem?", opts: ["William Shakespeare", "Christopher Marlowe", "Molière", "Victor Hugo"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "Qual escritora britânica é a autora da popular série de mistério protagonizada pelo detetive Hercule Poirot?", opts: ["Agatha Christie", "Arthur Conan Doyle", "Mary Shelley", "Jane Austen"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "O livro 'Grande Sertão: Veredas', marco da literatura modernista brasileira, foi escrito por quem?", opts: ["João Guimarães Rosa", "Clarice Lispector", "Carlos Drummond de Andrade", "Euclides da Cunha"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "Qual é o nome do monstro criado pelo cientista Victor em uma clássica obra de ficção gótica escrita por Mary Shelley?", opts: ["A Criatura (ou O Monstro de Frankenstein)", "Drácula", "Mr. Hyde", "O Lobisomem"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "Em qual cidade fictícia se passa o épico sul-americano 'Cem Anos de Solidão', de Gabriel García Márquez?", opts: ["Macondo", "Comala", "Santa María", "Yoknapatawpha"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "Qual famoso poema de Dante Alighieri descreve a jornada da alma através do Inferno, Purgatório e Paraíso?", opts: ["A Divina Comédia", "Os Lusíadas", "Paraíso Perdido", "Canto da Alma"], ans: 0, cat: "Literatura", icon: "book-open" },
+            { q: "Quem é o autor da série 'As Crônicas de Nárnia'?", opts: ["C.S. Lewis", "J.R.R. Tolkien", "J.K. Rowling", "Philip Pullman"], ans: 0, cat: "Literatura", icon: "book-open" },
+            
+            // Astronomia
+            { q: "Qual é o planeta do Sistema Solar mais próximo do Sol?", opts: ["Mercúrio", "Vênus", "Marte", "Júpiter"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "O Sol é composto principalmente por quais dois gases?", opts: ["Hidrogênio e Hélio", "Oxigênio e Nitrogênio", "Carbono e Hidrogênio", "Ferro e Níquel"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "Qual é a galáxia na qual o Sistema Solar está localizado?", opts: ["Via Láctea", "Andrômeda", "Sombrero", "Magalhães"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "Júpiter, o maior planeta do nosso sistema, possui uma famosa tempestade gigante em sua superfície conhecida como?", opts: ["A Grande Mancha Vermelha", "O Olho de Júpiter", "O Furacão Gasoso", "A Zona Escura"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "O que é um 'Ano-Luz'?", opts: ["A distância que a luz viaja em um ano", "O tempo que a luz do sol leva para chegar à Terra", "A velocidade da luz no vácuo", "A idade estimada do universo"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "Em qual fase da lua ocorre um eclipse solar (quando a lua bloqueia a luz do sol)?", opts: ["Lua Nova", "Lua Cheia", "Quarto Crescente", "Quarto Minguante"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "Qual cientista famoso propôs pela primeira vez que o Sol era o centro do universo (Heliocentrismo), desafiando a visão de que a Terra era o centro?", opts: ["Nicolau Copérnico", "Galileu Galilei", "Johannes Kepler", "Isaac Newton"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "Plutão deixou de ser considerado o nono planeta do sistema solar em 2006. Como ele é classificado agora?", opts: ["Planeta Anão", "Asteroide", "Cometa", "Exoplaneta"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "Saturno é famoso por seus grandes anéis, que são compostos principalmente por pedaços de rocha e quê?", opts: ["Gelo", "Fogo", "Gás Hidrogênio", "Ouro"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "Como se chama um objeto espacial que sobrevive à passagem pela atmosfera e atinge o solo da Terra?", opts: ["Meteorito", "Meteoro (Estrela Cadente)", "Meteoroide", "Asteroide"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "O que diz a teoria mais aceita sobre a origem do Universo, envolvendo uma grande expansão há bilhões de anos?", opts: ["Big Bang", "Teoria do Estado Estacionário", "Teoria das Cordas", "O Grande Colapso (Big Crunch)"], ans: 0, cat: "Astronomia", icon: "rocket" },
+            { q: "Titã, um lugar de grande interesse para os cientistas, é a maior lua de qual planeta?", opts: ["Saturno", "Júpiter", "Urano", "Netuno"], ans: 0, cat: "Astronomia", icon: "rocket" }
+        ];
+
+        let fullDatabase = [...questionDB];
+
+        // --- Game State ---
+        let currentMode = '';
+        let currentCategory = '';
+        let availableQuestions = [];
+        let currentQuestion = null;
+        let score = 0;
+        let correctCount = 0;
+        let questionNumber = 0;
+        let totalQuestionsLimit = 0;
+        let lives = 3;
+        
+        let timerInterval;
+        let timeLeft = 15;
+        const TIME_LIMIT = 15;
+
+        // Utility: Shuffle array
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex > 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // --- Navigation ---
+        function hideAllScreens() {
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('category-menu').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('game-over-screen').classList.add('hidden');
+        }
+
+        function showMainMenu() {
+            clearInterval(timerInterval);
+            hideAllScreens();
+            document.getElementById('main-menu').classList.remove('hidden');
+        }
+
+        function selectMode(mode) {
+            currentMode = mode;
+            hideAllScreens();
+            document.getElementById('category-menu').classList.remove('hidden');
+        }
+
+        function startQuiz(category) {
+            currentCategory = category;
+            score = 0;
+            correctCount = 0;
+            questionNumber = 0;
+            
+            let filteredDb = category === 'Todas' ? [...fullDatabase] : fullDatabase.filter(q => q.cat === category);
+            
+            availableQuestions = shuffle(filteredDb);
+            
+            if (currentMode === 'campaign' || currentMode === 'challenge') {
+                totalQuestionsLimit = 10;
+            } else {
+                totalQuestionsLimit = availableQuestions.length;
+            }
+            
+            document.getElementById('total-q-num').textContent = (currentMode === 'zen' || availableQuestions.length < 10) ? availableQuestions.length : totalQuestionsLimit;
+
+            hideAllScreens();
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            document.getElementById('score').textContent = score;
+            
+            const modeLabel = document.getElementById('mode-label');
+            const timerContainer = document.getElementById('timer-container');
+            const livesContainer = document.getElementById('lives-container');
+            
+            timerContainer.classList.add('hidden');
+            livesContainer.classList.add('hidden');
+            
+            if(currentMode === 'campaign') {
+                modeLabel.innerHTML = "<span class='text-indigo-400'>Campanha</span>";
+            } else if (currentMode === 'zen') {
+                modeLabel.innerHTML = "<span class='text-teal-400'>Zen</span>";
+            } else if (currentMode === 'challenge') {
+                modeLabel.innerHTML = "<span class='text-rose-400'>Desafio</span>";
+                timerContainer.classList.remove('hidden');
+                livesContainer.classList.remove('hidden');
+                lives = 3;
+                updateLivesUI();
+            }
+
+            nextQuestion();
+        }
+
+        // --- Game Logic ---
+        function updateLivesUI() {
+            const container = document.getElementById('lives-container');
+            container.innerHTML = '';
+            for(let i=0; i<3; i++) {
+                const icon = document.createElement('i');
+                icon.setAttribute('data-lucide', 'heart');
+                icon.className = `w-3 h-3 md:w-5 md:h-5 ${i < lives ? 'text-rose-500 fill-rose-500' : 'text-slate-600'}`;
+                container.appendChild(icon);
+            }
+            lucide.createIcons({root: container});
+        }
+
+        function nextQuestion() {
+            document.getElementById('next-container').classList.add('hidden');
+            
+            if (availableQuestions.length === 0 || (currentMode !== 'zen' && questionNumber >= totalQuestionsLimit)) {
+                endGame("Fim das perguntas desta rodada!");
+                return;
+            }
+
+            questionNumber++;
+            document.getElementById('current-q-num').textContent = questionNumber;
+            
+            const qData = availableQuestions.pop();
+            
+            let optionsObj = qData.opts.map((opt, index) => ({ text: opt, isCorrect: index === qData.ans }));
+            optionsObj = shuffle(optionsObj);
+            
+            currentQuestion = {
+                q: qData.q,
+                cat: qData.cat,
+                icon: qData.icon,
+                opts: optionsObj
+            };
+
+            renderQuestion();
+            
+            if (currentMode === 'challenge') {
+                startTimer();
+            }
+        }
+
+        function renderQuestion() {
+            document.getElementById('category-label').innerHTML = `<i data-lucide="${currentQuestion.icon}" class="w-3 h-3 md:w-4 md:h-4"></i> ${currentQuestion.cat}`;
+            document.getElementById('bg-category-icon').setAttribute('data-lucide', currentQuestion.icon);
+            document.getElementById('question-text').textContent = currentQuestion.q;
+            
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = ''; 
+            
+            currentQuestion.opts.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full text-left p-3 md:p-4 rounded-xl md:rounded-2xl text-sm md:text-base font-medium flex items-center justify-between group h-full min-h-[64px]';
+                btn.innerHTML = `
+                    <span class="break-words w-full pr-2">${opt.text}</span>
+                    <div class="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-slate-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" id="icon-container-${index}"></div>
+                `;
+                btn.onclick = () => handleAnswer(opt.isCorrect, btn, index);
+                optsContainer.appendChild(btn);
+            });
+            
+            lucide.createIcons();
+        }
+
+        function handleAnswer(isCorrect, btnSelected, selectedIndex) {
+            clearInterval(timerInterval);
+            
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+            
+            allBtns.forEach((b, index) => {
+                const iconContainer = b.querySelector(`div`);
+                if (currentQuestion.opts[index].isCorrect) {
+                    b.classList.add('correct');
+                    iconContainer.innerHTML = `<i data-lucide="check" class="w-3 h-3 md:w-4 md:h-4 text-emerald-300"></i>`;
+                    iconContainer.classList.replace('border-slate-500', 'border-emerald-300');
+                    iconContainer.classList.remove('opacity-0');
+                } else if (b === btnSelected && !isCorrect) {
+                    b.classList.add('wrong');
+                    iconContainer.innerHTML = `<i data-lucide="x" class="w-3 h-3 md:w-4 md:h-4 text-rose-300"></i>`;
+                    iconContainer.classList.replace('border-slate-500', 'border-rose-300');
+                    iconContainer.classList.remove('opacity-0');
+                }
+            });
+            
+            lucide.createIcons();
+
+            if (isCorrect) {
+                correctCount++;
+                let points = 100;
+                if(currentMode === 'challenge') points += Math.floor(timeLeft * 10);
+                score += points;
+                document.getElementById('score').textContent = score;
+                
+                setTimeout(() => {
+                    document.getElementById('next-container').classList.remove('hidden');
+                    if(currentMode === 'challenge') {
+                         nextQuestion(); 
+                    }
+                }, 1000);
+
+            } else {
+                if (currentMode === 'challenge') {
+                    lives--;
+                    updateLivesUI();
+                    if (lives <= 0) {
+                        setTimeout(() => endGame("Sem vidas! Jogo encerrado."), 1500);
+                        return;
+                    } else {
+                         setTimeout(nextQuestion, 1500);
+                    }
+                } else {
+                    document.getElementById('next-container').classList.remove('hidden');
+                }
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = TIME_LIMIT;
+            
+            const timerBar = document.getElementById('timer-bar');
+            
+            timerBar.style.width = '100%';
+            timerBar.style.transition = 'none';
+            timerBar.className = 'h-full bg-gradient-to-r from-emerald-400 to-emerald-500 w-full rounded-full';
+            
+            void timerBar.offsetWidth; 
+            
+            timerBar.style.transition = 'width 1s linear, background-color 0.5s';
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const percentage = (timeLeft / TIME_LIMIT) * 100;
+                timerBar.style.width = `${percentage}%`;
+                
+                if(percentage <= 50 && percentage > 25) {
+                    timerBar.className = 'h-full bg-gradient-to-r from-amber-400 to-amber-500 w-full rounded-full';
+                } else if (percentage <= 25) {
+                    timerBar.className = 'h-full bg-gradient-to-r from-rose-500 to-red-600 w-full rounded-full';
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleTimeOut() {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach((b, index) => {
+                b.disabled = true;
+                if (currentQuestion.opts[index].isCorrect) {
+                    b.classList.add('correct');
+                    const iconContainer = b.querySelector(`div`);
+                    iconContainer.innerHTML = `<i data-lucide="check" class="w-3 h-3 md:w-4 md:h-4 text-emerald-300"></i>`;
+                    iconContainer.classList.remove('opacity-0');
+                }
+            });
+            lucide.createIcons();
+
+            lives--;
+            updateLivesUI();
+            
+            if (lives <= 0) {
+                setTimeout(() => endGame("Tempo esgotado! Suas vidas acabaram."), 1500);
+            } else {
+                setTimeout(nextQuestion, 2000);
+            }
+        }
+
+        function endGame(message) {
+            clearInterval(timerInterval);
+            hideAllScreens();
+            
+            const gameOverScreen = document.getElementById('game-over-screen');
+            gameOverScreen.classList.remove('hidden');
+            
+            document.getElementById('game-over-message').textContent = message;
+            document.getElementById('final-score').textContent = score;
+            
+            let total = currentMode === 'zen' ? questionNumber - 1 : Math.min(questionNumber, totalQuestionsLimit);
+            if (lives <= 0 && currentMode === 'challenge') total = questionNumber;
+
+            document.getElementById('questions-answered-stats').textContent = `Acertou ${correctCount} de ${total} perguntas.`;
+        }
+
+    </script>
+</body>
+</html>
