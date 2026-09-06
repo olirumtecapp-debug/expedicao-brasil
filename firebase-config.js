@@ -1,11 +1,11 @@
-// Configuração do Firebase para o Expedição Brasil
-// Substitua os valores abaixo pelas credenciais do seu projeto no Firebase Console (https://console.firebase.google.com)
+// Configuração Oficial do Firebase para o Expedição Brasil
 
 window.FIREBASE_CONFIG = {
-  apiKey: "SUA_API_KEY_AQUI",
-  authDomain: "seu-projeto.firebaseapp.com",
-  projectId: "seu-projeto",
-  storageBucket: "seu-projeto.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef123456"
+  apiKey: "AIzaSyBUHGXoUMg0bV3EdmfpfmVAEYMLQceqkQc",
+  authDomain: "expedicao-brasil.firebaseapp.com",
+  projectId: "expedicao-brasil",
+  storageBucket: "expedicao-brasil.firebasestorage.app",
+  messagingSenderId: "766439248151",
+  appId: "1:766439248151:web:ffe62de3fcf988ed756752",
+  measurementId: "G-QDMSH4NRVK"
 };

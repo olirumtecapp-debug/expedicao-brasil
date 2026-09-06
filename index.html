@@ -3,76 +3,607 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expedição Brasil - Quiz e Curso EAD</title>
+    <title>Expedição Brasil - Portal Educacional Multi-Disciplinas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="firebase-config.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap');
-        body { font-family: 'Nunito', sans-serif; background-color: #f0fdf4; }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .bounce-slight { animation: bounceSlight 2s infinite; }
-        @keyframes bounceSlight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        /* Scrollbar customizada para abas do editor */
-        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a0a0a5; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+        body { font-family: 'Nunito', sans-serif; background-color: #f8fafc; }
+        .fade-in { animation: fadeIn 0.35s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .bounce-slight { animation: bounceSlight 2s infinite ease-in-out; }
+        @keyframes bounceSlight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        .pulse-gold { animation: pulseGold 2s infinite; }
+        @keyframes pulseGold { 0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); } 50% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); } }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @media print {
+            body * { visibility: hidden; }
+            #certificate-print-area, #certificate-print-area * { visibility: visible; }
+            #certificate-print-area { position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0; padding: 0; }
+        }
     </style>
 </head>
-<body class="min-h-screen text-gray-800 flex flex-col">
+<body class="min-h-screen text-gray-800 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-    <!-- Header -->
-    <header class="bg-indigo-700 text-white p-4 shadow-md z-10 relative">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="window.changeState('MENU')">
-                <span class="text-3xl">🇧🇷</span>
-                <h1 class="text-2xl font-black tracking-wide">Expedição Brasil</h1>
+    <!-- Header Principal do Portal -->
+    <header class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-emerald-800 text-white shadow-lg z-20 relative">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="window.changeState('PORTAL_HUB')">
+                <div class="text-3xl transform group-hover:scale-110 transition-transform">🇧🇷</div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl md:text-2xl font-black tracking-wide leading-tight">Expedição Brasil</h1>
+                        <span class="bg-emerald-500/30 text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-400/40">PORTAL EAD</span>
+                    </div>
+                    <p class="text-xs text-indigo-200 font-bold hidden sm:block">Plataforma Gamificada de Ensino Fundamental</p>
+                </div>
             </div>
-            <div id="user-info" class="hidden font-bold bg-indigo-800 px-4 py-2 rounded-full border border-indigo-500">
-                👤 <span id="current-user-name"></span>
+            
+            <div class="flex items-center gap-3">
+                <div id="user-info" class="hidden items-center gap-2 bg-indigo-950/80 px-3.5 py-1.5 rounded-full border border-indigo-400/40 shadow-inner">
+                    <span id="current-user-avatar" class="text-lg">🧭</span>
+                    <div class="text-left">
+                        <div class="text-xs font-black text-white leading-none" id="current-user-name"></div>
+                        <div class="text-[10px] text-indigo-200 font-bold leading-none mt-0.5" id="current-user-turma"></div>
+                    </div>
+                    <button onclick="window.showCertificatesModal()" title="Ver Certificados e Conquistas" class="ml-1 bg-amber-500 hover:bg-amber-400 text-white p-1 rounded-full text-xs transition">
+                        🏆
+                    </button>
+                </div>
+
+                <button onclick="window.soundClick(); window.changeState('PORTAL_HUB')" title="Menu de Disciplinas" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-xl border border-white/20 font-bold text-xs transition flex items-center gap-1">
+                    📚 Matérias
+                </button>
+                
+                <button id="admin-badge-btn" onclick="window.soundClick(); window.changeState('ADMIN_LOGIN')" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-xl border border-white/20 font-bold transition flex items-center gap-1">
+                    👨‍🏫 Professor
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main id="main-content" class="flex-grow flex items-center justify-center p-4 max-w-6xl mx-auto w-full relative">
-        <!-- Loading State inicial -->
+    <!-- Conteúdo Principal -->
+    <main id="main-content" class="flex-grow flex items-center justify-center p-4 md:p-6 max-w-6xl mx-auto w-full relative">
         <div class="text-center fade-in">
-            <div class="text-6xl animate-bounce mb-4">☁️</div>
-            <h2 class="text-2xl font-bold text-indigo-600">Conectando aos servidores EAD...</h2>
+            <div class="text-6xl animate-bounce mb-4">🧭</div>
+            <h2 class="text-2xl font-black text-indigo-700">Carregando o Portal Educacional...</h2>
+            <p class="text-sm text-gray-500 mt-1">Conectando aos cursos e servidores da nuvem.</p>
         </div>
     </main>
 
-    <!-- Modal Container para Alertas e Confirmações -->
-    <div id="modal-container" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 fade-in">
-        <div id="modal-content" class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
-            <!-- Modal Content -->
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-3 text-center text-xs text-gray-400 font-bold">
+        Expedição Brasil &bull; Portal Educacional Cívico e Gamificado &bull; <span class="text-indigo-600">História e Geografia da Nossa Pátria 🇧🇷</span>
+    </footer>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 fade-in">
+        <div id="modal-content" class="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 shadow-2xl relative border-4 border-indigo-50 max-h-[90vh] overflow-y-auto custom-scrollbar">
         </div>
     </div>
 
-    <!-- Script Principal como Módulo para suportar Nuvem (Firebase) -->
+    <!-- Script Principal como Módulo -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Configurações globais fornecidas pelo ambiente EAD ou arquivo local
+        // ==========================================
+        // 1. ÁUDIO & SÍNTESE DE VOZ (Web Audio / TTS)
+        // ==========================================
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        window.soundClick = function() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.08);
+            } catch (_) {}
+        };
+
+        window.soundCorrect = function() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+                    gain.gain.setValueAtTime(0.18, ctx.currentTime + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + idx * 0.08 + 0.25);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + idx * 0.08);
+                    osc.stop(ctx.currentTime + idx * 0.08 + 0.25);
+                });
+            } catch (_) {}
+        };
+
+        window.soundWrong = function() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(130, ctx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.25);
+            } catch (_) {}
+        };
+
+        window.soundFanfare = function() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const fanfare = [
+                    { f: 523.25, d: 0.15 }, { f: 659.25, d: 0.15 }, { f: 783.99, d: 0.15 },
+                    { f: 1046.50, d: 0.4 }, { f: 783.99, d: 0.15 }, { f: 1046.50, d: 0.6 }
+                ];
+                let cur = ctx.currentTime;
+                fanfare.forEach(item => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(item.f, cur);
+                    gain.gain.setValueAtTime(0.25, cur);
+                    gain.gain.exponentialRampToValueAtTime(0.01, cur + item.d);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(cur);
+                    osc.stop(cur + item.d);
+                    cur += item.d + 0.05;
+                });
+            } catch (_) {}
+        };
+
+        // TTS
+        let isSpeaking = false;
+        window.toggleReadAloud = function(text) {
+            if (!('speechSynthesis' in window)) {
+                window.customAlert('A leitura em voz alta não é suportada neste navegador.');
+                return;
+            }
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+                isSpeaking = false;
+                updateAudioBtnUI(false);
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const cleanText = text.replace(/<[^>]*>?/gm, ' ');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'pt-BR';
+            utterance.rate = 0.95;
+            utterance.pitch = 1.05;
+
+            utterance.onstart = () => { isSpeaking = true; updateAudioBtnUI(true); };
+            utterance.onend = utterance.onerror = () => { isSpeaking = false; updateAudioBtnUI(false); };
+            window.speechSynthesis.speak(utterance);
+        };
+
+        function updateAudioBtnUI(speaking) {
+            const btn = document.getElementById('btn-tts-speaker');
+            if (btn) {
+                btn.innerHTML = speaking ? '⏸️ Pausar Voz' : '🔊 Ouvir Aula em Voz Alta';
+                btn.className = speaking 
+                    ? 'bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-4 rounded-xl shadow-md transition flex items-center gap-2 text-sm animate-pulse'
+                    : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-4 rounded-xl shadow-sm transition flex items-center gap-2 text-sm border border-indigo-200';
+            }
+        }
+
+        // ==========================================
+        // 2. MATÉRIAS E DISCIPLINAS DO PORTAL
+        // ==========================================
+        const PORTAL_SUBJECTS = [
+            {
+                id: 'historia',
+                name: 'História do Brasil',
+                icon: '🇧🇷',
+                tag: 'Completo',
+                color: 'from-amber-600 to-indigo-800',
+                desc: 'Descobrimento, Brasil Colônia, Império, Independência, República e Nossos Heróis.',
+                active: true
+            },
+            {
+                id: 'geografia',
+                name: 'Geografia do Brasil',
+                icon: '🌍',
+                tag: 'Novo & Completo',
+                color: 'from-emerald-600 to-teal-800',
+                desc: 'As 5 Regiões, os 6 Biomas, Rios Majestosos, Climas, Relevo e o Agronegócio.',
+                active: true
+            },
+            {
+                id: 'ciencias',
+                name: 'Ciências & Natureza',
+                icon: '🔬',
+                tag: 'Em Breve',
+                color: 'from-cyan-600 to-blue-800',
+                desc: 'O Corpo Humano, Sistema Solar, Animais da Fauna Brasileira e Ecossistemas.',
+                active: false
+            },
+            {
+                id: 'portugues',
+                name: 'Português & Literatura',
+                icon: '📖',
+                tag: 'Em Breve',
+                color: 'from-purple-600 to-pink-800',
+                desc: 'Gramática Divertida, Interpretação de Texto, Folclore e Grandes Escritores.',
+                active: false
+            },
+            {
+                id: 'matematica',
+                name: 'Matemática & Finanças',
+                icon: '📐',
+                tag: 'Em Breve',
+                color: 'from-orange-600 to-amber-800',
+                desc: 'Desafios de Lógica, Geometria e Educação Financeira Inteligente para Crianças.',
+                active: false
+            }
+        ];
+
+        // Avatares por Disciplina
+        const AVATARS_BY_SUBJECT = {
+            historia: [
+                { id: 'pedro2', name: 'Dom Pedro II', emoji: '👑', desc: 'Imperador Educador' },
+                { id: 'isabel', name: 'Princesa Isabel', emoji: '📜', desc: 'A Redentora' },
+                { id: 'santos_dumont', name: 'Santos Dumont', emoji: '✈️', desc: 'Pai da Aviação' },
+                { id: 'maria_quiteria', name: 'Maria Quitéria', emoji: '⚔️', desc: 'Heroína da Pátria' },
+                { id: 'tiradentes', name: 'Tiradentes', emoji: '🏛️', desc: 'Patrono Cívico' },
+                { id: 'tarsila', name: 'Tarsila do Amaral', emoji: '🎨', desc: 'Grande Pintora' },
+                { id: 'explorador', name: 'Jovem Explorador', emoji: '🧭', desc: 'Estudante Curioso' }
+            ],
+            geografia: [
+                { id: 'onca', name: 'Onça-Pintada', emoji: '🐆', desc: 'Guardiã do Pantanal' },
+                { id: 'arara', name: 'Arara-Azul', emoji: '🦜', desc: 'Embaixadora das Florestas' },
+                { id: 'mico', name: 'Mico-Leão-Dourado', emoji: '🐒', desc: 'Símbolo da Mata Atlântica' },
+                { id: 'sertanejo', name: 'Explorador da Caatinga', emoji: '🌵', desc: 'O Sertanejo Resiliente' },
+                { id: 'agro', name: 'Pioneiro do Campo', emoji: '🌾', desc: 'O Gigante do Agro' },
+                { id: 'geografo', name: 'Geógrafo Mirim', emoji: '🗺️', desc: 'Mapeador do Brasil' }
+            ]
+        };
+
+        // ==========================================
+        // 3. BANCO DE DADOS DOS CURSOS (HISTÓRIA E GEOGRAFIA)
+        // ==========================================
+        const initialCoursesDatabase = {
+            historia: {
+                name: 'História do Brasil',
+                categories: [
+                    {
+                        id: 'colonia',
+                        name: 'Brasil Colônia (1500 - 1808)',
+                        icon: 'M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9',
+                        description: 'As caravelas, o encontro com os índios, a fé, os engenhos de açúcar, os bandeirantes e o ouro de Minas Gerais.',
+                        chapters: [
+                            {
+                                title: '1. A Grande Epopeia das Caravelas e o Ano 1500 🚢',
+                                content: 'No ano de 1500, corajosos marinheiros portugueses liderados por <b>Pedro Álvares Cabral</b> atravessaram o Atlântico. No dia <b>22 de abril de 1500</b> avistaram o <b>Monte Pascoal</b> na Bahia. Ali encontraram os povos indígenas nativos. Dias depois, frei Henrique de Coimbra celebrou a <b>Primeira Missa</b>, selando o nascimento da nossa história sob a bênção da fé.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/A_descoberta_do_Brasil.jpg/800px-A_descoberta_do_Brasil.jpg'
+                            },
+                            {
+                                title: '2. A Madeira que Deu Nome à Pátria e o Ouro Branco 🌳',
+                                content: 'Nas matas litorâneas encontraram a árvore de cor de brasa: o <b>Pau-Brasil</b>, que batizou nosso país! Em 1532 foi fundada São Vicente e surgiram os engenhos de cana-de-açúcar, tão valioso na Europa que era chamado de <b>Ouro Branco</b>.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Engenho_de_Itamarac%C3%A1_-_Frans_Post.jpg/800px-Engenho_de_Itamarac%C3%A1_-_Frans_Post.jpg'
+                            },
+                            {
+                                title: '3. Os Bandeirantes: Desbravando o Gigante Continental 🧭',
+                                content: 'O Brasil é gigante graças à audácia dos <b>Bandeirantes</b>! Partindo de São Paulo, desbravaram florestas, cruzaram o Tratado de Tordesilhas e desenharam o mapa de dimensões continentais da nossa pátria.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Domingos_Jorge_Velho_e_o_locotenente_Ant%C3%B4nio_Fernandes_de_Abreu.jpg/800px-Domingos_Jorge_Velho_e_o_locotenente_Ant%C3%B4nio_Fernandes_de_Abreu.jpg'
+                            },
+                            {
+                                title: '4. O Ciclo do Ouro e a Genialidade de Aleijadinho ✨',
+                                content: 'Em Minas Gerais brotaram ouro e diamantes. Cidades barrocas floriram como Ouro Preto. <b>Aleijadinho</b>, mestre escultor, esculpiu em pedra-sabão os Doze Profetas de Congonhas, orgulho da arte universal.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Lavagem_de_min%C3%A9rio_de_ouro_perto_da_montanha_Ita_Columi.jpg/800px-Lavagem_de_min%C3%A9rio_de_ouro_perto_da_montanha_Ita_Columi.jpg'
+                            },
+                            {
+                                title: '5. Tiradentes e a Chama da Liberdade 🏛️',
+                                content: 'Na Inconfidência Mineira de 1789, <b>Tiradentes</b> liderou o sonho de um Brasil livre sob o lema <i>"Libertas Quæ Sera Tamen"</i>. Seu sacrifício o consagrou como o <b>Patrono Cívico da Nação Brasileira</b>.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Pedro_Am%C3%A9rico_-_Tiradentes_esquartejado.jpg/800px-Pedro_Am%C3%A9rico_-_Tiradentes_esquartejado.jpg'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'imperio',
+                        name: 'Brasil Império (1808 - 1889)',
+                        icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+                        description: 'A vinda de D. João VI, a Independência com D. Pedro I, Maria Quitéria, a sabedoria de D. Pedro II e a Lei Áurea.',
+                        chapters: [
+                            {
+                                title: '1. A Família Real no Brasil e o Progresso (1808) 👑',
+                                content: 'Em 1808, <b>Dom João VI</b> transferiu a corte para o Rio de Janeiro. Abriu os portos ao comércio internacional e criou o Banco do Brasil, a Imprensa Régia, a Biblioteca Nacional e o Jardim Botânico.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Embarque_da_Fam%C3%ADlia_Real_Portuguesa_para_o_Brasil.jpg/800px-Embarque_da_Fam%C3%ADlia_Real_Portuguesa_para_o_Brasil.jpg'
+                            },
+                            {
+                                title: '2. "Independência ou Morte!": O Grito do Ipiranga (1822) ⚔️',
+                                content: 'Em <b>7 de Setembro de 1822</b>, junto a José Bonifácio e à imperatriz Leopoldina, o jovem <b>Dom Pedro I</b> ergueu a espada no Ipiranga e bradou: <b>"Independência ou Morte!"</b>, libertando a pátria.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Independ%C3%AAncia_ou_Morte_%28Pedro_Am%C3%A9rico%29.jpg/800px-Independ%C3%AAncia_ou_Morte_%28Pedro_Am%C3%A9rico%29.jpg'
+                            },
+                            {
+                                title: '3. Maria Quitéria e os Heróis da Pátria 🛡️',
+                                content: 'Na guerra da independência na Bahia, <b>Maria Quitéria</b> alistou-se e lutou com bravura inigualável, tornando-se a primeira mulher soldado do Brasil e Heroína da Pátria, junto ao futuro Duque de Caxias.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Maria_Quit%C3%A9ria_-_Domenico_Failutti.jpg/800px-Maria_Quit%C3%A9ria_-_Domenico_Failutti.jpg'
+                            },
+                            {
+                                title: '4. Dom Pedro II: O Imperador Sábio e Educador 📖',
+                                content: '<b>Dom Pedro II</b> reinou por quase 50 anos com retidão, paz e amor à ciência e educação. Trouxe ferrovias, telégrafo e costumava dizer que se não fosse imperador, gostaria de ser professor.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/D._Pedro_II_aos_60_anos_de_idade.jpg/800px-D._Pedro_II_aos_60_anos_de_idade.jpg'
+                            },
+                            {
+                                title: '5. A Princesa Isabel e a Lei Áurea (1888) 📜',
+                                content: 'Em <b>13 de maio de 1888</b>, apoiada por José do Patrocínio e André Rebouças, a <b>Princesa Isabel</b> assinou a <b>Lei Áurea</b> com caneta de ouro, extinguindo para sempre a escravidão no Brasil.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Assinatura_da_Lei_%C3%81urea.jpg/800px-Assinatura_da_Lei_%C3%81urea.jpg'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'republica',
+                        name: 'Brasil República (1889 - 1960)',
+                        icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+                        description: 'Proclamação da República, símbolos cívicos, os imigrantes, Santos Dumont, Arte de 1922 e a construção de Brasília.',
+                        chapters: [
+                            {
+                                title: '1. A Proclamação e os Símbolos da Pátria 🌟',
+                                content: 'Em <b>15 de novembro de 1889</b>, o <b>Marechal Deodoro da Fonseca</b> proclamou a República. Nasceu a linda Bandeira Nacional com o lema <b>"Ordem e Progresso"</b> e as estrelas que representam nossos estados.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Proclama%C3%A7%C3%A3o_da_Rep%C3%BAblica_%28Benedito_Calixto%29.jpg/800px-Proclama%C3%A7%C3%A3o_da_Rep%C3%BAblica_%28Benedito_Calixto%29.jpg'
+                            },
+                            {
+                                title: '2. O Ciclo do Café e os Imigrantes ☕',
+                                content: 'O café impulsionou ferrovias e cidades. Milhares de famílias de valorosos imigrantes italianos, alemães, japoneses, portugueses e libaneses vieram trabalhar e enriquecer a cultura brasileira.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Colheita_de_caf%C3%A9_-_Marc_Ferrez.jpg/800px-Colheita_de_caf%C3%A9_-_Marc_Ferrez.jpg'
+                            },
+                            {
+                                title: '3. Santos Dumont: O Pai da Aviação ✈️',
+                                content: 'Em <b>23 de outubro de 1906</b> em Paris, o brasileiro <b>Alberto Santos Dumont</b> voou com o <b>14-Bis</b> com propulsão própria diante de juízes e da multidão, enchendo o Brasil de orgulho!',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/14-bis_flight_in_Paris.jpg/800px-14-bis_flight_in_Paris.jpg'
+                            },
+                            {
+                                title: '4. A Semana de Arte Moderna de 1922 🎨',
+                                content: 'No Teatro Municipal de SP, <b>Tarsila do Amaral</b>, Villa-Lobos e grandes autores revolucionaram a arte, incentivando os brasileiros a valorizarem com orgulho as nossas raízes e tradições.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Teatro_Municipal_de_S%C3%A3o_Paulo_-_1920.jpg/800px-Teatro_Municipal_de_S%C3%A3o_Paulo_-_1920.jpg'
+                            },
+                            {
+                                title: '5. A Construção de Brasília: A Capital do Brasil 🏛️',
+                                content: 'Nos anos 50, o presidente <b>Juscelino Kubitschek</b> e os pioneiros <b>Candangos</b> ergueram em tempo recorde no Planalto Central a capital em formato de avião, inaugurada em <b>21 de abril de 1960</b>.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Brasilia_construction.jpg/800px-Brasilia_construction.jpg'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'ciencia_herois',
+                        name: 'Grandes Brasileiros e Ciência 🌿',
+                        icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+                        description: 'Oswaldo Cruz, Vital Brazil e as riquezas naturais abençoadas da nossa pátria.',
+                        chapters: [
+                            {
+                                title: '1. Oswaldo Cruz, Vital Brazil e a Saúde Pública 🧪',
+                                content: '<b>Oswaldo Cruz</b> venceu epidemias e fundou a Fiocruz. O Dr. <b>Vital Brazil</b> descobriu os soros antiofídicos no Instituto Butantan, salvando incontáveis vidas humanas.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Oswaldo_Cruz.jpg/800px-Oswaldo_Cruz.jpg'
+                            },
+                            {
+                                title: '2. A Majestade da Amazônia e Biomas Brasileiros 🦜',
+                                content: 'O Brasil detém a maior bacia hidrográfica e biodiversidade do mundo, com terras férteis que alimentam o planeta com o trabalho do nosso povo.',
+                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Amazon_River_%28aerial_view%29.jpg/800px-Amazon_River_%28aerial_view%29.jpg'
+                            }
+                        ]
+                    }
+                ],
+                questions: [
+                    { category: 'colonia', text: 'Em que dia e ano Pedro Álvares Cabral chegou ao Brasil?', options: ['7 de Setembro de 1822', '22 de Abril de 1500', '15 de Novembro de 1889', '13 de Maio de 1888'], correct: 1, explanation: 'As caravelas avistaram o Monte Pascoal no dia 22 de abril de 1500.' },
+                    { category: 'colonia', text: 'Qual árvore nativa deu origem ao nome do nosso país?', options: ['Ipê Amarelo', 'Seringueira', 'Pau-Brasil', 'Castanheira'], correct: 2, explanation: 'O Pau-Brasil produzia uma tinta cor de brasa (brasil) muito valorizada.' },
+                    { category: 'colonia', text: 'Como ficou conhecido o açúcar no período colonial?', options: ['Ouro Branco', 'Cristal Doce', 'Sal da Terra', 'Diamante Tropical'], correct: 0, explanation: 'O açúcar era uma iguaria rara e nobre na Europa, chamado de Ouro Branco.' },
+                    { category: 'colonia', text: 'Quem expandiu as fronteiras além do Tratado de Tordesilhas?', options: ['Piratas', 'Bandeirantes', 'Vikings', 'Centuriões'], correct: 1, explanation: 'Os Bandeirantes desbravaram o interior e ampliaram as fronteiras do Brasil.' },
+                    { category: 'colonia', text: 'Quem é o Patrono Cívico do Brasil pela Inconfidência Mineira?', options: ['Dom Pedro I', 'Tiradentes', 'Aleijadinho', 'José Bonifácio'], correct: 1, explanation: 'Joaquim José da Silva Xavier, o Tiradentes, deu a vida pela liberdade.' },
+                    
+                    { category: 'imperio', text: 'O que Dom João VI fez logo após chegar ao Brasil em 1808?', options: ['Proclamou a República', 'Abriu os portos às nações amigas e criou o Banco do Brasil', 'Assinou a Lei Áurea', 'Construiu Brasília'], correct: 1, explanation: 'D. João VI abriu os portos e criou o Banco do Brasil, a Imprensa e o Jardim Botânico.' },
+                    { category: 'imperio', text: 'Onde e em que data D. Pedro I proclamou a Independência?', options: ['Em Ouro Preto em 1500', 'Às margens do Ipiranga, em 7 de Setembro de 1822', 'No Rio de Janeiro em 1889', 'Em Salvador em 1808'], correct: 1, explanation: 'No dia 7 de Setembro de 1822, com o Grito do Ipiranga: Independência ou Morte!' },
+                    { category: 'imperio', text: 'Quem foi a primeira mulher soldado a combater pela Independência na Bahia?', options: ['Anita Garibaldi', 'Princesa Isabel', 'Maria Quitéria de Jesus', 'Chiquinha Gonzaga'], correct: 2, explanation: 'Maria Quitéria combateu com heroísmo e foi condecorada por Dom Pedro I.' },
+                    { category: 'imperio', text: 'Qual imperador governou o Brasil por quase 50 anos com amor à educação e ciência?', options: ['Dom João VI', 'Dom Pedro I', 'Dom Pedro II', 'Deodoro da Fonseca'], correct: 2, explanation: 'Dom Pedro II governou de 1840 a 1889, sendo admirado em todo o mundo.' },
+                    { category: 'imperio', text: 'Qual lei aboliu a escravidão no Brasil em 13 de Maio de 1888?', options: ['Lei do Ventre Livre', 'Lei Áurea', 'Lei dos Sexagenários', 'Lei de Terras'], correct: 1, explanation: 'A Lei Áurea foi assinada pela Princesa Isabel, a Redentora.' },
+
+                    { category: 'republica', text: 'Quem proclamou a República no Brasil em 15 de Novembro de 1889?', options: ['Duque de Caxias', 'Marechal Deodoro da Fonseca', 'Floriano Peixoto', 'Santos Dumont'], correct: 1, explanation: 'Deodoro da Fonseca proclamou a República e liderou o novo governo.' },
+                    { category: 'republica', text: 'Qual é o lema na faixa branca da Bandeira Nacional do Brasil?', options: ['Liberdade e Fraternidade', 'Ordem e Progresso', 'Paz e Prosperidade', 'União e Força'], correct: 1, explanation: 'O lema oficial da Bandeira Nacional é Ordem e Progresso.' },
+                    { category: 'republica', text: 'Qual avião consagrou Santos Dumont como o Pai da Aviação em 1906?', options: ['Boeing 707', '14-Bis', 'Concorde', 'Demoiselle Express'], correct: 1, explanation: 'O 14-Bis decolou com motor próprio no Campo de Bagatelle em 1906.' },
+                    { category: 'republica', text: 'Em que cidade e ano ocorreu a célebre Semana de Arte Moderna?', options: ['Rio de Janeiro em 1950', 'Salvador em 1822', 'São Paulo em 1922', 'Brasília em 1960'], correct: 2, explanation: 'A Semana de 22 ocorreu no Teatro Municipal de São Paulo.' },
+                    { category: 'republica', text: 'Qual presidente construiu a capital planejada de Brasília?', options: ['Getúlio Vargas', 'Juscelino Kubitschek (JK)', 'Dom Pedro II', 'Eurico Dutra'], correct: 1, explanation: 'Juscelino Kubitschek inaugurou Brasília em 21 de abril de 1960.' },
+
+                    { category: 'ciencia_herois', text: 'Qual médico brasileiro fundou o Butantan e criou os soros antiofídicos?', options: ['Vital Brazil', 'Oswaldo Cruz', 'Carlos Chagas', 'Santos Dumont'], correct: 0, explanation: 'Dr. Vital Brazil descobriu a especificidade dos venenos de cobras.' },
+                    { category: 'ciencia_herois', text: 'Qual bioma brasileiro abriga a maior reserva de biodiversidade do planeta?', options: ['Deserto do Saara', 'Floresta Amazônica', 'Tundra Siberiana', 'Pampa Seco'], correct: 1, explanation: 'A Amazônia possui a maior bacia hidrográfica e biodiversidade do mundo.' }
+                ]
+            },
+            geografia: {
+                name: 'Geografia do Brasil',
+                categories: [
+                    {
+                        id: 'regioes',
+                        name: 'As 5 Grandes Regiões do Brasil 🗺️',
+                        icon: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7',
+                        description: 'O mosaico do nosso país: Norte, Nordeste, Centro-Oeste, Sudeste e Sul com seus estados, capitais e culturas.',
+                        chapters: [
+                            {
+                                title: '1. Região Norte: O Coração Verde e a Bacia Amazônica 🌳',
+                                content: 'A <b>Região Norte</b> é a maior em extensão territorial (7 estados: Amazonas, Pará, Acre, Rondônia, Roraima, Amapá e Tocantins). É banhada pela majestosa <b>Bacia Amazônica</b>, lar de cidades como Manaus e Belém, do rico folclore do Boi-Bumbá e da saborosa culinária do açaí, pirarucu e tacacá.',
+                                imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. Região Nordeste: Litoral Paradisíaco e a Força do Sertão 🏖️',
+                                content: 'Com 9 estados (BA, PE, CE, MA, PB, RN, AL, PI, SE), o <b>Nordeste</b> combina o litoral mais extenso e belo do Brasil com o semiárido do sertão. É berço de uma cultura rica e alegre com forró, frevo, maracatu, culinária saborosa e povo de imensa fé e bravura.',
+                                imageUrl: 'https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Região Centro-Oeste: O Planalto Central e o Pantanal 🌾',
+                                content: 'Composta por Mato Grosso, Mato Grosso do Sul, Goiás e o Distrito Federal, a <b>Região Centro-Oeste</b> abriga a capital federal <b>Brasília</b>, o santuário de águas do <b>Pantanal</b> e as imensas lavouras de soja e milho que lideram o agronegócio mundial.',
+                                imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. Região Sudeste: O Motor Industrial e Econômico 🏭',
+                                content: 'Formada por São Paulo, Rio de Janeiro, Minas Gerais e Espírito Santo, o <b>Sudeste</b> é a região mais populosa e industrializada do Brasil. Reúne grandes centros financeiros, serras exuberantes (Mantiqueira e Mar), portos como Santos e o Cristo Redentor.',
+                                imageUrl: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '5. Região Sul: Serras, Araucárias e Tradições Gaúchas 🏔️',
+                                content: 'Composta por Paraná, Santa Catarina e Rio Grande do Sul, o <b>Sul</b> destaca-se pelo clima subtropical (com geadas e neve nas serras), as espetaculares <b>Cataratas do Iguaçu</b>, as matas de pinheiros (Araucárias) e as tradições gaúchas e de imigrantes.',
+                                imageUrl: 'https://images.unsplash.com/photo-1551041777-575d3855ca71?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'biomas',
+                        name: 'Os 6 Grandes Biomas Brasileiros 🌿',
+                        icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+                        description: 'Amazônia, Cerrado, Caatinga, Mata Atlântica, Pantanal e Pampas: a maior biodiversidade da Terra.',
+                        chapters: [
+                            {
+                                title: '1. Floresta Amazônica e os Rios Voadores 🦜',
+                                content: 'A <b>Amazônia</b> é a maior floresta tropical úmida do planeta. As árvores gigantes liberam vapor de água que forma os célebres <b>"Rios Voadores"</b>, nuvens densas que levam chuvas preciosas para todo o centro-sul do Brasil.',
+                                imageUrl: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. Cerrado: A Savana Brasileira e Berço das Águas 💧',
+                                content: 'O <b>Cerrado</b> cobre o coração do Brasil. Com árvores de casca grossa e raízes profundas que funcionam como esponjas, é conhecido como o <b>"Berço das Águas"</b>, pois abastece 8 das 12 principais bacias hidrográficas nacionais.',
+                                imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Caatinga: O Bioma Exclusivamente Brasileiro 🌵',
+                                content: 'A <b>Caatinga</b> (do tupi: "mata branca") é o único bioma presente apenas no território brasileiro. Plantas como o mandacaru e xique-xique armazenam água para florescer no sertão semiárido.',
+                                imageUrl: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32f?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. Mata Atlântica, Pantanal e Pampas 🐆',
+                                content: 'A <b>Mata Atlântica</b> abraça a costa litorânea; o <b>Pantanal</b> é o maior ecossistema alagável do mundo repleto de onças, tuiuiús e jacarés; e os <b>Pampas</b> no Sul formam campos de pastagens naturais verdes.',
+                                imageUrl: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef6?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'relevo_rios',
+                        name: 'Relevo, Rios e Climas do Brasil ⛰️',
+                        icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+                        description: 'Planaltos, planícies, o Rio Amazonas, o Rio São Francisco e as estações climáticas.',
+                        chapters: [
+                            {
+                                title: '1. O Relevo Brasileiro: Planaltos, Serras e Planícies 🏞️',
+                                content: 'O relevo do Brasil é antigo e suavemente esculpido pela chuva e pelo vento ao longo de milhões de anos. Não temos vulcões ativos nem terremotos graves! O ponto mais alto do país é o <b>Pico da Neblina</b> (2.995m) no Amazonas.',
+                                imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. As Maiores Bacias Hidrográficas do Mundo 🌊',
+                                content: 'O Brasil é o país mais rico em água doce do planeta! O <b>Rio Amazonas</b> é o maior em volume do mundo. O <b>Rio São Francisco</b> (o Velho Chico) irriga o sertão nordestino e o <b>Rio Paraná</b> move a gigantesca Usina Hidrelétrica de Itaipu.',
+                                imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'agro_economia',
+                        name: 'O Agro e as Riquezas que Alimentam o Mundo 🚜',
+                        icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
+                        description: 'A força do produtor rural brasileiro, mineração de Carajás, o Pré-Sal e energia limpa.',
+                        chapters: [
+                            {
+                                title: '1. O Brasil como Celeiro de Alimentos do Planeta 🌽',
+                                content: 'Graças à pesquisa da Embrapa e à dedicação do homem do campo, o Brasil é o maior exportador mundial de <b>soja, café, suco de laranja, açúcar e carnes</b>, alimentando mais de 1 bilhão de pessoas em todos os continentes!',
+                                imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. Tesouros Minerais e Energia Limpa Renovável ⚡',
+                                content: 'O Brasil possui a maior mina de ferro do mundo em <b>Carajás</b> (Pará), reservas de petróleo no <b>Pré-Sal</b> e mais de 80% de sua matriz elétrica gerada por fontes limpas e renováveis (hidrelétricas, parques eólicos e solares).',
+                                imageUrl: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    }
+                ],
+                questions: [
+                    { category: 'regioes', text: 'Quantas e quais são as Grandes Regiões do Brasil?', options: ['3 Regiões: Norte, Centro e Sul', '5 Regiões: Norte, Nordeste, Centro-Oeste, Sudeste e Sul', '7 Regiões Continentais', '4 Regiões Cardeais'], correct: 1, explanation: 'O IBGE divide o Brasil em 5 macrorregiões: Norte, Nordeste, Centro-Oeste, Sudeste e Sul.' },
+                    { category: 'regioes', text: 'Qual é a maior região do Brasil em extensão territorial?', options: ['Região Sul', 'Região Sudeste', 'Região Norte', 'Região Nordeste'], correct: 2, explanation: 'A Região Norte ocupa mais de 45% de todo o território brasileiro.' },
+                    { category: 'regioes', text: 'Em qual região brasileira fica a capital federal Brasília?', options: ['Centro-Oeste', 'Sudeste', 'Nordeste', 'Sul'], correct: 0, explanation: 'Brasília fica no Distrito Federal, no coração da Região Centro-Oeste.' },
+                    { category: 'regioes', text: 'Qual região possui o maior polo industrial e econômico do país?', options: ['Norte', 'Sudeste (SP, RJ, MG, ES)', 'Sul', 'Nordeste'], correct: 1, explanation: 'O Sudeste lidera a indústria, os serviços e a economia nacional.' },
+                    
+                    { category: 'biomas', text: 'Como são chamadas as nuvens de vapor que a Amazônia envia para o Brasil?', options: ['Ventos Alísios', 'Rios Voadores', 'Furacões Tropicais', 'Monções'], correct: 1, explanation: 'Os Rios Voadores da Amazônia transportam umidade e chuvas para o Centro-Sul.' },
+                    { category: 'biomas', text: 'Qual bioma é chamado de "Berço das Águas" do Brasil?', options: ['Cerrado', 'Pampas', 'Caatinga', 'Deserto'], correct: 0, explanation: 'O Cerrado abastece importantes nascentes e aquíferos de todo o país.' },
+                    { category: 'biomas', text: 'Qual bioma é 100% exclusivo do território brasileiro?', options: ['Mata Atlântica', 'Caatinga', 'Pantanal', 'Floresta Boreal'], correct: 1, explanation: 'A Caatinga só existe no semiárido do Brasil e em nenhum outro lugar da Terra.' },
+                    { category: 'biomas', text: 'Qual é a maior planície alagável contínua do mundo?', options: ['Pantanal', 'Saara', 'Cerrado', 'Pampas'], correct: 0, explanation: 'O Pantanal abriga a maior concentração de vida selvagem e águas do continente.' },
+
+                    { category: 'relevo_rios', text: 'Qual é o ponto mais alto do relevo do Brasil?', options: ['Pão de Açúcar', 'Pico da Neblina (2.995m)', 'Pico das Agulhas Negras', 'Monte Roraima'], correct: 1, explanation: 'O Pico da Neblina, na Serra do Imeri (Amazonas), é o cume mais alto do país.' },
+                    { category: 'relevo_rios', text: 'Qual é o maior rio do mundo em volume de água doce?', options: ['Rio Nilo', 'Rio Amazonas', 'Rio Mississipi', 'Rio Danúbio'], correct: 1, explanation: 'O Rio Amazonas despeja cerca de 20% de toda a água doce que chega aos oceanos.' },
+
+                    { category: 'agro_economia', text: 'O agronegócio brasileiro é líder mundial na exportação de qual produto?', options: ['Soja, Café e Suco de Laranja', 'Trigo de Inverno', 'Azeite de Oliva', 'Maçã Fuji'], correct: 0, explanation: 'O Brasil é campeão mundial em soja, café, carne, açúcar e suco de laranja.' },
+                    { category: 'agro_economia', text: 'Qual é a principal fonte da matriz elétrica limpa do Brasil?', options: ['Usinas a Carvão', 'Usinas Hidrelétricas e Renováveis', 'Usinas Nucleares', 'Termelétricas a Óleo'], correct: 1, explanation: 'Mais de 80% da eletricidade do Brasil vem de fontes limpas como hidrelétricas, vento e sol.' }
+                ]
+            }
+        };
+
+        // ==========================================
+        // 4. ESTADO GERAL DA APLICAÇÃO
+        // ==========================================
+        let currentSubjectId = 'historia'; // 'historia' ou 'geografia'
+        let appData = {};
+        let currentState = 'PORTAL_HUB';
+        let currentUser = null;
+        let currentUserTurma = 'Geral';
+        let currentUserAvatar = '🧭';
+        let selectedCategoryId = null;
+        let currentChapterIndex = 0;
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let quizAnswers = [];
+        let studentsProgress = {};
+
+        // Filtros do Admin
+        let adminSubjectFilter = 'Todos';
+        let adminStudentFilter = 'Todos';
+        let adminModuleFilter = 'Todos';
+        let adminTurmaFilter = 'Todos';
+        let adminSelectedCategoryForEdit = null;
+
+        const mainContent = document.getElementById('main-content');
+        const modalContainer = document.getElementById('modal-container');
+        const modalContent = document.getElementById('modal-content');
+        const userInfoDisplay = document.getElementById('user-info');
+        const currentUserNameDisplay = document.getElementById('current-user-name');
+        const currentUserTurmaDisplay = document.getElementById('current-user-turma');
+        const currentUserAvatarDisplay = document.getElementById('current-user-avatar');
+
+        // Configurações do Firebase
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'expedicao-brasil-ead';
-        
         let rawConfig = null;
         try {
             const savedLocal = localStorage.getItem('expedicao_firebase_config');
             if (savedLocal) rawConfig = JSON.parse(savedLocal);
         } catch (_) {}
 
-        if (!rawConfig && typeof window.FIREBASE_CONFIG !== 'undefined') {
-            rawConfig = window.FIREBASE_CONFIG;
-        } else if (!rawConfig && typeof __firebase_config !== 'undefined') {
-            rawConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-        }
+        if (!rawConfig && typeof window.FIREBASE_CONFIG !== 'undefined') rawConfig = window.FIREBASE_CONFIG;
+        else if (!rawConfig && typeof __firebase_config !== 'undefined') rawConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
 
-        const isConfigured = rawConfig && rawConfig.apiKey && !rawConfig.apiKey.includes('SUA_API_KEY') && !rawConfig.apiKey.includes('...');
+        const isConfigured = rawConfig && rawConfig.apiKey && !rawConfig.apiKey.includes('SUA_API_KEY');
         const firebaseConfig = isConfigured ? rawConfig : null;
         const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
@@ -82,167 +613,38 @@
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
-            } catch (err) {
-                console.warn("Erro ao inicializar Firebase:", err);
+            } catch (e) {
+                console.warn("Erro ao iniciar Firebase:", e);
             }
-        }
-
-        const initialCourseData = {
-            categories: [
-                { 
-                    id: 'colonia', 
-                    name: 'Brasil Colônia', 
-                    icon: 'M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9',
-                    description: 'O descobrimento, os índios e o açúcar.',
-                    chapters: [
-                        {
-                            title: 'A Chegada dos Portugueses! 🚢',
-                            content: 'Imagina viajar pelo mar em um barco gigante de madeira por meses! Foi assim que Pedro Álvares Cabral chegou ao Brasil no ano de 1500. Eles achavam que estavam indo para as Índias. Quando chegaram, descobriram que a terra já era habitada por milhões de indígenas, que cuidavam muito bem da natureza.',
-                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/A_descoberta_do_Brasil.jpg/800px-A_descoberta_do_Brasil.jpg',
-                        },
-                        {
-                            title: 'O Pau-Brasil e o Açúcar 🌳',
-                            content: 'Os portugueses encontraram uma árvore chamada <b>Pau-Brasil</b>. Foi por causa dela que nosso país ganhou o nome de Brasil! Depois, começaram a plantar Cana-de-Açúcar. O açúcar era tão valioso que era chamado de "Ouro Branco". Infelizmente, muitas pessoas foram trazidas escravizadas da África para trabalhar nessas fazendas.',
-                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Engenho_de_Itamarac%C3%A1_-_Frans_Post.jpg/800px-Engenho_de_Itamarac%C3%A1_-_Frans_Post.jpg',
-                        },
-                        {
-                            title: 'A Corrida do Ouro ✨',
-                            content: 'Muitos anos depois, os Bandeirantes encontraram ouro no meio do Brasil, num lugar que hoje chamamos de Minas Gerais! Cidades lindas com igrejas cheias de ouro foram construídas. Foi nessa época que viveu Aleijadinho, um artista incrível que fazia esculturas de pedra-sabão.',
-                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Lavagem_de_min%C3%A9rio_de_ouro_perto_da_montanha_Ita_Columi.jpg/800px-Lavagem_de_min%C3%A9rio_de_ouro_perto_da_montanha_Ita_Columi.jpg',
-                        }
-                    ]
-                },
-                { 
-                    id: 'imperio', 
-                    name: 'Brasil Império', 
-                    icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
-                    description: 'A família real, a independência e os imperadores.',
-                    chapters: [
-                        {
-                            title: 'A Família Real Foge para o Brasil 👑',
-                            content: 'Em 1808, o Rei de Portugal, Dom João VI, teve que fugir da Europa porque Napoleão queria invadir seu país. Ele atravessou o oceano para morar no Brasil! O Brasil, que era só uma colônia, de repente virou a sede de um império inteiro.',
-                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Embarque_da_Fam%C3%ADlia_Real_Portuguesa_para_o_Brasil.jpg/800px-Embarque_da_Fam%C3%ADlia_Real_Portuguesa_para_o_Brasil.jpg',
-                        },
-                        {
-                            title: 'Independência ou Morte! ⚔️',
-                            content: 'O rei voltou para Portugal e deixou seu filho, Dom Pedro I, cuidando do Brasil. Portugal queria o controle de volta, mas Dom Pedro não aceitou! No dia 7 de setembro de 1822, ele gritou <b>"Independência ou Morte!"</b> e o Brasil se tornou um país livre!',
-                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Independ%C3%AAncia_ou_Morte_%28Pedro_Am%C3%A9rico%29.jpg/800px-Independ%C3%AAncia_ou_Morte_%28Pedro_Am%C3%A9rico%29.jpg',
-                        },
-                        {
-                            title: 'A Princesa Isabel 📜',
-                            content: 'Foi durante o reinado de Dom Pedro II que sua filha, a Princesa Isabel, assinou a <b>Lei Áurea</b> em 1888. Essa lei finalmente libertou todas as pessoas escravizadas no Brasil, um momento muito importante da nossa história.',
-                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Assinatura_da_Lei_%C3%81urea.jpg/800px-Assinatura_da_Lei_%C3%81urea.jpg',
-                        }
-                    ]
-                },
-                { 
-                    id: 'republica', 
-                    name: 'Brasil República', 
-                    icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
-                    description: 'Presidentes, o café, Brasília e a democracia.',
-                    chapters: [
-                        {
-                            title: 'O Fim do Império 🗳️',
-                            content: 'Em 1889, os militares decidiram que não queriam mais um imperador. Eles queriam uma <b>República</b>. O Marechal Deodoro da Fonseca proclamou a República e passamos a ter Presidentes! Nessa época, o Brasil ficou muito rico vendendo <b>Café</b>.',
-                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Proclama%C3%A7%C3%A3o_da_Rep%C3%BAblica_%28Benedito_Calixto%29.jpg/800px-Proclama%C3%A7%C3%A3o_da_Rep%C3%BAblica_%28Benedito_Calixto%29.jpg',
-                        },
-                        {
-                            title: 'Getúlio e Brasília 🏗️',
-                            content: 'Muitos presidentes passaram, como Getúlio Vargas. Depois, o presidente Juscelino Kubitschek teve uma ideia genial: construir uma capital novinha em folha no meio do nada! Assim nasceu <b>Brasília</b>, uma cidade planejada em formato de avião.',
-                            imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Brasilia_construction.jpg/800px-Brasilia_construction.jpg',
-                        }
-                    ]
-                }
-            ],
-            questions: [
-                { category: 'colonia', text: 'Qual foi a árvore que deu nome ao nosso país?', options: ['Seringueira', 'Pau-Brasil', 'Ipê', 'Cacau'], correct: 1, explanation: 'O Pau-Brasil soltava uma tinta vermelha valiosa.' },
-                { category: 'colonia', text: 'O que era o "Ouro Branco"?', options: ['Sal', 'Algodão', 'Açúcar', 'Leite'], correct: 2, explanation: 'O açúcar era um artigo de luxo na Europa.' },
-                { category: 'imperio', text: 'Quem gritou "Independência ou Morte"?', options: ['Cabral', 'Princesa Isabel', 'Dom Pedro I', 'Dom Pedro II'], correct: 2, explanation: 'Dom Pedro I separou o Brasil de Portugal.' },
-                { category: 'imperio', text: 'Qual lei libertou os escravizados?', options: ['Lei do Ouro', 'Lei Áurea', 'Lei Livre', 'Lei de Portugal'], correct: 1, explanation: 'Assinada pela Princesa Isabel em 1888.' },
-                { category: 'republica', text: 'Na República, quem governa?', options: ['Rei', 'Imperador', 'Presidente', 'Bandeirante'], correct: 2, explanation: 'O poder vem do povo, que vota no Presidente.' },
-                { category: 'republica', text: 'Qual a capital construída no formato de avião?', options: ['Rio de Janeiro', 'São Paulo', 'Brasília', 'Salvador'], correct: 2, explanation: 'Brasília foi construída por Juscelino Kubitschek.' }
-            ]
-        };
-
-        let appData = {};
-        let currentState = 'MENU';
-        let currentUser = null;
-        let selectedCategoryId = null;
-        let currentChapterIndex = 0;
-        let quizQuestions = [];
-        let currentQuestionIndex = 0;
-        let quizAnswers = [];
-        let studentsProgress = {};
-        
-        let adminSelectedCategoryForEdit = null;
-        let adminStudentFilter = 'Todos';
-        let adminModuleFilter = 'Todos';
-
-        const mainContent = document.getElementById('main-content');
-        const modalContainer = document.getElementById('modal-container');
-        const modalContent = document.getElementById('modal-content');
-        const userInfoDisplay = document.getElementById('user-info');
-        const currentUserNameDisplay = document.getElementById('current-user-name');
-
-        window.showModal = function(html) {
-            modalContent.innerHTML = html;
-            modalContainer.classList.remove('hidden');
-        }
-
-        window.hideModal = function() {
-            modalContainer.classList.add('hidden');
-        }
-
-        window.customAlert = function(message) {
-            window.showModal(`
-                <div class="text-center">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Aviso</h3>
-                    <p class="text-gray-600 mb-6">${message}</p>
-                    <button onclick="window.hideModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold w-full">OK, Entendi</button>
-                </div>
-            `);
-        }
-
-        window.customConfirm = function(message, onConfirmCallbackStr) {
-            window.showModal(`
-                <div class="text-center">
-                    <div class="text-5xl mb-4">⚠️</div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Tem certeza?</h3>
-                    <p class="text-gray-600 mb-6 text-sm">${message}</p>
-                    <div class="flex gap-2 justify-center">
-                        <button onclick="window.hideModal()" class="w-1/2 px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg border border-gray-200">Cancelar</button>
-                        <button onclick="window.hideModal(); ${onConfirmCallbackStr}" class="w-1/2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold shadow-md">Sim, Continuar</button>
-                    </div>
-                </div>
-            `);
         }
 
         function calculateGrade(score, total) {
             const percentage = total > 0 ? (score / total) * 100 : 0;
-            if (percentage >= 90) return { grade: 'A', text: 'Excelente!', color: 'text-green-600' };
-            if (percentage >= 70) return { grade: 'B', text: 'Muito Bom', color: 'text-blue-600' };
-            if (percentage >= 50) return { grade: 'C', text: 'Regular', color: 'text-amber-600' };
-            return { grade: 'D', text: 'Precisa Revisar', color: 'text-red-600' };
+            if (percentage >= 90) return { grade: 'A', text: 'Excelente!', color: 'text-emerald-600', badge: '🥇 Ouro' };
+            if (percentage >= 70) return { grade: 'B', text: 'Muito Bom', color: 'text-blue-600', badge: '🥈 Prata' };
+            if (percentage >= 50) return { grade: 'C', text: 'Regular', color: 'text-amber-600', badge: '🥉 Bronze' };
+            return { grade: 'D', text: 'Precisa Revisar', color: 'text-rose-600', badge: '📚 Estudo' };
         }
 
         function loadLocalData() {
             try {
-                const savedCourse = localStorage.getItem('expedicao_course_data');
-                if (savedCourse) appData = JSON.parse(savedCourse);
-                else appData = JSON.parse(JSON.stringify(initialCourseData));
+                const savedCourse = localStorage.getItem('expedicao_courses_db_v3');
+                if (savedCourse) window.coursesDatabase = JSON.parse(savedCourse);
+                else window.coursesDatabase = JSON.parse(JSON.stringify(initialCoursesDatabase));
 
-                const savedProgress = localStorage.getItem('expedicao_students_progress');
+                const savedProgress = localStorage.getItem('expedicao_students_progress_v3');
                 if (savedProgress) studentsProgress = JSON.parse(savedProgress);
             } catch (e) {
                 console.warn("Erro ao ler localStorage:", e);
-                appData = JSON.parse(JSON.stringify(initialCourseData));
+                window.coursesDatabase = JSON.parse(JSON.stringify(initialCoursesDatabase));
             }
+            appData = window.coursesDatabase[currentSubjectId] || window.coursesDatabase.historia;
         }
 
         function saveLocalData() {
             try {
-                localStorage.setItem('expedicao_course_data', JSON.stringify(appData));
-                localStorage.setItem('expedicao_students_progress', JSON.stringify(studentsProgress));
+                localStorage.setItem('expedicao_courses_db_v3', JSON.stringify(window.coursesDatabase));
+                localStorage.setItem('expedicao_students_progress_v3', JSON.stringify(studentsProgress));
             } catch (e) {
                 console.warn("Erro ao salvar localStorage:", e);
             }
@@ -251,35 +653,30 @@
         async function loadCloudData() {
             loadLocalData();
             if (!auth || !auth.currentUser) return;
-            
             try {
-                // Carrega o conteúdo do curso da Nuvem
-                const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'course_content', 'main');
+                const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi', 'main');
                 const docSnap = await getDoc(contentRef);
-                
                 if (docSnap.exists()) {
-                    appData = docSnap.data();
+                    window.coursesDatabase = docSnap.data();
+                    appData = window.coursesDatabase[currentSubjectId] || window.coursesDatabase.historia;
                     saveLocalData();
                 } else {
-                    await setDoc(contentRef, appData);
+                    await setDoc(contentRef, window.coursesDatabase);
                 }
-
-                // Carrega o progresso de todos os alunos
                 await fetchCloudProgress();
-
             } catch (e) {
-                console.error("Erro na nuvem:", e);
+                console.error("Erro ao carregar nuvem:", e);
             }
         }
 
         async function fetchCloudProgress() {
             if (!auth || !auth.currentUser) return;
             try {
-                const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress');
+                const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress_multi');
                 const snapshot = await getDocs(progressColl);
                 studentsProgress = {};
-                snapshot.forEach(document => {
-                    studentsProgress[document.id] = document.data().progress || {};
+                snapshot.forEach(docItem => {
+                    studentsProgress[docItem.id] = docItem.data().progress || {};
                 });
                 saveLocalData();
             } catch(e) {
@@ -288,42 +685,45 @@
         }
 
         window.saveCourseDataCloud = async function() {
+            window.coursesDatabase[currentSubjectId] = appData;
             saveLocalData();
             if (!auth || !auth.currentUser) {
-                window.customAlert("💾 Conteúdo salvo localmente com sucesso! (Para sincronizar com todos os dispositivos, conecte as chaves do Firebase).");
+                window.customAlert("💾 Conteúdo salvo localmente com sucesso!");
                 return;
             }
-            const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'course_content', 'main');
+            const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi', 'main');
             try {
-                await setDoc(contentRef, appData);
-                window.customAlert("✅ Curso atualizado na nuvem com sucesso! Todos os alunos já podem ver a nova versão.");
+                await setDoc(contentRef, window.coursesDatabase);
+                window.customAlert("✅ Cursos atualizados na nuvem com sucesso para todas as disciplinas!");
             } catch (e) {
                 window.customAlert("Erro ao salvar na nuvem: " + e.message + " (salvo localmente)");
             }
-        }
+        };
 
         async function updateStudentProgress(studentName, categoryId, chaptersRead, totalChapters, quizScore = null) {
-            if (!studentsProgress[studentName]) studentsProgress[studentName] = {};
-            if (!studentsProgress[studentName][categoryId]) studentsProgress[studentName][categoryId] = { chaptersRead: 0, quizScore: null };
+            if (!studentsProgress[studentName]) studentsProgress[studentName] = { _meta: { turma: currentUserTurma, avatar: currentUserAvatar } };
+            const subKey = currentSubjectId;
+            if (!studentsProgress[studentName][subKey]) studentsProgress[studentName][subKey] = {};
+            if (!studentsProgress[studentName][subKey][categoryId]) studentsProgress[studentName][subKey][categoryId] = { chaptersRead: 0, quizScore: null };
             
-            if (chaptersRead > studentsProgress[studentName][categoryId].chaptersRead) {
-                 studentsProgress[studentName][categoryId].chaptersRead = chaptersRead;
+            if (chaptersRead > studentsProgress[studentName][subKey][categoryId].chaptersRead) {
+                 studentsProgress[studentName][subKey][categoryId].chaptersRead = chaptersRead;
             }
             if (quizScore !== null) {
-                studentsProgress[studentName][categoryId].quizScore = quizScore;
+                studentsProgress[studentName][subKey][categoryId].quizScore = quizScore;
             }
-            studentsProgress[studentName][categoryId].totalChapters = totalChapters;
-            studentsProgress[studentName][categoryId].lastAccess = new Date().toISOString();
+            studentsProgress[studentName][subKey][categoryId].totalChapters = totalChapters;
+            studentsProgress[studentName][subKey][categoryId].lastAccess = new Date().toISOString();
+            studentsProgress[studentName]._meta = { turma: currentUserTurma, avatar: currentUserAvatar, lastUpdate: new Date().toISOString() };
 
             saveLocalData();
 
-            // Salva na Nuvem silenciosamente se conectado
             if (!auth || !auth.currentUser) return;
-            const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'progress', studentName);
+            const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'progress_multi', studentName);
             try {
                 await setDoc(studentRef, { progress: studentsProgress[studentName] }, { merge: true });
             } catch (e) {
-                console.error("Erro no envio EAD:", e);
+                console.error("Erro de envio EAD:", e);
             }
         }
 
@@ -331,16 +731,17 @@
             studentsProgress = {};
             currentUser = null;
             userInfoDisplay.classList.add('hidden');
+            userInfoDisplay.classList.remove('flex');
             saveLocalData();
             
             if (auth && auth.currentUser) {
                 try {
-                    const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress');
+                    const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress_multi');
                     const snapshot = await getDocs(progressColl);
-                    for (const document of snapshot.docs) {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'progress', document.id));
+                    for (const docItem of snapshot.docs) {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'progress_multi', docItem.id));
                     }
-                    window.customAlert("Todos os históricos de alunos foram apagados da nuvem e do armazenamento local.");
+                    window.customAlert("Histórico de todos os alunos apagado na nuvem e localmente.");
                     window.renderAdminDashboard();
                 } catch(e) {
                     window.customAlert("Erro ao limpar nuvem.");
@@ -349,187 +750,298 @@
                 window.customAlert("Histórico local de alunos zerado.");
                 window.renderAdminDashboard();
             }
+        };
+
+        function getStudentProgress(studentName, categoryId) {
+            return studentsProgress[studentName]?.[currentSubjectId]?.[categoryId] || { chaptersRead: 0, quizScore: null };
         }
 
-        window.openFirebaseConfigModal = function() {
-            const currentCfgStr = rawConfig ? JSON.stringify(rawConfig, null, 2) : '';
+        window.showModal = function(html) {
+            modalContent.innerHTML = html;
+            modalContainer.classList.remove('hidden');
+        };
+
+        window.hideModal = function() {
+            modalContainer.classList.add('hidden');
+        };
+
+        window.customAlert = function(message) {
             window.showModal(`
-                <div class="text-left">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-2xl">🔥</span>
-                        <h3 class="text-xl font-bold text-gray-800">Conectar Firebase (Nuvem)</h3>
-                    </div>
-                    <p class="text-xs text-gray-500 mb-3 leading-relaxed">Cole abaixo o objeto <code>firebaseConfig</code> do console do Firebase (ou edite o arquivo <code>firebase-config.js</code>):</p>
-                    <textarea id="firebase-json-input" class="w-full h-44 p-3 border-2 border-indigo-100 rounded-xl font-mono text-xs focus:border-indigo-500 focus:outline-none bg-slate-900 text-emerald-400 mb-4" placeholder='{\n  "apiKey": "AIzaSy...",\n  "authDomain": "seu-app.firebaseapp.com",\n  "projectId": "seu-app",\n  "storageBucket": "seu-app.appspot.com",\n  "messagingSenderId": "...",\n  "appId": "..."\n}'>${currentCfgStr}</textarea>
-                    <div class="flex gap-2 justify-end">
-                        <button onclick="window.hideModal()" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancelar</button>
-                        <button onclick="window.saveFirebaseConfigFromModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold shadow-md">Salvar e Conectar</button>
+                <div class="text-center">
+                    <div class="text-5xl mb-4">💡</div>
+                    <h3 class="text-xl font-black text-gray-800 mb-3">Informação</h3>
+                    <p class="text-gray-600 mb-6 text-sm leading-relaxed">${message}</p>
+                    <button onclick="window.hideModal(); window.soundClick();" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold w-full shadow-md text-sm">Entendido</button>
+                </div>
+            `);
+        };
+
+        window.customConfirm = function(message, onConfirmCallbackStr) {
+            window.showModal(`
+                <div class="text-center">
+                    <div class="text-5xl mb-4">⚠️</div>
+                    <h3 class="text-xl font-black text-gray-800 mb-2">Confirmação</h3>
+                    <p class="text-gray-600 mb-6 text-sm leading-relaxed">${message}</p>
+                    <div class="flex gap-3 justify-center">
+                        <button onclick="window.hideModal(); window.soundClick();" class="w-1/2 px-4 py-2.5 text-gray-600 font-bold hover:bg-gray-100 rounded-xl border border-gray-200 text-sm">Cancelar</button>
+                        <button onclick="window.hideModal(); window.soundClick(); ${onConfirmCallbackStr}" class="w-1/2 bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-md text-sm">Sim, Continuar</button>
                     </div>
                 </div>
             `);
-        }
+        };
 
-        window.saveFirebaseConfigFromModal = function() {
-            const txt = document.getElementById('firebase-json-input').value.trim();
-            try {
-                let parsed = null;
-                if (txt.startsWith('{')) {
-                    parsed = JSON.parse(txt);
-                } else {
-                    // Tenta extrair formato JS
-                    const match = txt.match(/\{[\s\S]*\}/);
-                    if (match) parsed = (new Function('return ' + match[0]))();
-                }
-                if (parsed && parsed.apiKey) {
-                    localStorage.setItem('expedicao_firebase_config', JSON.stringify(parsed));
-                    window.hideModal();
-                    window.customAlert("✅ Configuração do Firebase salva! A página será recarregada para conectar.");
-                    setTimeout(() => location.reload(), 1200);
-                } else {
-                    window.customAlert("JSON inválido ou campo 'apiKey' ausente.");
-                }
-            } catch (err) {
-                window.customAlert("Erro ao analisar JSON: " + err.message);
-            }
-        }
+        // ==========================================
+        // 5. TELAS DO PORTAL E NAVEGAÇÃO
+        // ==========================================
 
-        function getStudentProgress(studentName, categoryId) {
-            return studentsProgress[studentName]?.[categoryId] || { chaptersRead: 0, quizScore: null };
-        }
-
-        async function initAppEAD() {
-            loadLocalData();
-            if (!app) {
-                console.warn("Sem credenciais do Firebase. Rodando em modo local offline.");
-                window.changeState('MENU');
-                return;
-            }
-
-            try {
-                if (authToken) {
-                    await signInWithCustomToken(auth, authToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                if (auth.currentUser) {
-                    await loadCloudData();
-                }
-            } catch (e) {
-                console.error("Falha de autenticação EAD:", e);
-            }
+        // TELA 1: HUB DO PORTAL (SELETOR DE MATÉRIAS)
+        window.renderPortalHub = function() {
+            if (isSpeaking) window.speechSynthesis.cancel();
             
-            window.changeState('MENU');
-        }
+            const subjectsHTML = PORTAL_SUBJECTS.map(subj => {
+                if (subj.active) {
+                    return `
+                        <div onclick="window.selectSubject('${subj.id}')" class="bg-white border-2 border-indigo-100 hover:border-indigo-500 rounded-3xl p-6 shadow-md hover:shadow-2xl transition-all cursor-pointer flex flex-col justify-between transform hover:-translate-y-1.5 relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl ${subj.color} opacity-10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform"></div>
+                            
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-4xl p-3 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">${subj.icon}</span>
+                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-300">${subj.tag}</span>
+                                </div>
+                                <h3 class="text-xl font-black text-gray-800 mb-2 group-hover:text-indigo-600 transition-colors">${subj.name}</h3>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-6">${subj.desc}</p>
+                            </div>
 
-        window.renderMenu = function() {
+                            <button class="w-full bg-gradient-to-r ${subj.color} text-white font-black py-3 px-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+                                <span>Entrar na Matéria</span> 🚀
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="bg-gray-50/80 border-2 border-dashed border-gray-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between opacity-60">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-4xl grayscale p-3 bg-gray-100 rounded-2xl">${subj.icon}</span>
+                                    <span class="bg-gray-200 text-gray-600 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full">${subj.tag}</span>
+                                </div>
+                                <h3 class="text-lg font-black text-gray-700 mb-2">${subj.name}</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed mb-6">${subj.desc}</p>
+                            </div>
+                            <button disabled class="w-full bg-gray-200 text-gray-400 font-bold py-2.5 px-4 rounded-2xl text-xs cursor-not-allowed">
+                                Em Desenvolvimento
+                            </button>
+                        </div>
+                    `;
+                }
+            }).join('');
+
             mainContent.innerHTML = `
-                <div class="fade-in text-center flex flex-col items-center bg-white p-8 md:p-12 rounded-3xl shadow-xl border-4 border-indigo-100 max-w-lg w-full">
-                    <div class="text-6xl md:text-8xl mb-6 animate-bounce">🇧🇷</div>
-                    <h2 class="text-3xl md:text-5xl font-black text-gray-800 mb-4 tracking-tight">Expedição Brasil</h2>
-                    <p class="text-gray-500 mb-8 text-lg font-medium">Um curso interativo e divertido sobre a nossa história!</p>
-                    <div class="w-full flex flex-col gap-3">
-                        <button onclick="window.startAppFlow()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-4 px-8 rounded-xl shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl">
-                            Começar a Aprender 🚀
-                        </button>
-                        <button id="admin-login-btn" onclick="window.changeState('ADMIN_LOGIN')" class="hidden w-full bg-gray-50 hover:bg-gray-100 text-gray-600 text-lg font-bold py-3 px-8 rounded-xl border-2 border-gray-100 transition-colors flex justify-center items-center gap-2">
-                            👨‍🏫 Painel do Professor
+                <div class="fade-in w-full max-w-5xl">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-4 py-1.5 rounded-full text-xs font-black text-indigo-700 mb-3">
+                            <span>🇧🇷</span> Portal Educacional Expedição Brasil
+                        </div>
+                        <h2 class="text-3xl md:text-5xl font-black text-gray-800 tracking-tight mb-2">Escolha sua Disciplina</h2>
+                        <p class="text-gray-500 text-sm md:text-base max-w-lg mx-auto">Aulas narradas, quizzes didáticos, medalhas cívicas e certificados de conclusão para cada matéria!</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        ${subjectsHTML}
+                    </div>
+
+                    <div class="bg-gradient-to-r from-indigo-900 to-emerald-900 rounded-3xl p-6 text-white shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="text-4xl">👨‍🏫</div>
+                            <div>
+                                <h4 class="font-black text-base">Área do Professor e Gestão Escolar</h4>
+                                <p class="text-xs text-indigo-200">Acesse o boletim geral, exporte planilhas de turmas e edite aulas.</p>
+                            </div>
+                        </div>
+                        <button onclick="window.soundClick(); window.changeState('ADMIN_LOGIN')" class="bg-white text-gray-900 hover:bg-gray-100 font-black px-6 py-3 rounded-2xl shadow-lg transition text-xs shrink-0">
+                            Acessar Painel EAD →
                         </button>
                     </div>
                 </div>
             `;
-        }
+        };
 
-        window.startAppFlow = function() {
+        window.selectSubject = function(subjectId) {
+            window.soundClick();
+            currentSubjectId = subjectId;
+            appData = window.coursesDatabase[currentSubjectId] || window.coursesDatabase.historia;
+            
             if (currentUser) {
                 window.changeState('CATEGORY_SELECT');
             } else {
-                window.showModal(`
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Olá, Explorador! 🧭</h3>
-                    <p class="text-gray-600 mb-4">Qual é o seu nome para registrarmos sua expedição na nuvem?</p>
-                    <input type="text" id="student-name-input" class="w-full px-4 py-3 rounded-lg border-2 border-indigo-200 focus:border-indigo-500 focus:outline-none mb-4 font-bold text-lg" placeholder="Digite seu nome (Ex: João, Maria)...">
-                    <div class="flex gap-2 justify-end">
-                        <button onclick="window.hideModal()" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancelar</button>
-                        <button onclick="window.loginStudent()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold">Começar!</button>
-                    </div>
-                `);
-                setTimeout(() => document.getElementById('student-name-input').focus(), 100);
+                window.openStudentRegistrationModal();
             }
-        }
+        };
+
+        window.openStudentRegistrationModal = function() {
+            const subjectAvatars = AVATARS_BY_SUBJECT[currentSubjectId] || AVATARS_BY_SUBJECT.historia;
+            const avatarOptionsHTML = subjectAvatars.map((av, idx) => `
+                <label class="flex flex-col items-center p-3 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 transition transform hover:scale-105">
+                    <input type="radio" name="avatar-choice" value="${av.emoji}" ${idx === 0 ? 'checked' : ''} class="hidden peer">
+                    <span class="text-3xl mb-1 peer-checked:scale-125 transition-transform">${av.emoji}</span>
+                    <span class="text-xs font-black text-gray-800 text-center leading-tight">${av.name}</span>
+                    <span class="text-[10px] text-gray-500 text-center leading-tight mt-0.5">${av.desc}</span>
+                </label>
+            `).join('');
+
+            window.showModal(`
+                <div class="text-left">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-3xl">${currentSubjectId === 'geografia' ? '🌍' : '🇧🇷'}</span>
+                        <div>
+                            <h3 class="text-2xl font-black text-gray-800">Bem-vindo à Expedição!</h3>
+                            <p class="text-xs text-gray-500">Curso: <b>${appData.name}</b></p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1.5">Seu Nome Completo:</label>
+                        <input type="text" id="student-name-input" class="w-full px-4 py-3 rounded-xl border-2 border-indigo-200 focus:border-indigo-600 focus:outline-none font-bold text-lg" placeholder="Ex: Gabriel Silva...">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1.5">Sua Turma ou Escola (Opcional):</label>
+                        <input type="text" id="student-turma-input" class="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-indigo-600 focus:outline-none font-bold text-sm" placeholder="Ex: 5º Ano A / Colégio Pátria...">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-2">Escolha seu Avatar:</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto custom-scrollbar p-1">
+                            ${avatarOptionsHTML}
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 justify-end">
+                        <button onclick="window.hideModal()" class="px-4 py-2.5 text-gray-500 font-bold hover:bg-gray-100 rounded-xl text-sm">Cancelar</button>
+                        <button onclick="window.loginStudent()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-md text-sm">Começar Aulas! 🌟</button>
+                    </div>
+                </div>
+            `);
+            setTimeout(() => document.getElementById('student-name-input')?.focus(), 150);
+        };
 
         window.loginStudent = function() {
-            const nameInput = document.getElementById('student-name-input').value.trim();
-            if (nameInput.length < 2) {
-                window.customAlert('Por favor, digite um nome válido com pelo menos 2 letras.');
+            const nameInput = document.getElementById('student-name-input')?.value.trim();
+            const turmaInput = document.getElementById('student-turma-input')?.value.trim() || 'Geral';
+            const selectedAvatar = document.querySelector('input[name="avatar-choice"]:checked')?.value || '🧭';
+
+            if (!nameInput || nameInput.length < 2) {
+                window.customAlert('Por favor, digite seu nome com pelo menos 2 letras.');
                 return;
             }
-            currentUser = nameInput;
-            currentUserNameDisplay.innerText = currentUser;
-            userInfoDisplay.classList.remove('hidden');
-            window.hideModal();
-            window.changeState('CATEGORY_SELECT');
-        }
 
+            currentUser = nameInput;
+            currentUserTurma = turmaInput;
+            currentUserAvatar = selectedAvatar;
+
+            currentUserNameDisplay.innerText = currentUser;
+            currentUserTurmaDisplay.innerText = currentUserTurma;
+            currentUserAvatarDisplay.innerText = currentUserAvatar;
+            
+            userInfoDisplay.classList.remove('hidden');
+            userInfoDisplay.classList.add('flex');
+
+            window.hideModal();
+            window.soundClick();
+            window.changeState('CATEGORY_SELECT');
+        };
+
+        // TELA 2: SELETOR DE MÓDULOS DA MATÉRIA ATIVA
         window.renderCategorySelect = function() {
-            const categoriesHTML = appData.categories.map(cat => {
+            appData = window.coursesDatabase[currentSubjectId] || window.coursesDatabase.historia;
+
+            const categoriesHTML = appData.categories.map((cat, idx) => {
                 const prog = getStudentProgress(currentUser, cat.id);
                 const totalChaps = cat.chapters.length;
                 const progressPercent = totalChaps > 0 ? Math.round((prog.chaptersRead / totalChaps) * 100) : 0;
                 
                 const isFinished = totalChaps > 0 && prog.chaptersRead >= totalChaps;
                 const hasQuizScore = prog.quizScore !== null;
+                const totalQuestions = appData.questions.filter(q => q.category === cat.id).length;
                 
                 let actionBtnHTML = '';
                 if (progressPercent > 0 && !isFinished) {
-                    actionBtnHTML = `<button onclick="window.openModule('${cat.id}')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
-                        📖 Continuar (${progressPercent}%)
-                    </button>`;
+                    actionBtnHTML = `
+                        <button onclick="window.soundClick(); window.openModule('${cat.id}')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 shadow-sm text-sm">
+                            📖 Continuar (${progressPercent}%)
+                        </button>
+                    `;
                 } else if (isFinished) {
-                    actionBtnHTML = `<button onclick="window.openModule('${cat.id}')" class="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        🔁 Revisar Curso
-                    </button>`;
+                    actionBtnHTML = `
+                        <button onclick="window.soundClick(); window.openModule('${cat.id}')" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 text-sm border border-indigo-200">
+                            🔁 Revisar Aulas
+                        </button>
+                    `;
                 } else {
-                     actionBtnHTML = `<button onclick="window.openModule('${cat.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
-                        📖 Iniciar Curso
-                    </button>`;
+                    actionBtnHTML = `
+                        <button onclick="window.soundClick(); window.openModule('${cat.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 shadow-md text-sm">
+                            📖 Iniciar Módulo
+                        </button>
+                    `;
                 }
 
                 let quizBtnHTML = '';
                 if (isFinished) {
                     if (hasQuizScore) {
-                        const grade = calculateGrade(prog.quizScore, appData.questions.filter(q=>q.category===cat.id).length);
-                        quizBtnHTML = `<button onclick="window.startQuiz('${cat.id}')" class="w-full bg-green-100 hover:bg-green-200 text-green-800 font-bold py-2 px-3 rounded-lg transition-colors flex flex-col items-center justify-center shadow-sm text-sm border border-green-300">
-                            <span>Refazer Quiz</span>
-                            <span class="text-xs">Nota: ${grade.grade}</span>
-                        </button>`;
+                        const grade = calculateGrade(prog.quizScore, totalQuestions);
+                        quizBtnHTML = `
+                            <button onclick="window.soundClick(); window.startQuiz('${cat.id}')" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold py-2 px-3 rounded-xl transition flex flex-col items-center justify-center shadow-sm text-xs border border-emerald-300">
+                                <span>Refazer Quiz</span>
+                                <span class="font-black text-emerald-700">Nota: ${grade.grade} (${grade.badge})</span>
+                            </button>
+                        `;
                     } else {
-                        quizBtnHTML = `<button onclick="window.startQuiz('${cat.id}')" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm animate-pulse">
-                            🎮 Fazer Quiz!
-                        </button>`;
+                        quizBtnHTML = `
+                            <button onclick="window.soundClick(); window.startQuiz('${cat.id}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-1.5 shadow-md pulse-gold text-sm">
+                                🎮 Fazer Quiz!
+                            </button>
+                        `;
                     }
                 } else {
-                    quizBtnHTML = `<button onclick="window.customAlert('🔒 Quiz Bloqueado! Você precisa ler todos os capítulos deste módulo antes de testar seus conhecimentos.')" class="w-full bg-gray-200 text-gray-500 font-bold py-2 px-3 rounded-lg cursor-not-allowed flex items-center justify-center gap-2">
-                        🔒 Quiz
-                    </button>`;
+                    quizBtnHTML = `
+                        <button onclick="window.soundWrong(); window.customAlert('🔒 <b>Quiz Bloqueado!</b><br>Você precisa ler todas as ${totalChaps} aulas deste módulo antes de liberar o desafio!')" class="w-full bg-gray-100 text-gray-400 font-bold py-2.5 px-3 rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5 text-sm border border-gray-200">
+                            🔒 Quiz Bloqueado
+                        </button>
+                    `;
                 }
 
                 return `
-                    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                        <div class="flex items-center gap-4 mb-3">
-                            <div class="bg-indigo-100 text-indigo-600 p-3 rounded-xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${cat.icon}" />
-                                </svg>
+                    <div class="bg-white border-2 border-indigo-50 hover:border-indigo-200 rounded-3xl p-6 shadow-md hover:shadow-xl transition-all flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-indigo-100/50 to-transparent rounded-bl-full pointer-events-none"></div>
+                        
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${cat.icon}" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] font-black uppercase tracking-wider text-indigo-500">Módulo ${idx + 1}</div>
+                                    <h3 class="font-black text-lg text-gray-800 leading-tight">${cat.name}</h3>
+                                </div>
                             </div>
-                            <div>
-                                <h3 class="font-bold text-xl text-gray-800">${cat.name}</h3>
-                                <p class="text-sm text-gray-500 line-clamp-2">${cat.description}</p>
+                            
+                            <p class="text-xs text-gray-500 mb-4 leading-relaxed line-clamp-3">${cat.description}</p>
+                            
+                            <div class="mb-4 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                                <div class="flex justify-between text-[11px] font-bold text-gray-500 mb-1">
+                                    <span>Progresso das Aulas</span>
+                                    <span>${prog.chaptersRead || 0} de ${totalChaps} aulas (${progressPercent}%)</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-2 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                          <div class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 mt-auto">
+
+                        <div class="grid grid-cols-2 gap-2 mt-2">
                             ${actionBtnHTML}
                             ${quizBtnHTML}
                         </div>
@@ -539,24 +1051,41 @@
 
             mainContent.innerHTML = `
                 <div class="fade-in w-full">
-                    <div class="flex justify-between items-center mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                        <h2 class="text-2xl font-black text-gray-800">Escolha um Módulo</h2>
-                        <button onclick="window.logout()" class="text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg font-bold text-sm transition-colors border border-red-200">
-                            Sair do Aluno
-                        </button>
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 bg-white p-5 rounded-3xl shadow-sm border border-indigo-50">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <button onclick="window.soundClick(); window.changeState('PORTAL_HUB')" class="text-xs font-bold text-indigo-600 hover:underline">← Todas as Matérias</button>
+                                <span class="text-gray-300">/</span>
+                                <span class="text-xs font-black text-gray-500 uppercase">${currentSubjectId}</span>
+                            </div>
+                            <h2 class="text-2xl font-black text-gray-800 flex items-center gap-2">
+                                <span>${appData.name}</span>
+                            </h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.showCertificatesModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                🏆 Medalhas & Certificado
+                            </button>
+                            <button onclick="window.logout()" class="text-rose-600 hover:bg-rose-50 px-3 py-2 rounded-xl font-bold text-xs transition border border-rose-200">
+                                Trocar Aluno
+                            </button>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         ${categoriesHTML}
                     </div>
                 </div>
             `;
-        }
+        };
 
         window.logout = function() {
+            if (isSpeaking) window.speechSynthesis.cancel();
             currentUser = null;
             userInfoDisplay.classList.add('hidden');
-            window.changeState('MENU');
-        }
+            userInfoDisplay.classList.remove('flex');
+            window.changeState('PORTAL_HUB');
+        };
 
         window.openModule = function(categoryId) {
             selectedCategoryId = categoryId;
@@ -568,9 +1097,11 @@
                 currentChapterIndex = prog.chaptersRead;
             }
             window.changeState('MODULE_VIEW');
-        }
+        };
 
+        // TELA 3: VISUALIZAÇÃO DE AULA
         window.renderModuleView = function() {
+            if (isSpeaking) window.speechSynthesis.cancel();
             const category = appData.categories.find(c => c.id === selectedCategoryId);
             const chapter = category.chapters[currentChapterIndex];
             
@@ -580,40 +1111,52 @@
             const isLast = currentChapterIndex === category.chapters.length - 1;
 
             mainContent.innerHTML = `
-                <div class="fade-in w-full h-full max-w-4xl mx-auto flex flex-col">
+                <div class="fade-in w-full max-w-4xl mx-auto flex flex-col">
                     <div class="flex justify-between items-center mb-4">
-                        <button onclick="window.changeState('CATEGORY_SELECT')" class="text-gray-500 hover:text-indigo-600 flex items-center gap-1 font-bold bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200">
-                            ← Voltar
+                        <button onclick="window.soundClick(); window.changeState('CATEGORY_SELECT')" class="text-gray-600 hover:text-indigo-600 flex items-center gap-1.5 font-bold bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200 text-sm transition">
+                            ← Voltar aos Módulos
                         </button>
-                        <span class="bg-indigo-100 text-indigo-800 text-sm font-bold px-4 py-1 rounded-full">
-                            ${category.name} (${currentChapterIndex + 1}/${category.chapters.length})
+                        <span class="bg-indigo-100 text-indigo-900 text-xs font-black px-4 py-1.5 rounded-full border border-indigo-200">
+                            ${category.name} (${currentChapterIndex + 1} de ${category.chapters.length})
                         </span>
                     </div>
 
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-xl flex-grow flex flex-col border-4 border-indigo-50">
-                        <div class="h-48 md:h-72 w-full bg-gray-200 relative group">
-                            <img src="${chapter.imageUrl}" onerror="this.src='https://placehold.co/800x400/e2e8f0/475569?text=Imagem+Nao+Encontrada'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                            <h2 class="absolute bottom-4 left-6 text-3xl md:text-4xl font-black text-white drop-shadow-md">${chapter.title}</h2>
-                        </div>
-                        <div class="p-6 md:p-10 flex-grow flex flex-col justify-between">
-                            <p class="text-gray-700 text-lg md:text-xl leading-relaxed mb-8">
-                                ${chapter.content}
-                            </p>
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-2xl flex-grow flex flex-col border-4 border-indigo-50">
+                        <div class="h-56 md:h-80 w-full bg-gray-900 relative group overflow-hidden">
+                            <img src="${chapter.imageUrl}" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                             
-                            <div class="flex justify-between mt-auto pt-4 border-t border-gray-100">
+                            <div class="absolute bottom-4 left-6 right-6">
+                                <span class="bg-emerald-500 text-white text-[10px] uppercase tracking-widest font-black px-2.5 py-1 rounded-md mb-2 inline-block shadow">Aula Ilustrada &bull; ${appData.name}</span>
+                                <h2 class="text-2xl md:text-4xl font-black text-white drop-shadow-md leading-tight">${chapter.title}</h2>
+                            </div>
+                        </div>
+
+                        <div class="p-6 md:p-8 flex-grow flex flex-col justify-between">
+                            <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">Leitura e Compreensão</span>
+                                <button id="btn-tts-speaker" onclick="window.toggleReadAloud(document.getElementById('lesson-content-text').innerText)" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-4 rounded-xl shadow-sm transition flex items-center gap-2 text-sm border border-indigo-200">
+                                    🔊 Ouvir Aula em Voz Alta
+                                </button>
+                            </div>
+
+                            <div id="lesson-content-text" class="text-gray-700 text-base md:text-lg leading-relaxed mb-8 space-y-4 font-medium">
+                                ${chapter.content}
+                            </div>
+                            
+                            <div class="flex justify-between items-center pt-4 border-t border-gray-100 mt-auto">
                                 ${currentChapterIndex > 0 ? 
-                                    `<button onclick="window.prevChapter()" class="text-gray-500 hover:text-indigo-600 font-bold px-4 py-2 flex items-center gap-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition">
-                                        ← Voltar Aula
+                                    `<button onclick="window.soundClick(); window.prevChapter()" class="text-gray-600 hover:text-indigo-600 font-bold px-4 py-2.5 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition text-sm">
+                                        ← Aula Anterior
                                     </button>` : '<div></div>'
                                 }
                                 
                                 ${isLast ? 
-                                    `<button onclick="window.changeState('CATEGORY_SELECT')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-8 py-3 rounded-xl shadow-md transform transition hover:-translate-y-1">
-                                        Terminar Módulo! 🌟
+                                    `<button onclick="window.soundCorrect(); window.finishModuleAndGoToQuiz('${category.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-8 py-3.5 rounded-2xl shadow-xl transform transition hover:-translate-y-1 flex items-center gap-2 text-base">
+                                        <span>Concluir e Ir p/ o Quiz</span> 🏆
                                     </button>` :
-                                    `<button onclick="window.nextChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-md transform transition hover:-translate-y-1">
-                                        Próxima Aula →
+                                    `<button onclick="window.soundClick(); window.nextChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-8 py-3.5 rounded-2xl shadow-lg transform transition hover:-translate-y-1 flex items-center gap-2 text-base">
+                                        <span>Próxima Aula</span> →
                                     </button>`
                                 }
                             </div>
@@ -621,11 +1164,17 @@
                     </div>
                 </div>
             `;
-        }
+        };
 
-        window.nextChapter = function() { currentChapterIndex++; window.renderModuleView(); }
-        window.prevChapter = function() { currentChapterIndex--; window.renderModuleView(); }
+        window.nextChapter = function() { currentChapterIndex++; window.renderModuleView(); };
+        window.prevChapter = function() { currentChapterIndex--; window.renderModuleView(); };
 
+        window.finishModuleAndGoToQuiz = function(catId) {
+            window.customAlert('🎉 <b>Parabéns!</b><br>Você leu todas as aulas deste módulo! O Quiz oficial foi <b>DESBLOQUEADO</b>!');
+            window.changeState('CATEGORY_SELECT');
+        };
+
+        // TELA 4: QUIZ
         window.startQuiz = function(categoryId) {
             selectedCategoryId = categoryId;
             quizQuestions = appData.questions.filter(q => q.category === categoryId);
@@ -633,49 +1182,52 @@
             currentQuestionIndex = 0;
             quizAnswers = [];
             window.changeState('QUIZ');
-        }
+        };
 
         window.renderQuiz = function() {
             const q = quizQuestions[currentQuestionIndex];
             const category = appData.categories.find(c => c.id === selectedCategoryId);
 
             mainContent.innerHTML = `
-                <div class="fade-in w-full max-w-2xl bg-white rounded-3xl p-6 md:p-10 shadow-xl border-4 border-teal-50">
+                <div class="fade-in w-full max-w-2xl bg-white rounded-3xl p-6 md:p-10 shadow-2xl border-4 border-indigo-50">
                     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-                        <span class="text-teal-600 font-black tracking-widest uppercase text-sm">${category.name}</span>
-                        <span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-bold text-sm">
-                            Pergunta ${currentQuestionIndex + 1} de ${quizQuestions.length}
+                        <span class="text-indigo-600 font-black tracking-widest uppercase text-xs">${appData.name} &bull; ${category.name}</span>
+                        <span class="bg-indigo-100 text-indigo-900 px-3 py-1 rounded-full font-black text-xs">
+                            Questão ${currentQuestionIndex + 1} de ${quizQuestions.length}
                         </span>
                     </div>
                     
-                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 leading-snug">${q.text}</h2>
+                    <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-6 leading-snug">${q.text}</h2>
                     
-                    <div class="space-y-4" id="options-container">
+                    <div class="space-y-3" id="options-container">
                         ${q.options.map((opt, i) => `
-                            <button onclick="window.answerQuestion(${i})" class="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-teal-500 hover:bg-teal-50 text-gray-700 font-semibold text-lg transition-all transform hover:-translate-y-1">
-                                <span class="inline-block w-8 h-8 bg-gray-100 text-center rounded-full mr-3 leading-8 font-bold text-gray-500">${String.fromCharCode(65 + i)}</span>
-                                ${opt}
+                            <button onclick="window.answerQuestion(${i})" class="w-full text-left p-4 rounded-2xl border-2 border-gray-200 hover:border-indigo-600 hover:bg-indigo-50/50 text-gray-700 font-bold text-base transition-all transform hover:-translate-y-0.5 shadow-sm flex items-center">
+                                <span class="w-8 h-8 bg-gray-100 text-gray-600 text-center rounded-xl mr-3 flex items-center justify-center font-black text-sm">${String.fromCharCode(65 + i)}</span>
+                                <span class="flex-grow">${opt}</span>
                             </button>
                         `).join('')}
                     </div>
                 </div>
             `;
-        }
+        };
 
         window.answerQuestion = function(selectedIndex) {
             const q = quizQuestions[currentQuestionIndex];
             const isCorrect = selectedIndex === q.correct;
             
+            if (isCorrect) window.soundCorrect();
+            else window.soundWrong();
+
             quizAnswers.push({ question: q, selected: selectedIndex, isCorrect: isCorrect });
 
             const optionsHTML = q.options.map((opt, i) => {
-                let btnClass = "w-full text-left p-4 rounded-xl border-2 font-semibold text-lg flex items-center justify-between ";
+                let btnClass = "w-full text-left p-4 rounded-2xl border-2 font-bold text-base flex items-center justify-between ";
                 if (i === q.correct) {
-                    btnClass += "bg-green-100 border-green-500 text-green-800";
+                    btnClass += "bg-emerald-50 border-emerald-500 text-emerald-900";
                 } else if (i === selectedIndex && !isCorrect) {
-                    btnClass += "bg-red-100 border-red-500 text-red-800";
+                    btnClass += "bg-rose-50 border-rose-500 text-rose-900";
                 } else {
-                    btnClass += "bg-gray-50 border-gray-200 text-gray-400 opacity-50";
+                    btnClass += "bg-gray-50 border-gray-200 text-gray-400 opacity-60";
                 }
                 
                 let icon = "";
@@ -684,8 +1236,11 @@
 
                 return `
                     <div class="${btnClass}">
-                        <div><span class="font-bold mr-2">${String.fromCharCode(65 + i)})</span> ${opt}</div>
-                        <div class="text-2xl">${icon}</div>
+                        <div class="flex items-center">
+                            <span class="w-8 h-8 rounded-xl mr-3 flex items-center justify-center font-black text-sm ${i === q.correct ? 'bg-emerald-200 text-emerald-800' : (i === selectedIndex ? 'bg-rose-200 text-rose-800' : 'bg-gray-200 text-gray-500')}">${String.fromCharCode(65 + i)}</span>
+                            <span>${opt}</span>
+                        </div>
+                        <div class="text-xl">${icon}</div>
                     </div>
                 `;
             }).join('');
@@ -693,32 +1248,37 @@
             const category = appData.categories.find(c => c.id === selectedCategoryId);
 
             mainContent.innerHTML = `
-                <div class="fade-in w-full max-w-2xl bg-white rounded-3xl p-6 md:p-10 shadow-xl border-4 ${isCorrect ? 'border-green-100' : 'border-red-100'}">
-                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-                        <span class="text-teal-600 font-black tracking-widest uppercase text-sm">${category.name}</span>
+                <div class="fade-in w-full max-w-2xl bg-white rounded-3xl p-6 md:p-10 shadow-2xl border-4 ${isCorrect ? 'border-emerald-100' : 'border-rose-100'}">
+                    <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+                        <span class="text-indigo-600 font-black tracking-widest uppercase text-xs">${category.name}</span>
+                        <span class="text-xs font-black ${isCorrect ? 'text-emerald-600' : 'text-rose-600'}">${isCorrect ? '✨ Resposta Correta!' : '⚠️ Resposta Incorreta'}</span>
                     </div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 leading-snug">${q.text}</h2>
-                    <div class="space-y-3 mb-8">${optionsHTML}</div>
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-r-lg mb-8">
-                        <h4 class="font-bold text-blue-800 flex items-center gap-2 mb-1">
-                            <span class="text-xl">💡</span> Você Sabia?
+                    
+                    <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-6 leading-snug">${q.text}</h2>
+                    <div class="space-y-3 mb-6">${optionsHTML}</div>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-2xl mb-6">
+                        <h4 class="font-black text-blue-900 flex items-center gap-2 mb-1 text-sm">
+                            <span class="text-lg">💡</span> Você Sabia? (Explicação)
                         </h4>
-                        <p class="text-blue-900">${q.explanation}</p>
+                        <p class="text-blue-800 text-xs md:text-sm leading-relaxed">${q.explanation}</p>
                     </div>
-                    <button onclick="window.nextQuestion()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg text-lg transform transition hover:-translate-y-1">
-                        ${currentQuestionIndex < quizQuestions.length - 1 ? 'Próxima Pergunta →' : 'Ver Resultado Final 🏆'}
+
+                    <button onclick="window.soundClick(); window.nextQuestion()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl shadow-xl text-base transform transition hover:-translate-y-1">
+                        ${currentQuestionIndex < quizQuestions.length - 1 ? 'Próxima Pergunta →' : 'Ver Resultado do Quiz 🏆'}
                     </button>
                 </div>
             `;
-        }
+        };
 
         window.nextQuestion = function() {
             currentQuestionIndex++;
             if (currentQuestionIndex < quizQuestions.length) window.renderQuiz();
             else window.finishQuiz();
-        }
+        };
 
         window.finishQuiz = function() {
+            window.soundFanfare();
             const score = quizAnswers.filter(a => a.isCorrect).length;
             const total = quizQuestions.length;
             const category = appData.categories.find(c => c.id === selectedCategoryId);
@@ -727,193 +1287,394 @@
             const grade = calculateGrade(score, total);
 
             mainContent.innerHTML = `
-                <div class="fade-in w-full max-w-2xl bg-white rounded-3xl p-8 md:p-12 shadow-xl border-4 border-indigo-100 text-center">
-                    <div class="text-7xl mb-6 bounce-slight">${score > total/2 ? '🎉' : '📚'}</div>
-                    <h2 class="text-4xl font-black text-gray-800 mb-2">Quiz Concluído!</h2>
-                    <p class="text-xl text-gray-500 mb-8">Você terminou o desafio de <b>${category.name}</b></p>
+                <div class="fade-in w-full max-w-xl bg-white rounded-3xl p-8 md:p-10 shadow-2xl border-4 border-indigo-100 text-center">
+                    <div class="text-7xl mb-4 bounce-slight">${score >= total * 0.7 ? '🏆' : '📚'}</div>
+                    <h2 class="text-3xl font-black text-gray-800 mb-1">Desafio Concluído!</h2>
+                    <p class="text-sm text-gray-500 mb-6">Você finalizou o quiz de <b>${category.name}</b> (${appData.name})</p>
                     
-                    <div class="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
-                        <div class="text-5xl font-black ${grade.color} mb-2">${score} / ${total}</div>
-                        <div class="text-xl font-bold text-gray-700 uppercase tracking-widest">Acertos</div>
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                            <span class="text-gray-500 font-bold mr-2">Nota no Relatório:</span>
-                            <span class="text-2xl font-black ${grade.color}">${grade.grade} - ${grade.text}</span>
+                    <div class="bg-gradient-to-b from-gray-50 to-indigo-50/30 rounded-3xl p-6 mb-6 border border-indigo-100 shadow-inner">
+                        <div class="text-5xl font-black ${grade.color} mb-1">${score} / ${total}</div>
+                        <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Acertos Totais</div>
+                        
+                        <div class="pt-4 border-t border-gray-200 flex justify-around items-center">
+                            <div>
+                                <span class="text-xs text-gray-500 block">Conceito Escolar:</span>
+                                <span class="text-2xl font-black ${grade.color}">Nota ${grade.grade}</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gray-500 block">Medalha Obtida:</span>
+                                <span class="text-lg font-black text-amber-600">${grade.badge}</span>
+                            </div>
                         </div>
                     </div>
-                    <button onclick="window.changeState('CATEGORY_SELECT')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-4 rounded-xl shadow-lg transform transition hover:-translate-y-1">
-                        Voltar para o Menu
+
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="window.soundClick(); window.changeState('CATEGORY_SELECT')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3.5 px-6 rounded-2xl shadow-lg transition">
+                            Voltar aos Módulos
+                        </button>
+                        <button onclick="window.soundClick(); window.showCertificatesModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-3.5 px-6 rounded-2xl shadow-lg transition flex items-center justify-center gap-1.5">
+                            📜 Ver Certificado
+                        </button>
+                    </div>
+                </div>
+            `;
+        };
+
+        // CERTIFICADOS & MEDALHAS
+        window.showCertificatesModal = function() {
+            const studentProg = studentsProgress[currentUser]?.[currentSubjectId] || {};
+            let completedModules = 0;
+            let totalScores = 0;
+            let totalPossible = 0;
+
+            const medalsHTML = appData.categories.map(cat => {
+                const prog = studentProg[cat.id];
+                const totalQs = appData.questions.filter(q => q.category === cat.id).length;
+                const isDone = prog && prog.quizScore !== null;
+                if (isDone) {
+                    completedModules++;
+                    totalScores += prog.quizScore;
+                    totalPossible += totalQs;
+                }
+
+                return `
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border ${isDone ? 'bg-amber-50/60 border-amber-300' : 'bg-gray-50 border-gray-200 opacity-50'}">
+                        <span class="text-3xl">${isDone ? '🎖️' : '🔒'}</span>
+                        <div class="text-left">
+                            <h4 class="font-black text-xs text-gray-800">${cat.name}</h4>
+                            <p class="text-[10px] text-gray-500">${isDone ? `Quiz: ${prog.quizScore}/${totalQs} acertos` : 'Pendente'}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const averagePercentage = totalPossible > 0 ? Math.round((totalScores / totalPossible) * 100) : 0;
+
+            window.showModal(`
+                <div class="text-center">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+                        <h3 class="text-xl font-black text-gray-800 flex items-center gap-2">
+                            <span>🏆 Conquistas &bull; ${appData.name}</span>
+                        </h3>
+                        <button onclick="window.hideModal()" class="text-gray-400 hover:text-gray-600 font-black text-lg">✕</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
+                        ${medalsHTML}
+                    </div>
+
+                    <div id="certificate-print-area" class="bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100 p-6 rounded-3xl border-4 border-amber-300 shadow-inner mb-4 relative text-center">
+                        <div class="text-4xl mb-1">${currentSubjectId === 'geografia' ? '🌍' : '🇧🇷'}</div>
+                        <h4 class="text-lg font-black text-amber-900 tracking-wider uppercase">Certificado de Honra ao Mérito</h4>
+                        <p class="text-[11px] text-amber-800 italic mb-3">Expedição Brasil &bull; Curso de ${appData.name}</p>
+                        
+                        <p class="text-xs text-gray-700 leading-relaxed">
+                            Certificamos com louvor que o(a) jovem estudante<br>
+                            <span class="text-xl font-black text-indigo-900 block my-1">${currentUser || 'Estudante'}</span>
+                            Turma: <b>${currentUserTurma}</b> &bull; Avatar: <b>${currentUserAvatar}</b><br>
+                            concluiu os estudos da disciplina de <b>${appData.name}</b> com aproveitamento de <b>${averagePercentage}%</b>.
+                        </p>
+                        
+                        <div class="mt-4 pt-3 border-t border-amber-200/80 flex justify-between text-[10px] text-amber-900 font-bold">
+                            <span>Data: ${new Date().toLocaleDateString('pt-BR')}</span>
+                            <span>Selo Oficial de Honra 📜</span>
+                        </div>
+                    </div>
+
+                    <button onclick="window.print()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-2xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+                        <span>🖨️ Imprimir Certificado</span>
                     </button>
                 </div>
-            `;
-        }
+            `);
+        };
 
+        // ==========================================
+        // 6. PAINEL DO PROFESSOR UNIFICADO (LMS / CMS)
+        // ==========================================
         window.renderAdminLogin = function() {
             mainContent.innerHTML = `
-                <div class="fade-in w-full max-w-md bg-white rounded-3xl p-8 shadow-xl border-4 border-gray-800">
-                    <div class="text-center mb-8">
-                        <div class="text-5xl mb-4">👨‍🏫</div>
-                        <h2 class="text-2xl font-black text-gray-800">Painel do Professor</h2>
-                        <p class="text-gray-500 text-sm mt-1">Gestão de Conteúdo e Relatórios EAD</p>
+                <div class="fade-in w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl border-4 border-gray-800">
+                    <div class="text-center mb-6">
+                        <div class="text-5xl mb-2">👨‍🏫</div>
+                        <h2 class="text-2xl font-black text-gray-800">Painel Central do Professor</h2>
+                        <p class="text-gray-500 text-xs mt-1">Gestão Unificada de História, Geografia e Turmas</p>
                     </div>
+                    
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-gray-700 font-bold mb-2">Login</label>
-                            <input type="text" id="admin-user" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-gray-800 focus:outline-none bg-gray-50 font-mono">
+                            <label class="block text-gray-700 font-bold text-xs uppercase mb-1">Usuário de Acesso</label>
+                            <input type="text" id="admin-user" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-gray-800 focus:outline-none bg-gray-50 font-mono text-sm font-bold" value="admplus">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-bold mb-2">Senha</label>
-                            <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-gray-800 focus:outline-none bg-gray-50 font-mono">
+                            <label class="block text-gray-700 font-bold text-xs uppercase mb-1">Senha de Acesso</label>
+                            <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-gray-800 focus:outline-none bg-gray-50 font-mono text-sm font-bold" placeholder="Digite sua senha...">
                         </div>
-                        <button onclick="window.handleAdminLogin()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 rounded-xl transition-colors mt-6 shadow-md">
-                            Entrar no Sistema
+                        
+                        <button onclick="window.soundClick(); window.handleAdminLogin()" class="w-full bg-gray-900 hover:bg-black text-white font-black py-3.5 rounded-xl transition shadow-lg mt-4 text-sm">
+                            Entrar no Painel EAD
                         </button>
-                        <button onclick="window.changeState('MENU')" class="w-full text-gray-500 hover:text-gray-800 font-bold py-2 mt-2">
-                            Cancelar e Voltar
+                        <button onclick="window.soundClick(); window.changeState('PORTAL_HUB')" class="w-full text-gray-500 hover:text-gray-800 font-bold py-2 text-xs">
+                            ← Voltar ao Portal de Matérias
                         </button>
                     </div>
                 </div>
             `;
-        }
+            setTimeout(() => document.getElementById('admin-pass')?.focus(), 150);
+        };
 
         window.handleAdminLogin = function() {
-            const user = document.getElementById('admin-user').value;
-            const pass = document.getElementById('admin-pass').value;
+            const user = document.getElementById('admin-user')?.value;
+            const pass = document.getElementById('admin-pass')?.value;
             if (user === 'admplus' && pass === '16Bl33@p') {
+                window.soundCorrect();
                 window.changeState('ADMIN_DASHBOARD');
             } else {
+                window.soundWrong();
                 window.customAlert('Credenciais incorretas. Tente novamente.');
             }
-        }
+        };
 
         window.updateFilter = function(type, value) {
+            if (type === 'subject') adminSubjectFilter = value;
             if (type === 'student') adminStudentFilter = value;
             if (type === 'module') adminModuleFilter = value;
+            if (type === 'turma') adminTurmaFilter = value;
             window.renderAdminDashboard();
-        }
-        
+        };
+
         window.refreshDashboard = async function() {
             await fetchCloudProgress();
             window.renderAdminDashboard();
-        }
+        };
+
+        window.exportReportCSV = function() {
+            let csvRows = [
+                ['Aluno', 'Avatar', 'Turma', 'Disciplina', 'Modulo', 'Progresso_Aulas', 'Nota_Quiz', 'Conceito', 'Data_Ultimo_Acesso']
+            ];
+
+            for (const [studentName, studentObj] of Object.entries(studentsProgress)) {
+                const meta = studentObj._meta || {};
+                const turma = meta.turma || 'Geral';
+                const avatar = meta.avatar || '🧭';
+
+                for (const [subjKey, catData] of Object.entries(studentObj)) {
+                    if (subjKey === '_meta') continue;
+                    const courseObj = window.coursesDatabase[subjKey];
+                    if (!courseObj) continue;
+
+                    for (const [catId, data] of Object.entries(catData)) {
+                        const category = courseObj.categories.find(c => c.id === catId);
+                        if (!category) continue;
+
+                        const totalChaps = category.chapters.length;
+                        const progressPercent = totalChaps > 0 ? Math.round((data.chaptersRead / totalChaps) * 100) : 0;
+                        const totalQs = courseObj.questions.filter(q => q.category === catId).length;
+                        
+                        let notaStr = 'Pendente';
+                        let conceitoStr = '-';
+                        if (data.quizScore !== null) {
+                            const grade = calculateGrade(data.quizScore, totalQs);
+                            notaStr = `${data.quizScore}/${totalQs}`;
+                            conceitoStr = `${grade.grade} - ${grade.text}`;
+                        }
+                        const dateStr = data.lastAccess ? new Date(data.lastAccess).toLocaleDateString('pt-BR') : '-';
+
+                        csvRows.push([
+                            `"${studentName}"`,
+                            `"${avatar}"`,
+                            `"${turma}"`,
+                            `"${courseObj.name}"`,
+                            `"${category.name}"`,
+                            `"${progressPercent}%"`,
+                            `"${notaStr}"`,
+                            `"${conceitoStr}"`,
+                            `"${dateStr}"`
+                        ]);
+                    }
+                }
+            }
+
+            const csvString = '\uFEFF' + csvRows.map(e => e.join(';')).join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `boletim_geral_expedicao_brasil_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
 
         window.renderAdminDashboard = function() {
             let reportRows = [];
             let uniqueStudents = new Set();
             let uniqueModules = new Set();
-            
-            for (const [studentName, catData] of Object.entries(studentsProgress)) {
-                uniqueStudents.add(studentName);
-                for (const [catId, data] of Object.entries(catData)) {
-                    const category = appData.categories.find(c => c.id === catId);
-                    if (!category) continue;
-                    uniqueModules.add(category.name);
-                    
-                    const totalChaps = category.chapters.length;
-                    const progressPercent = totalChaps > 0 ? Math.round((data.chaptersRead / totalChaps) * 100) : 0;
-                    const totalQs = appData.questions.filter(q => q.category === catId).length;
-                    
-                    let quizText = `<span class="text-gray-400">Pendente</span>`;
-                    if (data.quizScore !== null) {
-                        const grade = calculateGrade(data.quizScore, totalQs);
-                        quizText = `<span class="font-bold ${grade.color}">${data.quizScore}/${totalQs} (Nota ${grade.grade})</span>`;
-                    }
-                    const dateStr = data.lastAccess ? new Date(data.lastAccess).toLocaleDateString('pt-BR') : '-';
+            let uniqueTurmas = new Set();
+            let uniqueSubjects = new Set();
 
-                    reportRows.push({ student: studentName, category: category.name, progress: progressPercent, quiz: quizText, date: dateStr });
+            for (const [studentName, studentObj] of Object.entries(studentsProgress)) {
+                uniqueStudents.add(studentName);
+                const meta = studentObj._meta || {};
+                const turma = meta.turma || 'Geral';
+                const avatar = meta.avatar || '🧭';
+                uniqueTurmas.add(turma);
+
+                for (const [subjKey, catData] of Object.entries(studentObj)) {
+                    if (subjKey === '_meta') continue;
+                    const courseObj = window.coursesDatabase[subjKey];
+                    if (!courseObj) continue;
+                    uniqueSubjects.add(courseObj.name);
+
+                    for (const [catId, data] of Object.entries(catData)) {
+                        const category = courseObj.categories.find(c => c.id === catId);
+                        if (!category) continue;
+                        uniqueModules.add(category.name);
+
+                        const totalChaps = category.chapters.length;
+                        const progressPercent = totalChaps > 0 ? Math.round((data.chaptersRead / totalChaps) * 100) : 0;
+                        const totalQs = courseObj.questions.filter(q => q.category === catId).length;
+                        
+                        let quizText = `<span class="text-gray-400 font-bold text-xs">Pendente</span>`;
+                        if (data.quizScore !== null) {
+                            const grade = calculateGrade(data.quizScore, totalQs);
+                            quizText = `<span class="font-black ${grade.color} text-xs">${data.quizScore}/${totalQs} (${grade.grade})</span>`;
+                        }
+                        const dateStr = data.lastAccess ? new Date(data.lastAccess).toLocaleDateString('pt-BR') : '-';
+
+                        reportRows.push({
+                            student: studentName,
+                            avatar: avatar,
+                            turma: turma,
+                            subject: courseObj.name,
+                            category: category.name,
+                            progress: progressPercent,
+                            quiz: quizText,
+                            date: dateStr
+                        });
+                    }
                 }
             }
 
             reportRows.reverse();
 
             let filteredRows = reportRows;
+            if (adminSubjectFilter !== 'Todos') filteredRows = filteredRows.filter(r => r.subject === adminSubjectFilter);
             if (adminStudentFilter !== 'Todos') filteredRows = filteredRows.filter(r => r.student === adminStudentFilter);
             if (adminModuleFilter !== 'Todos') filteredRows = filteredRows.filter(r => r.category === adminModuleFilter);
+            if (adminTurmaFilter !== 'Todos') filteredRows = filteredRows.filter(r => r.turma === adminTurmaFilter);
 
             const rowsHtml = filteredRows.length > 0 ? filteredRows.map(row => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td class="py-3 px-4 font-bold text-gray-800">${row.student}</td>
-                    <td class="py-3 px-4 text-gray-600">${row.category}</td>
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors text-xs">
+                    <td class="py-3 px-4 font-black text-gray-800 flex items-center gap-1.5">
+                        <span>${row.avatar}</span>
+                        <span>${row.student}</span>
+                    </td>
+                    <td class="py-3 px-4 font-bold text-indigo-700">${row.turma}</td>
+                    <td class="py-3 px-4 font-black text-gray-700">${row.subject}</td>
+                    <td class="py-3 px-4 text-gray-600 font-bold">${row.category}</td>
                     <td class="py-3 px-4">
                         <div class="flex items-center gap-2">
-                            <div class="w-24 bg-gray-200 rounded-full h-2"><div class="bg-indigo-600 h-2 rounded-full" style="width: ${row.progress}%"></div></div>
-                            <span class="text-xs font-bold">${row.progress}%</span>
+                            <div class="w-16 bg-gray-200 rounded-full h-2 overflow-hidden"><div class="bg-indigo-600 h-2 rounded-full" style="width: ${row.progress}%"></div></div>
+                            <span class="text-[11px] font-black">${row.progress}%</span>
                         </div>
                     </td>
                     <td class="py-3 px-4">${row.quiz}</td>
-                    <td class="py-3 px-4 text-sm text-gray-500">${row.date}</td>
+                    <td class="py-3 px-4 text-gray-500">${row.date}</td>
                 </tr>
-            `).join('') : `<tr><td colspan="5" class="py-8 text-center text-gray-500 font-bold">Nenhum dado encontrado EAD.</td></tr>`;
+            `).join('') : `<tr><td colspan="7" class="py-8 text-center text-gray-400 font-bold text-sm">Nenhum registro encontrado.</td></tr>`;
 
+            const subjectOptions = ['Todos'].concat(Array.from(uniqueSubjects)).map(s => `<option value="${s}" ${adminSubjectFilter === s ? 'selected' : ''}>${s}</option>`).join('');
             const studentOptions = ['Todos'].concat(Array.from(uniqueStudents)).map(s => `<option value="${s}" ${adminStudentFilter === s ? 'selected' : ''}>${s}</option>`).join('');
             const moduleOptions = ['Todos'].concat(Array.from(uniqueModules)).map(m => `<option value="${m}" ${adminModuleFilter === m ? 'selected' : ''}>${m}</option>`).join('');
+            const turmaOptions = ['Todos'].concat(Array.from(uniqueTurmas)).map(t => `<option value="${t}" ${adminTurmaFilter === t ? 'selected' : ''}>${t}</option>`).join('');
 
             mainContent.innerHTML = `
-                <div class="fade-in w-full max-w-6xl flex h-[80vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
-                    <div class="w-64 bg-gray-900 text-gray-300 flex flex-col shrink-0">
+                <div class="fade-in w-full max-w-6xl flex flex-col md:flex-row h-[85vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+                    <div class="w-full md:w-64 bg-gray-900 text-gray-300 flex flex-col shrink-0">
                         <div class="p-6 text-center border-b border-gray-800">
-                            <div class="text-4xl mb-2">👨‍🏫</div>
-                            <h2 class="font-black text-white tracking-wide">EAD Admin</h2>
+                            <div class="text-4xl mb-1">👨‍🏫</div>
+                            <h2 class="font-black text-white tracking-wide text-lg">EAD Central</h2>
+                            <p class="text-[11px] text-gray-400">Portal Multi-Disciplinas</p>
                         </div>
                         <nav class="flex-grow p-4 space-y-2">
-                            <button onclick="window.changeState('ADMIN_DASHBOARD')" class="w-full text-left px-4 py-3 bg-gray-800 text-white rounded-xl font-bold flex items-center gap-2">
-                                📊 Relatórios Nuvem
+                            <button onclick="window.soundClick(); window.changeState('ADMIN_DASHBOARD')" class="w-full text-left px-4 py-3 bg-gray-800 text-white rounded-xl font-bold flex items-center gap-2 text-sm">
+                                📊 Boletim Geral
                             </button>
-                            <button onclick="window.changeState('ADMIN_EDITOR')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2 text-gray-300">
-                                📝 Editar Curso/Quiz
+                            <button onclick="window.soundClick(); window.changeState('ADMIN_EDITOR')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2 text-gray-300 font-bold text-sm">
+                                📝 Editor de Cursos
                             </button>
-                            <button onclick="window.openFirebaseConfigModal()" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-amber-400 rounded-xl transition flex items-center gap-2 text-gray-300 font-bold">
-                                🔥 Configurar Firebase
+                            <button onclick="window.soundClick(); window.openFirebaseConfigModal()" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-amber-400 rounded-xl transition flex items-center gap-2 text-gray-300 font-bold text-sm">
+                                🔥 Conexão Firebase
                             </button>
                         </nav>
-                        <div class="p-4 border-t border-gray-800">
-                            <button onclick="window.customConfirm('Você irá apagar os dados da NUVEM permanentemente!', 'window.resetProgressCloud()')" class="w-full text-left px-4 py-3 text-red-400 hover:bg-red-900/30 hover:text-red-300 rounded-xl transition flex items-center gap-2 font-bold mb-2">
-                                🗑️ Zerar Turma
+                        <div class="p-4 border-t border-gray-800 space-y-2">
+                            <button onclick="window.soundClick(); window.customConfirm('Você irá apagar os dados de TODOS os alunos de todas as matérias permanentemente!', 'window.resetProgressCloud()')" class="w-full text-left px-4 py-2 text-rose-400 hover:bg-rose-900/30 hover:text-rose-300 rounded-xl transition flex items-center gap-2 font-bold text-xs">
+                                🗑️ Zerar Turmas
                             </button>
-                            <button onclick="window.changeState('MENU')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2">
+                            <button onclick="window.soundClick(); window.changeState('PORTAL_HUB')" class="w-full text-left px-4 py-2 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2 text-xs font-bold">
                                 🚪 Sair do Painel
                             </button>
                         </div>
                     </div>
 
                     <div class="flex-grow bg-gray-50 flex flex-col relative overflow-hidden">
-                        <div class="p-8 border-b border-gray-200 bg-white flex justify-between items-end shrink-0">
+                        <div class="p-6 md:p-8 border-b border-gray-200 bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0 shadow-sm">
                             <div>
                                 <div class="flex items-center gap-3 mb-1">
-                                    <h2 class="text-3xl font-black text-gray-800">Boletim Geral (Nuvem)</h2>
-                                    ${auth && auth.currentUser ? '<span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full border border-emerald-300">🟢 Nuvem Online</span>' : '<button onclick="window.openFirebaseConfigModal()" class="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full border border-amber-300 hover:bg-amber-200 transition cursor-pointer">🟡 Modo Local (Conectar Firebase)</button>'}
+                                    <h2 class="text-2xl md:text-3xl font-black text-gray-800">Boletim Consolidado</h2>
+                                    ${auth && auth.currentUser ? '<span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-black rounded-full border border-emerald-300">🟢 Nuvem Online</span>' : '<button onclick="window.openFirebaseConfigModal()" class="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full border border-amber-300 hover:bg-amber-200 transition cursor-pointer">🟡 Modo Local</button>'}
                                 </div>
-                                <p class="text-gray-500">Acompanhe as notas salvas no Firebase / Armazenamento.</p>
+                                <p class="text-xs text-gray-500">Acompanhe as notas de todas as matérias e turmas.</p>
                             </div>
-                            <button onclick="window.refreshDashboard()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition shadow-sm border border-indigo-200">
-                                🔄 Atualizar da Nuvem
-                            </button>
+                            
+                            <div class="flex items-center gap-2">
+                                <button onclick="window.soundClick(); window.exportReportCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-1.5 transition shadow text-xs">
+                                    📥 Exportar Planilha (CSV)
+                                </button>
+                                <button onclick="window.soundClick(); window.refreshDashboard()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-2 rounded-xl font-bold flex items-center gap-1.5 transition text-xs">
+                                    🔄 Atualizar
+                                </button>
+                            </div>
                         </div>
                         
-                        <div class="p-8 flex-grow overflow-auto">
-                            <div class="grid grid-cols-2 gap-4 mb-6 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                        <div class="p-6 md:p-8 flex-grow overflow-auto">
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Filtrar por Aluno</label>
-                                    <select onchange="window.updateFilter('student', this.value)" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 font-bold text-gray-700 cursor-pointer focus:border-indigo-500 focus:outline-none">
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Disciplina</label>
+                                    <select onchange="window.updateFilter('subject', this.value)" class="w-full border border-gray-300 rounded-xl px-3 py-2 bg-gray-50 font-bold text-gray-700 text-xs focus:border-indigo-500 focus:outline-none">
+                                        ${subjectOptions}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Turma</label>
+                                    <select onchange="window.updateFilter('turma', this.value)" class="w-full border border-gray-300 rounded-xl px-3 py-2 bg-gray-50 font-bold text-gray-700 text-xs focus:border-indigo-500 focus:outline-none">
+                                        ${turmaOptions}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Aluno</label>
+                                    <select onchange="window.updateFilter('student', this.value)" class="w-full border border-gray-300 rounded-xl px-3 py-2 bg-gray-50 font-bold text-gray-700 text-xs focus:border-indigo-500 focus:outline-none">
                                         ${studentOptions}
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Filtrar por Módulo</label>
-                                    <select onchange="window.updateFilter('module', this.value)" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 font-bold text-gray-700 cursor-pointer focus:border-indigo-500 focus:outline-none">
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Módulo</label>
+                                    <select onchange="window.updateFilter('module', this.value)" class="w-full border border-gray-300 rounded-xl px-3 py-2 bg-gray-50 font-bold text-gray-700 text-xs focus:border-indigo-500 focus:outline-none">
                                         ${moduleOptions}
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
                                 <table class="w-full text-left border-collapse">
                                     <thead>
-                                        <tr class="bg-gray-100 text-gray-500 text-xs uppercase tracking-wider">
+                                        <tr class="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider border-b border-gray-200">
                                             <th class="py-3 px-4 font-black">Aluno</th>
-                                            <th class="py-3 px-4 font-black">Módulo Estudado</th>
-                                            <th class="py-3 px-4 font-black">Progresso do Curso</th>
-                                            <th class="py-3 px-4 font-black">Nota do Quiz</th>
-                                            <th class="py-3 px-4 font-black">Data Acesso</th>
+                                            <th class="py-3 px-4 font-black">Turma</th>
+                                            <th class="py-3 px-4 font-black">Matéria</th>
+                                            <th class="py-3 px-4 font-black">Módulo</th>
+                                            <th class="py-3 px-4 font-black">Progresso</th>
+                                            <th class="py-3 px-4 font-black">Quiz</th>
+                                            <th class="py-3 px-4 font-black">Data</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -925,127 +1686,149 @@
                     </div>
                 </div>
             `;
-        }
+        };
 
-        window.changeEditCategory = function(catId) { adminSelectedCategoryForEdit = catId; window.renderAdminEditor(); }
-        window.updateCategoryData = function(field, value) { const cat = appData.categories.find(c => c.id === adminSelectedCategoryForEdit); if (cat) cat[field] = value; if (field === 'name') window.renderAdminEditor(); }
-        window.updateChapter = function(catId, index, field, value) { const cat = appData.categories.find(c => c.id === catId); cat.chapters[index][field] = value; }
-        window.updateQuestion = function(globalIndex, field, value, optIndex = -1) { if (field === 'options') appData.questions[globalIndex].options[optIndex] = value; else if (field === 'correct') appData.questions[globalIndex].correct = parseInt(value); else appData.questions[globalIndex][field] = value; }
+        // CMS / EDITOR DO PROFESSOR
+        let adminEditingSubject = 'historia';
+        window.changeAdminEditingSubject = function(subjKey) {
+            adminEditingSubject = subjKey;
+            adminSelectedCategoryForEdit = null;
+            window.renderAdminEditor();
+        };
+
+        window.changeEditCategory = function(catId) { adminSelectedCategoryForEdit = catId; window.renderAdminEditor(); };
+        window.updateCategoryData = function(field, value) { const course = window.coursesDatabase[adminEditingSubject]; const cat = course?.categories.find(c => c.id === adminSelectedCategoryForEdit); if (cat) cat[field] = value; if (field === 'name') window.renderAdminEditor(); };
+        window.updateChapter = function(catId, index, field, value) { const course = window.coursesDatabase[adminEditingSubject]; const cat = course?.categories.find(c => c.id === catId); cat.chapters[index][field] = value; };
+        window.updateQuestion = function(globalIndex, field, value, optIndex = -1) { const course = window.coursesDatabase[adminEditingSubject]; if (field === 'options') course.questions[globalIndex].options[optIndex] = value; else if (field === 'correct') course.questions[globalIndex].correct = parseInt(value); else course.questions[globalIndex][field] = value; };
         
         window.addCategory = function() {
+            const course = window.coursesDatabase[adminEditingSubject];
             const newId = 'modulo_' + Date.now();
-            appData.categories.push({ id: newId, name: 'Novo Módulo EAD', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', description: 'Descrição do módulo...', chapters: [] });
+            course.categories.push({ id: newId, name: 'Novo Módulo', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', description: 'Descrição do módulo...', chapters: [] });
             adminSelectedCategoryForEdit = newId;
             window.renderAdminEditor();
-        }
+        };
 
         window.removeCategory = function() {
-            const index = appData.categories.findIndex(c => c.id === adminSelectedCategoryForEdit);
+            const course = window.coursesDatabase[adminEditingSubject];
+            const index = course.categories.findIndex(c => c.id === adminSelectedCategoryForEdit);
             if (index > -1) {
-                appData.categories.splice(index, 1);
-                appData.questions = appData.questions.filter(q => q.category !== adminSelectedCategoryForEdit);
-                adminSelectedCategoryForEdit = appData.categories.length > 0 ? appData.categories[0].id : null;
+                course.categories.splice(index, 1);
+                course.questions = course.questions.filter(q => q.category !== adminSelectedCategoryForEdit);
+                adminSelectedCategoryForEdit = course.categories.length > 0 ? course.categories[0].id : null;
                 window.renderAdminEditor();
             }
-        }
+        };
 
-        window.addChapter = function(catId) { const cat = appData.categories.find(c => c.id === catId); cat.chapters.push({ title: 'Novo Capítulo', content: 'Escreva a aula aqui...', imageUrl: '' }); window.renderAdminEditor(); }
-        window.removeChapter = function(catId, index) { const cat = appData.categories.find(c => c.id === catId); cat.chapters.splice(index, 1); window.renderAdminEditor(); }
-        window.addQuestion = function(catId) { appData.questions.push({ category: catId, text: 'Nova pergunta?', options: ['Opção A', 'Opção B', 'Opção C', 'Opção D'], correct: 0, explanation: 'Explicação.' }); window.renderAdminEditor(); }
-        window.removeQuestion = function(globalIndex) { appData.questions.splice(globalIndex, 1); window.renderAdminEditor(); }
+        window.addChapter = function(catId) { const course = window.coursesDatabase[adminEditingSubject]; const cat = course.categories.find(c => c.id === catId); cat.chapters.push({ title: 'Nova Aula', content: 'Escreva o texto pedagógico da aula aqui...', imageUrl: '' }); window.renderAdminEditor(); };
+        window.removeChapter = function(catId, index) { const course = window.coursesDatabase[adminEditingSubject]; const cat = course.categories.find(c => c.id === catId); cat.chapters.splice(index, 1); window.renderAdminEditor(); };
+        window.addQuestion = function(catId) { const course = window.coursesDatabase[adminEditingSubject]; course.questions.push({ category: catId, text: 'Nova pergunta do quiz?', options: ['Alternativa A', 'Alternativa B', 'Alternativa C', 'Alternativa D'], correct: 0, explanation: 'Explicação didática para o Você Sabia.' }); window.renderAdminEditor(); };
+        window.removeQuestion = function(globalIndex) { const course = window.coursesDatabase[adminEditingSubject]; course.questions.splice(globalIndex, 1); window.renderAdminEditor(); };
 
         window.restoreDefaultData = function() {
-            appData = JSON.parse(JSON.stringify(initialCourseData));
+            window.coursesDatabase = JSON.parse(JSON.stringify(initialCoursesDatabase));
             window.saveCourseDataCloud();
             window.renderAdminEditor();
-        }
+        };
 
         window.renderAdminEditor = function() {
-            if (!adminSelectedCategoryForEdit && appData.categories.length > 0) adminSelectedCategoryForEdit = appData.categories[0].id;
-            const category = appData.categories.find(c => c.id === adminSelectedCategoryForEdit);
+            const course = window.coursesDatabase[adminEditingSubject] || window.coursesDatabase.historia;
+            if (!adminSelectedCategoryForEdit && course.categories.length > 0) adminSelectedCategoryForEdit = course.categories[0].id;
+            const category = course.categories.find(c => c.id === adminSelectedCategoryForEdit);
             
-            const tabsHTML = appData.categories.map(c => `
-                <button onclick="window.changeEditCategory('${c.id}')" class="whitespace-nowrap px-4 py-3 font-bold rounded-t-xl border-b-4 ${adminSelectedCategoryForEdit === c.id ? 'border-indigo-600 text-indigo-700 bg-indigo-50' : 'border-transparent text-gray-500 hover:bg-gray-100 transition-colors'}">
+            const subjectTabsHTML = `
+                <div class="flex gap-2 mb-4 p-2 bg-indigo-50/60 rounded-2xl border border-indigo-100">
+                    <button onclick="window.changeAdminEditingSubject('historia')" class="px-4 py-2 rounded-xl text-xs font-black transition ${adminEditingSubject === 'historia' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-100'}">
+                        🇧🇷 História do Brasil
+                    </button>
+                    <button onclick="window.changeAdminEditingSubject('geografia')" class="px-4 py-2 rounded-xl text-xs font-black transition ${adminEditingSubject === 'geografia' ? 'bg-emerald-600 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-100'}">
+                        🌍 Geografia do Brasil
+                    </button>
+                </div>
+            `;
+
+            const moduleTabsHTML = course.categories.map(c => `
+                <button onclick="window.changeEditCategory('${c.id}')" class="whitespace-nowrap px-4 py-3 font-bold text-xs rounded-t-xl border-b-4 ${adminSelectedCategoryForEdit === c.id ? 'border-indigo-600 text-indigo-700 bg-indigo-50' : 'border-transparent text-gray-500 hover:bg-gray-100 transition-colors'}">
                     ${c.name}
                 </button>
             `).join('') + `
-                <button onclick="window.addCategory()" class="whitespace-nowrap px-4 py-3 font-bold rounded-t-xl border-b-4 border-transparent text-green-600 hover:bg-green-50 transition-colors flex items-center gap-1">
-                    <span class="text-lg">+</span> Módulo EAD
+                <button onclick="window.addCategory()" class="whitespace-nowrap px-4 py-3 font-bold text-xs rounded-t-xl border-b-4 border-transparent text-emerald-600 hover:bg-emerald-50 transition-colors flex items-center gap-1">
+                    <span class="text-sm font-black">+</span> Adicionar Módulo
                 </button>
             `;
 
             let editorContentHTML = '';
             if (category) {
                 editorContentHTML = `
-                    <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 mb-8 relative shadow-sm">
-                        <button onclick="window.customConfirm('Você irá apagar ESTE MÓDULO e suas perguntas!', 'window.removeCategory()')" class="absolute top-6 right-6 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg text-sm font-bold border border-transparent hover:border-red-200">
-                            🗑️ Apagar Módulo
+                    <div class="bg-indigo-50/70 p-6 rounded-2xl border border-indigo-100 mb-8 relative shadow-sm">
+                        <button onclick="window.customConfirm('Você irá apagar ESTE MÓDULO e todas as perguntas dele!', 'window.removeCategory()')" class="absolute top-6 right-6 text-rose-600 hover:bg-rose-100 px-3 py-1.5 rounded-lg text-xs font-bold border border-rose-200">
+                            🗑️ Excluir Módulo
                         </button>
-                        <h3 class="text-lg font-black text-indigo-900 mb-4">⚙️ Configuração Geral</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <h3 class="text-sm font-black text-indigo-900 uppercase tracking-wider mb-4">⚙️ Configurações do Módulo</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-indigo-500 uppercase mb-2">Nome</label>
-                                <input type="text" value="${category.name}" onchange="window.updateCategoryData('name', this.value)" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:border-indigo-600 focus:outline-none font-bold">
+                                <label class="block text-[11px] font-bold text-indigo-700 uppercase mb-1">Nome do Módulo</label>
+                                <input type="text" value="${category.name}" onchange="window.updateCategoryData('name', this.value)" class="w-full px-3 py-2 border rounded-xl focus:border-indigo-600 focus:outline-none font-bold text-sm bg-white">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-indigo-500 uppercase mb-2">Descrição Curta</label>
-                                <input type="text" value="${category.description}" onchange="window.updateCategoryData('description', this.value)" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:border-indigo-600 focus:outline-none text-gray-600">
+                                <label class="block text-[11px] font-bold text-indigo-700 uppercase mb-1">Descrição Curta</label>
+                                <input type="text" value="${category.description}" onchange="window.updateCategoryData('description', this.value)" class="w-full px-3 py-2 border rounded-xl focus:border-indigo-600 focus:outline-none text-xs bg-white">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Capítulos -->
-                    <div class="mb-10">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-black text-indigo-900">📖 Aulas do Módulo</h3>
-                            <button onclick="window.addChapter('${category.id}')" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-lg font-bold text-sm">+ Nova Aula</button>
+                    <!-- Aulas -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-base font-black text-gray-800">📖 Aulas (${category.chapters.length})</h3>
+                            <button onclick="window.addChapter('${category.id}')" class="bg-indigo-600 text-white hover:bg-indigo-700 px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm">+ Nova Aula</button>
                         </div>
-                        <div class="bg-gray-100 p-4 md:p-6 rounded-2xl border border-gray-200">
-                            ${category.chapters.length === 0 ? '<p class="text-gray-500 text-center">Nenhuma aula. Adicione uma.</p>' : category.chapters.map((chap, i) => `
-                                <div class="bg-white p-5 rounded-xl border border-gray-200 mb-4 shadow-sm relative">
-                                    <button onclick="window.customConfirm('Excluir aula ${i+1}?', 'window.removeChapter(\\'${category.id}\\', ${i})')" class="absolute top-4 right-4 text-red-500 hover:bg-red-50 p-2 rounded-lg">🗑️</button>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Título</label>
-                                    <input type="text" value="${chap.title}" onchange="window.updateChapter('${category.id}', ${i}, 'title', this.value)" class="w-full md:w-3/4 px-3 py-2 border rounded-lg focus:border-indigo-500 font-bold mb-4">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Link Imagem EAD</label>
-                                    <input type="text" value="${chap.imageUrl}" onchange="window.updateChapter('${category.id}', ${i}, 'imageUrl', this.value)" class="w-full px-3 py-2 border rounded-lg focus:border-indigo-500 text-sm mb-4">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Conteúdo da Aula</label>
-                                    <textarea onchange="window.updateChapter('${category.id}', ${i}, 'content', this.value)" class="w-full px-3 py-2 border rounded-lg focus:border-indigo-500" rows="3">${chap.content}</textarea>
+                        <div class="bg-gray-100 p-4 rounded-2xl border border-gray-200 space-y-3">
+                            ${category.chapters.length === 0 ? '<p class="text-gray-400 text-center py-4 text-xs font-bold">Nenhuma aula. Adicione uma nova acima.</p>' : category.chapters.map((chap, i) => `
+                                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative text-xs">
+                                    <button onclick="window.customConfirm('Excluir aula ${i+1}?', 'window.removeChapter(\\'${category.id}\\', ${i})')" class="absolute top-3 right-3 text-rose-500 hover:bg-rose-50 p-1.5 rounded-lg font-bold">🗑️</button>
+                                    <label class="block font-black text-gray-500 uppercase text-[10px] mb-1">Título da Aula</label>
+                                    <input type="text" value="${chap.title}" onchange="window.updateChapter('${category.id}', ${i}, 'title', this.value)" class="w-full md:w-3/4 px-3 py-1.5 border rounded-lg focus:border-indigo-500 font-bold mb-2">
+                                    <label class="block font-black text-gray-500 uppercase text-[10px] mb-1">Link da Imagem Ilustrativa (URL)</label>
+                                    <input type="text" value="${chap.imageUrl}" onchange="window.updateChapter('${category.id}', ${i}, 'imageUrl', this.value)" class="w-full px-3 py-1.5 border rounded-lg focus:border-indigo-500 text-xs mb-2">
+                                    <label class="block font-black text-gray-500 uppercase text-[10px] mb-1">Texto da Aula</label>
+                                    <textarea onchange="window.updateChapter('${category.id}', ${i}, 'content', this.value)" class="w-full px-3 py-1.5 border rounded-lg focus:border-indigo-500 text-xs leading-relaxed" rows="3">${chap.content}</textarea>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
 
-                    <!-- Perguntas -->
+                    <!-- Perguntas do Quiz -->
                     <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-black text-teal-900">🎮 Quiz do Módulo</h3>
-                            <button onclick="window.addQuestion('${category.id}')" class="bg-teal-100 text-teal-700 hover:bg-teal-200 px-4 py-2 rounded-lg font-bold text-sm">+ Pergunta</button>
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-base font-black text-gray-800">🎮 Perguntas do Quiz</h3>
+                            <button onclick="window.addQuestion('${category.id}')" class="bg-emerald-600 text-white hover:bg-emerald-700 px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm">+ Nova Pergunta</button>
                         </div>
-                        <div class="bg-gray-100 p-4 md:p-6 rounded-2xl border border-gray-200">
-                            ${appData.questions.filter(q => q.category === category.id).length === 0 ? '<p class="text-gray-500 text-center">Nenhuma pergunta para este módulo.</p>' : appData.questions.map((q, globalIndex) => {
+                        <div class="bg-gray-100 p-4 rounded-2xl border border-gray-200 space-y-3">
+                            ${course.questions.filter(q => q.category === category.id).length === 0 ? '<p class="text-gray-400 text-center py-4 text-xs font-bold">Nenhuma pergunta neste quiz.</p>' : course.questions.map((q, globalIndex) => {
                                 if (q.category !== category.id) return '';
                                 return `
-                                    <div class="bg-white p-5 rounded-xl border border-gray-200 mb-4 shadow-sm relative">
-                                        <button onclick="window.customConfirm('Excluir pergunta?', 'window.removeQuestion(${globalIndex})')" class="absolute top-4 right-4 text-red-500 hover:bg-red-50 p-2 rounded-lg">🗑️</button>
-                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pergunta</label>
-                                        <input type="text" value="${q.text}" onchange="window.updateQuestion(${globalIndex}, 'text', this.value)" class="w-full px-3 py-2 border rounded-lg font-bold mb-4">
-                                        <div class="grid md:grid-cols-2 gap-6">
+                                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative text-xs">
+                                        <button onclick="window.customConfirm('Excluir pergunta?', 'window.removeQuestion(${globalIndex})')" class="absolute top-3 right-3 text-rose-500 hover:bg-rose-50 p-1.5 rounded-lg font-bold">🗑️</button>
+                                        <label class="block font-black text-gray-500 uppercase text-[10px] mb-1">Enunciado da Pergunta</label>
+                                        <input type="text" value="${q.text}" onchange="window.updateQuestion(${globalIndex}, 'text', this.value)" class="w-full px-3 py-1.5 border rounded-lg font-bold mb-3">
+                                        <div class="grid md:grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Alternativas</label>
+                                                <label class="block font-black text-gray-500 uppercase text-[10px] mb-1.5">Alternativas</label>
                                                 ${q.options.map((opt, optIndex) => `
-                                                    <div class="flex items-center gap-2 mb-2">
-                                                        <span class="font-bold text-gray-400 w-6">${String.fromCharCode(65 + optIndex)})</span>
-                                                        <input type="text" value="${opt}" onchange="window.updateQuestion(${globalIndex}, 'options', this.value, ${optIndex})" class="flex-grow px-3 py-1 border rounded-lg text-sm">
+                                                    <div class="flex items-center gap-1.5 mb-1.5">
+                                                        <span class="font-black text-gray-400 w-5">${String.fromCharCode(65 + optIndex)})</span>
+                                                        <input type="text" value="${opt}" onchange="window.updateQuestion(${globalIndex}, 'options', this.value, ${optIndex})" class="flex-grow px-2 py-1 border rounded-lg text-xs">
                                                     </div>
                                                 `).join('')}
                                             </div>
                                             <div>
-                                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Alternativa Correta</label>
-                                                <select onchange="window.updateQuestion(${globalIndex}, 'correct', this.value)" class="w-full px-3 py-2 border rounded-lg bg-green-50 text-green-800 font-bold mb-4">
+                                                <label class="block font-black text-gray-500 uppercase text-[10px] mb-1">Alternativa Correta</label>
+                                                <select onchange="window.updateQuestion(${globalIndex}, 'correct', this.value)" class="w-full px-3 py-1.5 border rounded-lg bg-emerald-50 text-emerald-800 font-bold mb-2">
                                                     ${q.options.map((_, i) => `<option value="${i}" ${q.correct === i ? 'selected' : ''}>Opção ${String.fromCharCode(65 + i)}</option>`).join('')}
                                                 </select>
-                                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Explicação ao errar</label>
-                                                <textarea onchange="window.updateQuestion(${globalIndex}, 'explanation', this.value)" class="w-full px-3 py-2 border rounded-lg text-sm" rows="2">${q.explanation}</textarea>
+                                                <label class="block font-black text-gray-500 uppercase text-[10px] mb-1">Explicação Didática (Você Sabia?)</label>
+                                                <textarea onchange="window.updateQuestion(${globalIndex}, 'explanation', this.value)" class="w-full px-3 py-1.5 border rounded-lg text-xs" rows="2">${q.explanation}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -1054,30 +1837,29 @@
                         </div>
                     </div>
                 `;
-            } else {
-                editorContentHTML = `<div class="flex flex-col items-center justify-center h-64 text-gray-400"><span class="text-5xl mb-4">📭</span><p>Nenhum módulo. Crie um novo acima.</p></div>`;
             }
 
             mainContent.innerHTML = `
-                <div class="fade-in w-full max-w-6xl flex h-[80vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
-                    <div class="w-64 bg-gray-900 text-gray-300 flex flex-col shrink-0">
+                <div class="fade-in w-full max-w-6xl flex flex-col md:flex-row h-[85vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+                    <div class="w-full md:w-64 bg-gray-900 text-gray-300 flex flex-col shrink-0">
                         <div class="p-6 text-center border-b border-gray-800">
-                            <div class="text-4xl mb-2">👨‍🏫</div>
-                            <h2 class="font-black text-white tracking-wide">EAD Admin</h2>
+                            <div class="text-4xl mb-1">👨‍🏫</div>
+                            <h2 class="font-black text-white tracking-wide text-lg">EAD Central</h2>
+                            <p class="text-[11px] text-gray-400">Editor de Cursos</p>
                         </div>
                         <nav class="flex-grow p-4 space-y-2">
-                            <button onclick="window.changeState('ADMIN_DASHBOARD')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2 text-gray-300">
-                                📊 Relatórios Nuvem
+                            <button onclick="window.soundClick(); window.changeState('ADMIN_DASHBOARD')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2 text-gray-300 font-bold text-sm">
+                                📊 Boletim Geral
                             </button>
-                            <button onclick="window.changeState('ADMIN_EDITOR')" class="w-full text-left px-4 py-3 bg-gray-800 text-white rounded-xl font-bold flex items-center gap-2">
-                                📝 Editar Curso/Quiz
+                            <button onclick="window.soundClick(); window.changeState('ADMIN_EDITOR')" class="w-full text-left px-4 py-3 bg-gray-800 text-white rounded-xl font-bold flex items-center gap-2 text-sm">
+                                📝 Editor de Cursos
                             </button>
-                            <button onclick="window.openFirebaseConfigModal()" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-amber-400 rounded-xl transition flex items-center gap-2 text-gray-300 font-bold">
-                                🔥 Configurar Firebase
+                            <button onclick="window.soundClick(); window.openFirebaseConfigModal()" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-amber-400 rounded-xl transition flex items-center gap-2 text-gray-300 font-bold text-sm">
+                                🔥 Conexão Firebase
                             </button>
                         </nav>
-                        <div class="p-4 border-t border-gray-800">
-                            <button onclick="window.changeState('MENU')" class="w-full text-left px-4 py-3 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2">
+                        <div class="p-4 border-t border-gray-800 space-y-2">
+                            <button onclick="window.soundClick(); window.changeState('PORTAL_HUB')" class="w-full text-left px-4 py-2 hover:bg-gray-800 hover:text-white rounded-xl transition flex items-center gap-2 text-xs font-bold">
                                 🚪 Sair do Painel
                             </button>
                         </div>
@@ -1086,34 +1868,75 @@
                     <div class="flex-grow bg-gray-50 flex flex-col relative overflow-hidden">
                         <div class="p-6 border-b border-gray-200 bg-white flex justify-between items-center shrink-0 shadow-sm">
                             <div>
-                                <h2 class="text-3xl font-black text-gray-800">Editor de Conteúdo da Nuvem</h2>
-                                <p class="text-gray-500 text-sm">Atualizações serão enviadas direto para o banco de dados dos alunos.</p>
+                                <h2 class="text-2xl font-black text-gray-800">Editor de Conteúdo</h2>
+                                <p class="text-xs text-gray-500">Adicione ou edite aulas e perguntas em qualquer disciplina.</p>
                             </div>
-                            <div class="flex gap-2">
-                                <button onclick="window.customConfirm('Isso apagará suas edições na NUVEM e voltará ao padrão!', 'window.restoreDefaultData()')" class="px-4 py-2 text-red-500 hover:bg-red-50 border border-red-200 rounded-lg font-bold text-sm transition bg-white">
-                                    Restaurar Padrões
+                            <div class="flex items-center gap-2">
+                                <button onclick="window.soundClick(); window.customConfirm('Isso restaurará os textos originais de todos os cursos!', 'window.restoreDefaultData()')" class="px-3 py-2 text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl font-bold text-xs transition bg-white">
+                                    Restaurar Originais
                                 </button>
-                                <button onclick="window.saveCourseDataCloud()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 transition shadow-md hover:-translate-y-0.5 border border-indigo-700">
-                                    ☁️ Enviar para Nuvem
+                                <button onclick="window.soundClick(); window.saveCourseDataCloud()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-1.5 transition shadow text-xs">
+                                    ☁️ Salvar Cursos
                                 </button>
                             </div>
                         </div>
                         
-                        <div class="flex-grow overflow-auto p-4 md:p-8">
-                            <div class="flex border-b border-gray-200 mb-8 overflow-x-auto gap-1 pb-1 custom-scrollbar">
-                                ${tabsHTML}
+                        <div class="flex-grow overflow-auto p-4 md:p-6">
+                            ${subjectTabsHTML}
+                            <div class="flex border-b border-gray-200 mb-6 overflow-x-auto gap-1 pb-1 custom-scrollbar">
+                                ${moduleTabsHTML}
                             </div>
                             ${editorContentHTML}
                         </div>
                     </div>
                 </div>
             `;
-        }
+        };
+
+        window.openFirebaseConfigModal = function() {
+            const currentCfgStr = rawConfig ? JSON.stringify(rawConfig, null, 2) : '';
+            window.showModal(`
+                <div class="text-left">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">🔥</span>
+                        <h3 class="text-xl font-bold text-gray-800">Conexão com Firebase Firestore</h3>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3 leading-relaxed">Credenciais para sincronização online do Portal:</p>
+                    <textarea id="firebase-json-input" class="w-full h-44 p-3 border-2 border-indigo-100 rounded-xl font-mono text-xs focus:border-indigo-500 focus:outline-none bg-slate-900 text-emerald-400 mb-4" placeholder='{\n  "apiKey": "...",\n  "projectId": "..."\n}'>${currentCfgStr}</textarea>
+                    <div class="flex gap-2 justify-end">
+                        <button onclick="window.hideModal()" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg text-xs">Cancelar</button>
+                        <button onclick="window.saveFirebaseConfigFromModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold shadow-md text-xs">Salvar e Conectar</button>
+                    </div>
+                </div>
+            `);
+        };
+
+        window.saveFirebaseConfigFromModal = function() {
+            const txt = document.getElementById('firebase-json-input')?.value.trim();
+            try {
+                let parsed = null;
+                if (txt.startsWith('{')) parsed = JSON.parse(txt);
+                else {
+                    const match = txt.match(/\{[\s\S]*\}/);
+                    if (match) parsed = (new Function('return ' + match[0]))();
+                }
+                if (parsed && parsed.apiKey) {
+                    localStorage.setItem('expedicao_firebase_config', JSON.stringify(parsed));
+                    window.hideModal();
+                    window.customAlert("✅ Configuração do Firebase salva com sucesso!");
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    window.customAlert("JSON inválido ou campo 'apiKey' ausente.");
+                }
+            } catch (err) {
+                window.customAlert("Erro ao analisar JSON: " + err.message);
+            }
+        };
 
         window.changeState = function(newState) {
             currentState = newState;
             switch(currentState) {
-                case 'MENU': renderMenu(); break;
+                case 'PORTAL_HUB': renderPortalHub(); break;
                 case 'CATEGORY_SELECT': renderCategorySelect(); break;
                 case 'MODULE_VIEW': renderModuleView(); break;
                 case 'QUIZ': renderQuiz(); break;
@@ -1121,21 +1944,32 @@
                 case 'ADMIN_DASHBOARD': renderAdminDashboard(); break;
                 case 'ADMIN_EDITOR': renderAdminEditor(); break;
             }
-        }
+        };
 
+        // Atalho de Teclado: Alt + Shift + M
         document.addEventListener('keydown', function(event) {
             if (event.altKey && event.shiftKey && event.key.toLowerCase() === 'm') {
-                const adminBtn = document.getElementById('admin-login-btn');
-                if (adminBtn) {
-                    adminBtn.classList.toggle('hidden');
-                    mainContent.classList.remove('fade-in');
-                    void mainContent.offsetWidth;
-                    mainContent.classList.add('fade-in');
-                }
+                const adminBtn = document.getElementById('admin-badge-btn');
+                if (adminBtn) adminBtn.classList.toggle('hidden');
+                window.changeState('ADMIN_LOGIN');
             }
         });
 
-        // Inicia Conexão e Autenticação Firebase
+        // Inicialização
+        async function initAppEAD() {
+            loadLocalData();
+            if (app && auth) {
+                try {
+                    if (authToken) await signInWithCustomToken(auth, authToken);
+                    else await signInAnonymously(auth);
+                    if (auth.currentUser) await loadCloudData();
+                } catch (e) {
+                    console.error("Falha de autenticação EAD:", e);
+                }
+            }
+            window.changeState('PORTAL_HUB');
+        }
+
         initAppEAD();
     </script>
 </body>
