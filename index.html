@@ -1072,7 +1072,46 @@
             }
         };
 
+        let studentAuthTab = 'login'; // 'login' ou 'register'
+
+        window.setStudentAuthTab = function(tab) {
+            studentAuthTab = tab;
+            window.openStudentRegistrationModal();
+        };
+
+        window.selectExistingStudent = function(name) {
+            const studentObj = studentsProgress[name];
+            if (!studentObj) return;
+            const meta = studentObj._meta || {};
+            
+            currentUser = name;
+            currentUserTurma = meta.turma || 'Geral';
+            currentUserAvatar = meta.avatar || '🧭';
+            
+            try {
+                localStorage.setItem('expedicao_active_student_v5', JSON.stringify({ name: currentUser, turma: currentUserTurma, avatar: currentUserAvatar }));
+            } catch (_) {}
+
+            currentUserNameDisplay.innerText = currentUser;
+            currentUserTurmaDisplay.innerText = currentUserTurma;
+            currentUserAvatarDisplay.innerText = currentUserAvatar;
+            
+            userInfoDisplay.classList.remove('hidden');
+            userInfoDisplay.classList.add('flex');
+
+            window.hideModal();
+            window.soundCorrect();
+            window.changeState('CATEGORY_SELECT');
+        };
+
         window.openStudentRegistrationModal = function() {
+            const existingNames = Object.keys(studentsProgress).filter(k => k && k !== '_meta');
+            const hasExisting = existingNames.length > 0;
+            
+            if (!hasExisting && studentAuthTab === 'login') {
+                studentAuthTab = 'register';
+            }
+
             const subjectAvatars = AVATARS_BY_SUBJECT[currentSubjectId] || AVATARS_BY_SUBJECT.historia;
             const avatarOptionsHTML = subjectAvatars.map((av, idx) => `
                 <label class="flex flex-col items-center p-3 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 transition transform hover:scale-105">
@@ -1086,40 +1125,120 @@
             const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬' };
             const subIcon = iconMap[currentSubjectId] || '🧭';
 
-            window.showModal(`
-                <div class="text-left">
-                    <div class="flex items-center gap-3 mb-3">
-                        <span class="text-3xl">${subIcon}</span>
-                        <div>
-                            <h3 class="text-2xl font-black text-gray-800">Bem-vindo à Expedição!</h3>
-                            <p class="text-xs text-gray-500">Curso: <b>${appData.name}</b></p>
+            let existingStudentsCardsHTML = '';
+            if (hasExisting) {
+                existingStudentsCardsHTML = existingNames.map(name => {
+                    const st = studentsProgress[name] || {};
+                    const meta = st._meta || {};
+                    const avatar = meta.avatar || '🧭';
+                    const turma = meta.turma || 'Geral';
+
+                    // calcula módulos feitos pelo aluno
+                    let doneCount = 0;
+                    if (st[currentSubjectId]) {
+                        for (const catId of Object.keys(st[currentSubjectId])) {
+                            if (st[currentSubjectId][catId]?.quizScore !== null) doneCount++;
+                        }
+                    }
+
+                    return `
+                        <div onclick="window.selectExistingStudent('${name}')" class="p-3.5 bg-white border-2 border-indigo-100 hover:border-indigo-600 hover:bg-indigo-50/60 rounded-2xl cursor-pointer transition shadow-sm hover:shadow-md flex items-center justify-between group">
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl p-2 bg-indigo-50 rounded-xl group-hover:scale-110 transition-transform">${avatar}</span>
+                                <div class="text-left">
+                                    <h4 class="font-black text-sm text-gray-800 group-hover:text-indigo-700">${name}</h4>
+                                    <p class="text-[11px] text-gray-500 font-bold">${turma} &bull; <span class="text-emerald-600">${doneCount} quizzes feitos</span></p>
+                                </div>
+                            </div>
+                            <span class="text-indigo-600 font-black text-xs group-hover:translate-x-1 transition-transform">Entrar →</span>
                         </div>
-                    </div>
+                    `;
+                }).join('');
+            }
 
-                    <div class="mb-4">
-                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1.5">Seu Nome Completo:</label>
-                        <input type="text" id="student-name-input" class="w-full px-4 py-3 rounded-xl border-2 border-indigo-200 focus:border-indigo-600 focus:outline-none font-bold text-lg" placeholder="Ex: Gabriel Silva...">
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1.5">Sua Turma ou Escola (Opcional):</label>
-                        <input type="text" id="student-turma-input" class="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-indigo-600 focus:outline-none font-bold text-sm" placeholder="Ex: 5º Ano A / Colégio Pátria...">
-                    </div>
-
-                    <div class="mb-6">
-                        <label class="block text-xs font-bold text-gray-600 uppercase mb-2">Escolha seu Avatar:</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto custom-scrollbar p-1">
-                            ${avatarOptionsHTML}
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2 justify-end">
-                        <button onclick="window.hideModal()" class="px-4 py-2.5 text-gray-500 font-bold hover:bg-gray-100 rounded-xl text-sm">Cancelar</button>
-                        <button onclick="window.loginStudent()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-md text-sm">Começar Aulas! 🌟</button>
-                    </div>
+            const tabsHeaderHTML = `
+                <div class="flex p-1 bg-gray-100 rounded-2xl mb-5">
+                    <button onclick="window.setStudentAuthTab('login')" class="w-1/2 py-2.5 rounded-xl font-black text-xs transition ${studentAuthTab === 'login' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-800'}">
+                        👤 Já sou Aluno (Entrar)
+                    </button>
+                    <button onclick="window.setStudentAuthTab('register')" class="w-1/2 py-2.5 rounded-xl font-black text-xs transition ${studentAuthTab === 'register' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-800'}">
+                        ✨ Novo Aluno (Cadastrar)
+                    </button>
                 </div>
-            `);
-            setTimeout(() => document.getElementById('student-name-input')?.focus(), 150);
+            `;
+
+            if (studentAuthTab === 'login') {
+                window.showModal(`
+                    <div class="text-left">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-3xl">${subIcon}</span>
+                            <div>
+                                <h3 class="text-2xl font-black text-gray-800">Entrar na Expedição</h3>
+                                <p class="text-xs text-gray-500">Curso: <b>${appData.name}</b></p>
+                            </div>
+                        </div>
+
+                        ${tabsHeaderHTML}
+
+                        ${hasExisting ? `
+                            <p class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2.5">Selecione seu Perfil de Aluno:</p>
+                            <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-1 mb-4">
+                                ${existingStudentsCardsHTML}
+                            </div>
+                        ` : `
+                            <div class="text-center py-6 bg-gray-50 rounded-2xl border border-dashed border-gray-200 mb-4">
+                                <span class="text-3xl block mb-2">👋</span>
+                                <p class="text-xs text-gray-600 font-bold">Nenhum aluno cadastrado ainda.</p>
+                                <button onclick="window.setStudentAuthTab('register')" class="mt-2 text-xs font-black text-indigo-600 hover:underline">Cadastrar Primeiro Aluno →</button>
+                            </div>
+                        `}
+
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-100 mt-2">
+                            <button onclick="window.hideModal()" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-xl text-xs">Cancelar</button>
+                            <button onclick="window.setStudentAuthTab('register')" class="text-indigo-600 hover:text-indigo-800 font-black text-xs flex items-center gap-1">
+                                <span>+ Criar Novo Aluno</span>
+                            </button>
+                        </div>
+                    </div>
+                `);
+            } else {
+                window.showModal(`
+                    <div class="text-left">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-3xl">${subIcon}</span>
+                            <div>
+                                <h3 class="text-2xl font-black text-gray-800">Novo Cadastro</h3>
+                                <p class="text-xs text-gray-500">Curso: <b>${appData.name}</b></p>
+                            </div>
+                        </div>
+
+                        ${hasExisting ? tabsHeaderHTML : ''}
+
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1.5">Seu Nome Completo:</label>
+                            <input type="text" id="student-name-input" class="w-full px-4 py-3 rounded-xl border-2 border-indigo-200 focus:border-indigo-600 focus:outline-none font-bold text-lg" placeholder="Ex: Gabriel Silva...">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1.5">Sua Turma ou Escola (Opcional):</label>
+                            <input type="text" id="student-turma-input" class="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-indigo-600 focus:outline-none font-bold text-sm" placeholder="Ex: 5º Ano A / Colégio Pátria...">
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold text-gray-600 uppercase mb-2">Escolha seu Avatar:</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-44 overflow-y-auto custom-scrollbar p-1">
+                                ${avatarOptionsHTML}
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 justify-end">
+                            <button onclick="window.hideModal()" class="px-4 py-2.5 text-gray-500 font-bold hover:bg-gray-100 rounded-xl text-sm">Cancelar</button>
+                            <button onclick="window.loginStudent()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-md text-sm">Cadastrar e Começar! 🌟</button>
+                        </div>
+                    </div>
+                `);
+                setTimeout(() => document.getElementById('student-name-input')?.focus(), 150);
+            }
         };
 
         window.loginStudent = function() {
@@ -1136,6 +1255,16 @@
             currentUserTurma = turmaInput;
             currentUserAvatar = selectedAvatar;
 
+            // Se o aluno ainda não existir no registro, cria meta
+            if (!studentsProgress[currentUser]) {
+                studentsProgress[currentUser] = { _meta: { turma: currentUserTurma, avatar: currentUserAvatar, createdAt: new Date().toISOString() } };
+                saveLocalData();
+            }
+
+            try {
+                localStorage.setItem('expedicao_active_student_v5', JSON.stringify({ name: currentUser, turma: currentUserTurma, avatar: currentUserAvatar }));
+            } catch (_) {}
+
             currentUserNameDisplay.innerText = currentUser;
             currentUserTurmaDisplay.innerText = currentUserTurma;
             currentUserAvatarDisplay.innerText = currentUserAvatar;
@@ -1144,7 +1273,7 @@
             userInfoDisplay.classList.add('flex');
 
             window.hideModal();
-            window.soundClick();
+            window.soundCorrect();
             window.changeState('CATEGORY_SELECT');
         };
 
@@ -1292,6 +1421,7 @@
         window.logout = function() {
             if (isSpeaking) window.speechSynthesis.cancel();
             currentUser = null;
+            try { localStorage.removeItem('expedicao_active_student_v5'); } catch(_) {}
             userInfoDisplay.classList.add('hidden');
             userInfoDisplay.classList.remove('flex');
             window.changeState('PORTAL_HUB');
@@ -2197,6 +2327,25 @@
                     console.error("Falha de autenticação EAD:", e);
                 }
             }
+            
+            // Restaura último aluno logado se houver
+            try {
+                const savedActive = localStorage.getItem('expedicao_active_student_v5');
+                if (savedActive) {
+                    const parsed = JSON.parse(savedActive);
+                    if (parsed && parsed.name) {
+                        currentUser = parsed.name;
+                        currentUserTurma = parsed.turma || 'Geral';
+                        currentUserAvatar = parsed.avatar || '🧭';
+                        currentUserNameDisplay.innerText = currentUser;
+                        currentUserTurmaDisplay.innerText = currentUserTurma;
+                        currentUserAvatarDisplay.innerText = currentUserAvatar;
+                        userInfoDisplay.classList.remove('hidden');
+                        userInfoDisplay.classList.add('flex');
+                    }
+                }
+            } catch (_) {}
+
             window.changeState('PORTAL_HUB');
         }
 
