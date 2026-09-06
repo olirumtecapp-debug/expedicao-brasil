@@ -76,7 +76,7 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-100 py-3 text-center text-xs text-gray-400 font-bold">
-        Expedição Brasil &bull; Portal Educacional Cívico, Científico e Factual &bull; <span class="text-indigo-600">História, Geografia e Ciências da Pátria 🇧🇷</span>
+        Expedição Brasil &bull; Portal Educacional Cívico, Científico e Factual &bull; <span class="text-indigo-600">História, Geografia, Ciências e Português da Pátria 🇧🇷</span>
     </footer>
 
     <!-- Modal Container -->
@@ -255,10 +255,10 @@
                 id: 'portugues',
                 name: 'Português & Literatura',
                 icon: '📖',
-                tag: 'Em Breve',
+                tag: 'Novo & Ilustrado',
                 color: 'from-purple-600 to-pink-800',
-                desc: 'Gramática Divertida, Interpretação de Texto, Folclore e Grandes Escritores da Língua Portuguesa.',
-                active: false
+                desc: 'Gramática Divertida, Pontuação, Machado de Assis, Monteiro Lobato, Poesia e Folclore Nacional.',
+                active: true
             },
             {
                 id: 'matematica',
@@ -300,6 +300,14 @@
                 { id: 'zoologo', name: 'Zoólogo Mirim', emoji: '🐾', desc: 'Protetor dos Animais' },
                 { id: 'inventor', name: 'Inventor Criativo', emoji: '💡', desc: 'Criador de Invenções' },
                 { id: 'medico', name: 'Doutor Saúde', emoji: '🩺', desc: 'Guardião do Corpo' }
+            ],
+            portugues: [
+                { id: 'machado', name: 'Machado de Assis', emoji: '🎩', desc: 'Mestre da Literatura' },
+                { id: 'cecilia', name: 'Cecília Meireles', emoji: '📜', desc: 'Grande Poetisa' },
+                { id: 'lobato', name: 'Monteiro Lobato', emoji: '🌽', desc: 'Criador do Sítio' },
+                { id: 'escritor', name: 'Pequeno Escritor', emoji: '📖', desc: 'Amante dos Livros' },
+                { id: 'poeta', name: 'Poeta Mirim', emoji: '✍️', desc: 'Rimador Curioso' },
+                { id: 'curupira', name: 'Curupira Guardião', emoji: '🍃', desc: 'Amigo do Folclore' }
             ]
         };
 
@@ -752,6 +760,145 @@
                     { category: 'fisica_quimica', text: 'Como a ciência constrói o conhecimento verdadeiro sobre o mundo?', options: ['Por boatos e suposições', 'Pelo Método Científico: observação, hipóteses, experimentos e verificação', 'Por sorteios aleatórios', 'Ignorando a realidade'], correct: 1, explanation: 'O método científico baseia-se em evidências empíricas, testes e fatos verificáveis.' }
                 ]
             }
+        ,
+            portugues: {
+                name: 'Português & Literatura',
+                categories: [
+                    {
+                        id: 'gramatica_basica',
+                        name: 'A Fábrica das Palavras: Alfabeto e Classes Gramaticais 🔤',
+                        icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+                        description: 'As 26 letras, separação de sílabas, substantivos, adjetivos e verbos em ação.',
+                        sources: 'Academia Brasileira de Letras (ABL), Dicionário Caldas Aulete e Vocabulário Ortográfico da Língua Portuguesa (VOLP).',
+                        chapters: [
+                            {
+                                title: '1. As 26 Letras: Vogais e Consoantes 🔠',
+                                content: 'O alfabeto da Língua Portuguesa possui <b>26 letras</b>! Cinco delas são as <b>vogais mágicas</b> (A, E, I, O, U), que dão som e vida a todas as palavras. As outras 21 são as <b>consoantes</b>, que precisam se unir às vogais para formar sílabas sonoras e alegres.',
+                                imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. Sílabas e Separação Silábica 📖',
+                                content: 'Uma <b>sílaba</b> é cada pedacinho sonoro que emitimos de uma só vez ao falar uma palavra. As palavras podem ser: <b>Monossílabas</b> (1 sílaba: Sol, Pé), <b>Dissílabas</b> (2 sílabas: Ca-sa), <b>Trissílabas</b> (3 sílabas: Es-co-la) ou <b>Polissílabas</b> (4 ou mais sílabas: Bra-si-lei-ro)!',
+                                imageUrl: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Substantivos e Adjetivos: Nome e Cor ao Mundo 🎨',
+                                content: 'Os <b>Substantivos</b> são as palavras que dão nome a tudo o que existe: pessoas (Pedro), lugares (Brasil) e objetos (livro). Já os <b>Adjetivos</b> são palavras que dão qualidades e características aos substantivos: o Brasil é <b>gigante e belo</b>, o livro é <b>interessante</b>!',
+                                imageUrl: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. Verbos: As Palavras de Ação no Tempo 🏃',
+                                content: 'O <b>Verbo</b> indica ação, estado ou fenômeno da natureza. Ele viaja no tempo: <b>Passado</b> (eu estudei ontem), <b>Presente</b> (eu estudo agora) e <b>Futuro</b> (eu estudarei amanhã). É a palavra que movimenta nossas histórias!',
+                                imageUrl: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'pontuacao_ortografia',
+                        name: 'Pontuação Expressiva e Ortografia sem Segredos ✍️',
+                        icon: 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z',
+                        description: 'Ponto final, vírgula, interrogação, exclamação, acentos agudo e circunflexo e regras de ortografia.',
+                        sources: 'Acordo Ortográfico da Língua Portuguesa (CPLP) e Academia Brasileira de Letras (ABL).',
+                        chapters: [
+                            {
+                                title: '1. O Poder dos Sinais de Pontuação ❓',
+                                content: 'Os sinais de pontuação são a entonação da nossa voz escrita! O <b>Ponto Final (.)</b> encerra o pensamento; a <b>Vírgula (,)</b> dá uma pausa para respirar; o <b>Ponto de Interrogação (?)</b> faz uma pergunta curiosa; e o <b>Ponto de Exclamação (!)</b> expressa alegria, surpresa ou entusiasmo!',
+                                imageUrl: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. Acentos Agudo e Circunflexo: Som Aberto e Fechado 🎩',
+                                content: 'O <b>Acento Agudo (´)</b> deixa o som da vogal aberto e brilhante (como em <i>Pé, Vovó, Café</i>). O <b>Acento Circunflexo (^)</b>, conhecido como o "chapeuzinho", deixa o som fechado e aveludado (como em <i>Vovô, Lâmpada, Robô</i>).',
+                                imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. O Til (~) e o Som Nasal 🔔',
+                                content: 'O <b>Til (~)</b> não é um acento, mas sim um sinal de nasalização! Ele faz o ar vibrar pelo nariz ao pronunciar a vogal, criando sons ricos como em <i>Coração, Pão, Mãe, Maçã e Nação</i>.',
+                                imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. Regras Amigas: M antes de P e B, R/RR e S/SS 📝',
+                                content: 'Memorize esta regra de ouro: <b>Só usamos a letra M antes de P e B</b> (ex: <i>Campo, Samba, Tambor</i>); antes das outras consoantes, usamos <b>N</b> (ex: <i>Canto, Vento</i>). E no meio das palavras, o som forte de R e S ganha reforço duplo: <i>Carro e Pássaro</i>!',
+                                imageUrl: 'https://images.unsplash.com/photo-1471107340929-a87cd0f5b5f3?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'grandes_escritores',
+                        name: 'Mestres da Literatura e Poesia Brasileira 📚',
+                        icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+                        description: 'Machado de Assis, Monteiro Lobato, Cecília Meireles, Carlos Drummond de Andrade e os clássicos imortais.',
+                        sources: 'Fundação Biblioteca Nacional, Academia Brasileira de Letras (ABL) e Acervo de Domínio Público do MEC.',
+                        chapters: [
+                            {
+                                title: '1. Machado de Assis: O Maior Bruxo das Letras 🎩',
+                                content: 'Nascido no Morro do Livramento no Rio de Janeiro, <b>Joaquim Maria Machado de Assis</b> superou todas as dificuldades e tornou-se o maior escritor da língua portuguesa e o primeiro presidente da <b>Academia Brasileira de Letras (ABL)</b>, autor de obras-primas como <i>Dom Casmurro</i> e <i>Memórias Póstumas de Brás Cubas</i>.',
+                                imageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. Monteiro Lobato e a Magia do Sítio 🌽',
+                                content: '<b>Monteiro Lobato</b> revolucionou a literatura infantil brasileira criando o inesquecível <b>Sítio do Picapau Amarelo</b>. Personagens imortais como a boneca de pano <b>Emília</b>, o sábio sabugo de milho <b>Visconde de Sabugosa</b>, Pedrinho e Narizinho encantam gerações com lições de folclore e imaginação.',
+                                imageUrl: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Cecília Meireles e a Música das Poesias 📜',
+                                content: '<b>Cecília Meireles</b> foi uma das maiores poetisas e educadoras do Brasil. Com sensibilidade única, escreveu livros infantis célebres como <i>Ou Isto ou Aquilo</i>, ensinando crianças a amar o ritmo das rimas e a beleza das palavras cantadas.',
+                                imageUrl: 'https://images.unsplash.com/photo-1474932430478-367dbb6832c1?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. Carlos Drummond de Andrade e a Alma Nacional ✍️',
+                                content: 'Nascido em Itabira (MG), <b>Carlos Drummond de Andrade</b> soube como ninguém retratar em versos o cotidiano, a família, a pátria e os sentimentos humanos, deixando um legado poético venerado em todo o mundo.',
+                                imageUrl: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'folclore_redacao',
+                        name: 'Folclore, Sabedoria Popular e a Arte da Redação 🎭',
+                        icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+                        description: 'Lendas brasileiras, provérbios populares, interpretação de texto e estrutura de redação com começo, meio e fim.',
+                        sources: 'IPHAN (Instituto do Patrimônio Histórico e Artístico Nacional), Dicionário do Folclore Brasileiro de Luís da Câmara Cascudo e ABL.',
+                        chapters: [
+                            {
+                                title: '1. O Folclore Brasileiro: Lendas de Raiz 🌳',
+                                content: 'O folclore do Brasil une tradições indígenas, africanas e portuguesas: o <b>Curupira</b> com seus pés virados protege os animais dos caçadores; a <b>Iara</b> canta nos rios amazônicos; e o <b>Saci-Pererê</b> traz travessuras e ensinamentos populares.',
+                                imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. Provérbios e Ditados Populares 💡',
+                                content: 'Os <b>provérbios</b> são pequenas pílulas de sabedoria popular transmitidas de pais para filhos ao longo dos séculos: <i>"De grão em grão a galinha enche o papo"</i> (paciência gera resultados) ou <i>"Quem semeia o bem, colhe a paz"</i>!',
+                                imageUrl: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Como Interpretar um Texto com Sucesso 🔍',
+                                content: 'Para interpretar bem um texto: leia com calma a primeira vez; identifique quem são os personagens e o tema principal; descubra o que o autor quis nos ensinar; e releia os trechos mais importantes com atenção aos detalhes.',
+                                imageUrl: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. Como Escrever uma Excelente Redação 🖋️',
+                                content: 'Toda boa história precisa de 3 partes fundamentais: <b>Introdução (Começo)</b>: apresente quem, quando e onde acontece; <b>Desenvolvimento (Meio)</b>: mostre o desafio ou acontecimento empolgante; e <b>Conclusão (Fim)</b>: encerre com uma solução criativa e mensagem bonita!',
+                                imageUrl: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    }
+                ],
+                questions: [
+                    { category: 'gramatica_basica', text: 'Quantas letras compõem o alfabeto oficial da Língua Portuguesa?', options: ['20 letras', '26 letras (5 vogais e 21 consoantes)', '30 letras', '15 letras'], correct: 1, explanation: 'O alfabeto da Língua Portuguesa é composto por 26 letras.' },
+                    { category: 'gramatica_basica', text: 'Como é classificada uma palavra que possui exatamente 3 sílabas (ex: Es-co-la)?', options: ['Monossílaba', 'Dissílaba', 'Trissílaba', 'Polissílaba'], correct: 2, explanation: 'Palavras com 3 sílabas são chamadas de Trissílabas.' },
+                    { category: 'gramatica_basica', text: 'Qual é a função do ADJETIVO em uma frase?', options: ['Indicar ação de correr', 'Dar qualidade, característica ou estado ao substantivo', 'Encerrar um parágrafo', 'Fazer uma pergunta'], correct: 1, explanation: 'O adjetivo qualifica e dá características ao substantivo (ex: Brasil gigante e belo).' },
+
+                    { category: 'pontuacao_ortografia', text: 'Qual sinal de pontuação usamos no final de uma frase que faz uma PERGUNTA?', options: ['Ponto Final (.)', 'Ponto de Interrogação (?)', 'Dois Pontos (:)', 'Ponto de Exclamação (!)'], correct: 1, explanation: 'O ponto de interrogação (?) é o sinal oficial para perguntas e dúvidas.' },
+                    { category: 'pontuacao_ortografia', text: 'Antes de quais letras é OBRIGATÓRIO o uso da consoante M em vez de N?', options: ['Antes de T e D', 'Antes de P e B', 'Antes de F e V', 'Antes de S e Z'], correct: 1, explanation: 'A regra gramatical estabelece o uso de M somente antes de P e B (ex: Campo, Samba).' },
+                    { category: 'pontuacao_ortografia', text: 'Qual é o efeito sonoro do Acento Agudo (´) sobre a vogal?', options: ['Deixa o som mudo', 'Deixa o som aberto (como em Pé e Vovó)', 'Apaga a letra', 'Gera um som fechado'], correct: 1, explanation: 'O acento agudo indica que a pronúncia da vogal é aberta.' },
+
+                    { category: 'grandes_escritores', text: 'Quem foi o célebre escritor que fundou a Academia Brasileira de Letras e presidiu sua primeira diretoria?', options: ['Monteiro Lobato', 'Machado de Assis', 'Carlos Drummond', 'Pero Vaz de Caminha'], correct: 1, explanation: 'Machado de Assis foi o fundador e primeiro presidente perpétuo da Academia Brasileira de Letras.' },
+                    { category: 'grandes_escritores', text: 'Qual autor brasileiro criou os inesquecíveis personagens do Sítio do Picapau Amarelo?', options: ['Monteiro Lobato', 'Cecília Meireles', 'José de Alencar', 'Tiradentes'], correct: 0, explanation: 'Monteiro Lobato deu vida à boneca Emília, ao Visconde de Sabugosa e ao Sítio do Picapau Amarelo.' },
+                    { category: 'grandes_escritores', text: 'Qual poetisa brasileira escreveu a famosa obra infantil "Ou Isto ou Aquilo"?', options: ['Anita Garibaldi', 'Cecília Meireles', 'Princesa Isabel', 'Tarsila do Amaral'], correct: 1, explanation: 'Cecília Meireles encantou gerações com seus poemas e rimas infantis.' },
+
+                    { category: 'folclore_redacao', text: 'Quais são as três etapas fundamentais para a estrutura de uma boa redação?', options: ['Título, Letra e Caneta', 'Introdução (Começo), Desenvolvimento (Meio) e Conclusão (Fim)', 'Desenho, Rascunho e Borracha', 'Pergunta, Resposta e Dúvida'], correct: 1, explanation: 'Uma boa redação se estrutura com Introdução, Desenvolvimento e Conclusão harmoniosos.' },
+                    { category: 'folclore_redacao', text: 'No folclore brasileiro, qual guardião da floresta tem os pés virados para trás para despistar caçadores?', options: ['O Saci-Pererê', 'O Curupira', 'O Boto-Cor-de-Rosa', 'A Mula Sem Cabeça'], correct: 1, explanation: 'O Curupira é o protetor lendário da fauna e das matas com seus pés invertidos.' }
+                ]
+            }
+
         };
 
         // ==========================================
@@ -1122,7 +1269,7 @@
                 </label>
             `).join('');
 
-            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬' };
+            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬', portugues: '📖' };
             const subIcon = iconMap[currentSubjectId] || '🧭';
 
             let existingStudentsCardsHTML = '';
@@ -1704,7 +1851,7 @@
             }).join('');
 
             const averagePercentage = totalPossible > 0 ? Math.round((totalScores / totalPossible) * 100) : 0;
-            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬' };
+            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬', portugues: '📖' };
             const subIcon = iconMap[currentSubjectId] || '🧭';
 
             window.showModal(`
@@ -2103,6 +2250,9 @@
                     </button>
                     <button onclick="window.changeAdminEditingSubject('ciencias')" class="px-4 py-2 rounded-xl text-xs font-black transition ${adminEditingSubject === 'ciencias' ? 'bg-cyan-600 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-100'}">
                         🔬 Ciências da Natureza
+                    </button>
+                    <button onclick="window.changeAdminEditingSubject('portugues')" class="px-4 py-2 rounded-xl text-xs font-black transition ${adminEditingSubject === 'portugues' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-100'}">
+                        📖 Português & Literatura
                     </button>
                 </div>
             `;
