@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expedição Brasil - Portal Educacional Multi-Disciplinas</title>
+    <title>Expedição Brasil - Super Portal Educacional Ilustrado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="firebase-config.js"></script>
     <style>
@@ -38,7 +38,7 @@
                         <h1 class="text-xl md:text-2xl font-black tracking-wide leading-tight">Expedição Brasil</h1>
                         <span class="bg-emerald-500/30 text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-400/40">PORTAL EAD</span>
                     </div>
-                    <p class="text-xs text-indigo-200 font-bold hidden sm:block">Plataforma Gamificada de Ensino Fundamental</p>
+                    <p class="text-xs text-indigo-200 font-bold hidden sm:block">Plataforma Gamificada de Ensino Fundamental &bull; Factual & Ilustrada</p>
                 </div>
             </div>
             
@@ -69,14 +69,14 @@
     <main id="main-content" class="flex-grow flex items-center justify-center p-4 md:p-6 max-w-6xl mx-auto w-full relative">
         <div class="text-center fade-in">
             <div class="text-6xl animate-bounce mb-4">🧭</div>
-            <h2 class="text-2xl font-black text-indigo-700">Carregando o Portal Educacional...</h2>
+            <h2 class="text-2xl font-black text-indigo-700">Carregando o Portal Educacional Ilustrado...</h2>
             <p class="text-sm text-gray-500 mt-1">Conectando aos cursos e servidores da nuvem.</p>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-100 py-3 text-center text-xs text-gray-400 font-bold">
-        Expedição Brasil &bull; Portal Educacional Cívico e Gamificado &bull; <span class="text-indigo-600">História e Geografia da Nossa Pátria 🇧🇷</span>
+        Expedição Brasil &bull; Portal Educacional Cívico, Científico e Factual &bull; <span class="text-indigo-600">História, Geografia e Ciências da Pátria 🇧🇷</span>
     </footer>
 
     <!-- Modal Container -->
@@ -228,28 +228,28 @@
                 id: 'historia',
                 name: 'História do Brasil',
                 icon: '🇧🇷',
-                tag: 'Completo',
+                tag: 'Completo & Ilustrado',
                 color: 'from-amber-600 to-indigo-800',
-                desc: 'Descobrimento, Brasil Colônia, Império, Independência, República e Nossos Heróis.',
+                desc: 'Grandes Navegações, Batalha dos Guararapes, Império, Independência, José Bonifácio, Caxias e Barão do Rio Branco.',
                 active: true
             },
             {
                 id: 'geografia',
                 name: 'Geografia do Brasil',
                 icon: '🌍',
-                tag: 'Novo & Completo',
+                tag: 'Completo & Ilustrado',
                 color: 'from-emerald-600 to-teal-800',
-                desc: 'As 5 Regiões, os 6 Biomas, Rios Majestosos, Climas, Relevo e o Agronegócio.',
+                desc: 'As 5 Regiões, os 6 Biomas, Amazônia Azul, Aquíferos Alter do Chão e Guarani, Embrapa e o Agro Tecnológico.',
                 active: true
             },
             {
                 id: 'ciencias',
                 name: 'Ciências & Natureza',
                 icon: '🔬',
-                tag: 'Em Breve',
+                tag: 'Novo & Ilustrado',
                 color: 'from-cyan-600 to-blue-800',
-                desc: 'O Corpo Humano, Sistema Solar, Animais da Fauna Brasileira e Ecossistemas.',
-                active: false
+                desc: 'O Corpo Humano, Fotossíntese, Fauna Brasileira, Camadas da Terra, Ciclo da Água, Física e Grandes Inventores.',
+                active: true
             },
             {
                 id: 'portugues',
@@ -257,7 +257,7 @@
                 icon: '📖',
                 tag: 'Em Breve',
                 color: 'from-purple-600 to-pink-800',
-                desc: 'Gramática Divertida, Interpretação de Texto, Folclore e Grandes Escritores.',
+                desc: 'Gramática Divertida, Interpretação de Texto, Folclore e Grandes Escritores da Língua Portuguesa.',
                 active: false
             },
             {
@@ -275,11 +275,13 @@
         const AVATARS_BY_SUBJECT = {
             historia: [
                 { id: 'pedro2', name: 'Dom Pedro II', emoji: '👑', desc: 'Imperador Educador' },
+                { id: 'bonifacio', name: 'José Bonifácio', emoji: '🧪', desc: 'Patriarca da Independência' },
                 { id: 'isabel', name: 'Princesa Isabel', emoji: '📜', desc: 'A Redentora' },
-                { id: 'santos_dumont', name: 'Santos Dumont', emoji: '✈️', desc: 'Pai da Aviação' },
+                { id: 'caxias', name: 'Duque de Caxias', emoji: '🛡️', desc: 'Patrono do Exército' },
+                { id: 'riobranco', name: 'Barão do Rio Branco', emoji: '🖋️', desc: 'Diplomata da Paz' },
                 { id: 'maria_quiteria', name: 'Maria Quitéria', emoji: '⚔️', desc: 'Heroína da Pátria' },
+                { id: 'santos_dumont', name: 'Santos Dumont', emoji: '✈️', desc: 'Pai da Aviação' },
                 { id: 'tiradentes', name: 'Tiradentes', emoji: '🏛️', desc: 'Patrono Cívico' },
-                { id: 'tarsila', name: 'Tarsila do Amaral', emoji: '🎨', desc: 'Grande Pintora' },
                 { id: 'explorador', name: 'Jovem Explorador', emoji: '🧭', desc: 'Estudante Curioso' }
             ],
             geografia: [
@@ -287,13 +289,22 @@
                 { id: 'arara', name: 'Arara-Azul', emoji: '🦜', desc: 'Embaixadora das Florestas' },
                 { id: 'mico', name: 'Mico-Leão-Dourado', emoji: '🐒', desc: 'Símbolo da Mata Atlântica' },
                 { id: 'sertanejo', name: 'Explorador da Caatinga', emoji: '🌵', desc: 'O Sertanejo Resiliente' },
-                { id: 'agro', name: 'Pioneiro do Campo', emoji: '🌾', desc: 'O Gigante do Agro' },
+                { id: 'agro', name: 'Pioneiro do Agro', emoji: '🌾', desc: 'O Gigante do Campo' },
+                { id: 'marujo', name: 'Guardião da Amazônia Azul', emoji: '⚓', desc: 'Defensor dos Mares' },
                 { id: 'geografo', name: 'Geógrafo Mirim', emoji: '🗺️', desc: 'Mapeador do Brasil' }
+            ],
+            ciencias: [
+                { id: 'cientista', name: 'Pequeno Cientista', emoji: '🔬', desc: 'Investigador do Método' },
+                { id: 'astronomo', name: 'Astrônomo Mirim', emoji: '🔭', desc: 'Observador do Cosmos' },
+                { id: 'botanico', name: 'Botânico Explorador', emoji: '🌿', desc: 'Amigo das Plantas' },
+                { id: 'zoologo', name: 'Zoólogo Mirim', emoji: '🐾', desc: 'Protetor dos Animais' },
+                { id: 'inventor', name: 'Inventor Criativo', emoji: '💡', desc: 'Criador de Invenções' },
+                { id: 'medico', name: 'Doutor Saúde', emoji: '🩺', desc: 'Guardião do Corpo' }
             ]
         };
 
         // ==========================================
-        // 3. BANCO DE DADOS DOS CURSOS (HISTÓRIA E GEOGRAFIA)
+        // 3. BANCO DE DADOS DOS CURSOS COM IMAGENS REAIS
         // ==========================================
         const initialCoursesDatabase = {
             historia: {
@@ -301,143 +312,166 @@
                 categories: [
                     {
                         id: 'colonia',
-                        name: 'Brasil Colônia (1500 - 1808)',
+                        name: 'Brasil Colônia e as Raízes da Nação (1500 - 1808)',
                         icon: 'M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9',
-                        description: 'As caravelas, o encontro com os índios, a fé, os engenhos de açúcar, os bandeirantes e o ouro de Minas Gerais.',
+                        description: 'As caravelas de Cabral, a Batalha dos Guararapes, a união das três raças, os bandeirantes, o ciclo do ouro e Tiradentes.',
                         chapters: [
                             {
                                 title: '1. A Grande Epopeia das Caravelas e o Ano 1500 🚢',
-                                content: 'No ano de 1500, corajosos marinheiros portugueses liderados por <b>Pedro Álvares Cabral</b> atravessaram o Atlântico. No dia <b>22 de abril de 1500</b> avistaram o <b>Monte Pascoal</b> na Bahia. Ali encontraram os povos indígenas nativos. Dias depois, frei Henrique de Coimbra celebrou a <b>Primeira Missa</b>, selando o nascimento da nossa história sob a bênção da fé.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/A_descoberta_do_Brasil.jpg/800px-A_descoberta_do_Brasil.jpg'
+                                content: 'No ano de 1500, a esquadra portuguesa de <b>Pedro Álvares Cabral</b>, impulsionada pelas Grandes Navegações e sob a bênção da Cruz de Cristo, cruzou o Atlântico. Em <b>22 de abril de 1500</b> avistaram o <b>Monte Pascoal</b> na Bahia. Em 26 de abril, frei Henrique de Coimbra celebrou a <b>Primeira Missa</b>, selando o nascimento cristão da nossa nação.',
+                                imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '2. A Madeira que Deu Nome à Pátria e o Ouro Branco 🌳',
-                                content: 'Nas matas litorâneas encontraram a árvore de cor de brasa: o <b>Pau-Brasil</b>, que batizou nosso país! Em 1532 foi fundada São Vicente e surgiram os engenhos de cana-de-açúcar, tão valioso na Europa que era chamado de <b>Ouro Branco</b>.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Engenho_de_Itamarac%C3%A1_-_Frans_Post.jpg/800px-Engenho_de_Itamarac%C3%A1_-_Frans_Post.jpg'
+                                title: '2. O Pau-Brasil e os Engenhos de Açúcar 🌳',
+                                content: 'A madeira avermelhada <b>Pau-Brasil</b> fornecia tintura nobre para tecidos reais e batizou nossa terra. Em 1532, Martim Afonso de Sousa fundou a primeira vila em São Vicente e inaugurou os engenhos de cana-de-açúcar. O açúcar tornou-se tão precioso no comércio global que era chamado de <b>Ouro Branco</b>.',
+                                imageUrl: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '3. Os Bandeirantes: Desbravando o Gigante Continental 🧭',
-                                content: 'O Brasil é gigante graças à audácia dos <b>Bandeirantes</b>! Partindo de São Paulo, desbravaram florestas, cruzaram o Tratado de Tordesilhas e desenharam o mapa de dimensões continentais da nossa pátria.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Domingos_Jorge_Velho_e_o_locotenente_Ant%C3%B4nio_Fernandes_de_Abreu.jpg/800px-Domingos_Jorge_Velho_e_o_locotenente_Ant%C3%B4nio_Fernandes_de_Abreu.jpg'
+                                title: '3. A Batalha dos Guararapes: Gênese da Identidade Nacional (1648-1649) 🛡️',
+                                content: 'Quando invasores holandeses ocuparam Pernambuco, brasileiros de todas as origens uniram-se espontaneamente para defender sua terra e sua fé! O líder indígena <b>Filipe Camarão</b>, o líder negro <b>Henrique Dias</b> e o luso-brasileiro <b>João Fernandes Vieira</b> lutaram lado a lado nos Montes Guararapes. Essa vitória histórica marca a <b>gênese do Exército Brasileiro e o nascimento do sentimento de Pátria</b>!',
+                                imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '4. O Ciclo do Ouro e a Genialidade de Aleijadinho ✨',
-                                content: 'Em Minas Gerais brotaram ouro e diamantes. Cidades barrocas floriram como Ouro Preto. <b>Aleijadinho</b>, mestre escultor, esculpiu em pedra-sabão os Doze Profetas de Congonhas, orgulho da arte universal.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Lavagem_de_min%C3%A9rio_de_ouro_perto_da_montanha_Ita_Columi.jpg/800px-Lavagem_de_min%C3%A9rio_de_ouro_perto_da_montanha_Ita_Columi.jpg'
+                                title: '4. Os Bandeirantes: Desbravando as Fronteiras Continentais 🧭',
+                                content: 'Partindo da Capitania de São Paulo, audazes expedicionários chamados <b>Bandeirantes</b> (como Fernão Dias e Anhanguera) rasgaram matas inexploradas. Cruzaram a linha imaginária do Tratado de Tordesilhas e garantiram, no Tratado de Madri (1750), que o mapa do Brasil ganhasse suas dimensões continentais.',
+                                imageUrl: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '5. Tiradentes e a Chama da Liberdade 🏛️',
-                                content: 'Na Inconfidência Mineira de 1789, <b>Tiradentes</b> liderou o sonho de um Brasil livre sob o lema <i>"Libertas Quæ Sera Tamen"</i>. Seu sacrifício o consagrou como o <b>Patrono Cívico da Nação Brasileira</b>.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Pedro_Am%C3%A9rico_-_Tiradentes_esquartejado.jpg/800px-Pedro_Am%C3%A9rico_-_Tiradentes_esquartejado.jpg'
+                                title: '5. O Ciclo do Ouro e a Genialidade de Aleijadinho ✨',
+                                content: 'No século XVIII, rios de Minas Gerais revelaram ouro e diamantes. Cidades como Ouro Preto e Diamantina floresceram. <b>Antônio Francisco Lisboa, o Aleijadinho</b>, superou graves dores físicas e esculpiu em pedra-sabão e madeira obras-primas como os Doze Profetas de Congonhas, marco supremo do Barroco mundial.',
+                                imageUrl: 'https://images.unsplash.com/photo-1588714477688-cf28a50e94f7?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '6. Tiradentes e a Inconfidência Mineira (1789) 🏛️',
+                                content: 'Em 1789, em Vila Rica, intelectuais e patriotas sonharam com um Brasil livre dos impostos abusivos da Coroa. <b>Joaquim José da Silva Xavier, o Tiradentes</b>, assumiu a responsabilidade pelo ideal sob o lema <i>"Libertas Quæ Sera Tamen"</i>. Seu sacrifício o consagrou para sempre como o <b>Patrono Cívico da Nação Brasileira</b>.',
+                                imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1000&auto=format&fit=crop&q=80'
                             }
                         ]
                     },
                     {
                         id: 'imperio',
-                        name: 'Brasil Império (1808 - 1889)',
+                        name: 'Brasil Império: Soberania e Desenvolvimento (1808 - 1889)',
                         icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
-                        description: 'A vinda de D. João VI, a Independência com D. Pedro I, Maria Quitéria, a sabedoria de D. Pedro II e a Lei Áurea.',
+                        description: 'A vinda da Família Real, José Bonifácio, o Grito do Ipiranga, Maria Quitéria, Duque de Caxias, D. Pedro II e a Lei Áurea.',
                         chapters: [
                             {
-                                title: '1. A Família Real no Brasil e o Progresso (1808) 👑',
-                                content: 'Em 1808, <b>Dom João VI</b> transferiu a corte para o Rio de Janeiro. Abriu os portos ao comércio internacional e criou o Banco do Brasil, a Imprensa Régia, a Biblioteca Nacional e o Jardim Botânico.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Embarque_da_Fam%C3%ADlia_Real_Portuguesa_para_o_Brasil.jpg/800px-Embarque_da_Fam%C3%ADlia_Real_Portuguesa_para_o_Brasil.jpg'
+                                title: '1. A Família Real no Brasil e o Salto Civilizatório (1808) 👑',
+                                content: 'Em 1808, <b>Dom João VI</b> desembarcou no Rio de Janeiro e transformou o Brasil na sede do Império Português. Imediatamente decretou a <b>Abertura dos Portos</b> ao comércio do mundo, fundou o Banco do Brasil, a Real Imprensa, a Biblioteca Nacional, as primeiras faculdades de Medicina e o magnífico Jardim Botânico.',
+                                imageUrl: 'https://images.unsplash.com/photo-1548625361-19597c234907?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '2. "Independência ou Morte!": O Grito do Ipiranga (1822) ⚔️',
-                                content: 'Em <b>7 de Setembro de 1822</b>, junto a José Bonifácio e à imperatriz Leopoldina, o jovem <b>Dom Pedro I</b> ergueu a espada no Ipiranga e bradou: <b>"Independência ou Morte!"</b>, libertando a pátria.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Independ%C3%AAncia_ou_Morte_%28Pedro_Am%C3%A9rico%29.jpg/800px-Independ%C3%AAncia_ou_Morte_%28Pedro_Am%C3%A9rico%29.jpg'
+                                title: '2. José Bonifácio: O Patriarca da Independência 🧪',
+                                content: '<b>José Bonifácio de Andrada e Silva</b> foi um dos maiores sábios do mundo: mineralogista descobridor de minerais (como a petalita), poliglota e poeta. Como ministro de Dom Pedro I, foi o cérebro político e o articulador moral que uniu as províncias e planejou o nascimento do Estado brasileiro soberano.',
+                                imageUrl: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '3. Maria Quitéria e os Heróis da Pátria 🛡️',
-                                content: 'Na guerra da independência na Bahia, <b>Maria Quitéria</b> alistou-se e lutou com bravura inigualável, tornando-se a primeira mulher soldado do Brasil e Heroína da Pátria, junto ao futuro Duque de Caxias.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Maria_Quit%C3%A9ria_-_Domenico_Failutti.jpg/800px-Maria_Quit%C3%A9ria_-_Domenico_Failutti.jpg'
+                                title: '3. 7 de Setembro de 1822: "Independência ou Morte!" ⚔️',
+                                content: 'Apoiado por José Bonifácio e pela Princesa Leopoldina, o jovem príncipe regente <b>Dom Pedro I</b> ergueu sua espada às margens do riacho Ipiranga em São Paulo e bradou solenemente: <b>"Independência ou Morte!"</b>. O Brasil nascia como um império soberano e independente.',
+                                imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '4. Dom Pedro II: O Imperador Sábio e Educador 📖',
-                                content: '<b>Dom Pedro II</b> reinou por quase 50 anos com retidão, paz e amor à ciência e educação. Trouxe ferrovias, telégrafo e costumava dizer que se não fosse imperador, gostaria de ser professor.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/D._Pedro_II_aos_60_anos_de_idade.jpg/800px-D._Pedro_II_aos_60_anos_de_idade.jpg'
+                                title: '4. Maria Quitéria e os Bravos da Independência 🛡️',
+                                content: 'A consolidação da independência exigiu lutas corajosas na Bahia. <b>Maria Quitéria de Jesus</b> vestiu farda e lutou com destemor inigualável, tornando-se a primeira mulher no exército e condecorada com a Ordem Imperial do Cruzeiro por Dom Pedro I.',
+                                imageUrl: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32f?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '5. A Princesa Isabel e a Lei Áurea (1888) 📜',
-                                content: 'Em <b>13 de maio de 1888</b>, apoiada por José do Patrocínio e André Rebouças, a <b>Princesa Isabel</b> assinou a <b>Lei Áurea</b> com caneta de ouro, extinguindo para sempre a escravidão no Brasil.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Assinatura_da_Lei_%C3%81urea.jpg/800px-Assinatura_da_Lei_%C3%81urea.jpg'
+                                title: '5. Duque de Caxias: O Pacificador e Patrono do Exército 🗡️',
+                                content: '<b>Luís Alves de Lima e Silva, o Duque de Caxias</b>, dedicou toda a vida à defesa da soberania e da integridade territorial do Brasil. Pacificou revoltas regionais com clemência e comandou as forças aliadas com disciplina impecável, garantindo a paz e as fronteiras do país.',
+                                imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '6. Dom Pedro II: O Imperador Sábio e Educador 📖',
+                                content: '<b>Dom Pedro II</b> governou o Brasil por quase meio século (1840-1889) com humildade, tolerância e honestidade exemplar. Amigo dos maiores cientistas do mundo (como Graham Bell e Louis Pasteur), trouxe ferrovias, telégrafo submarino e afirmava: <i>"Se não fosse imperador, desejaria ser professor."</i>',
+                                imageUrl: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '7. A Princesa Isabel e a Lei Áurea (1888) 📜',
+                                content: 'Em <b>13 de maio de 1888</b>, sob aplausos calorosos de abolicionistas como André Rebouças e José do Patrocínio, a regente <b>Princesa Isabel</b> assinou a <b>Lei Áurea</b> com uma caneta de ouro cravejada de pedras preciosas, declarando extinta para todo o sempre a escravidão no território brasileiro.',
+                                imageUrl: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1000&auto=format&fit=crop&q=80'
                             }
                         ]
                     },
                     {
                         id: 'republica',
-                        name: 'Brasil República (1889 - 1960)',
+                        name: 'Brasil República e a Construção do Futuro (1889 - 1960)',
                         icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
-                        description: 'Proclamação da República, símbolos cívicos, os imigrantes, Santos Dumont, Arte de 1922 e a construção de Brasília.',
+                        description: 'A Proclamação da República, o Barão do Rio Branco, os imigrantes, o 14-Bis de Santos Dumont, a Semana de 22 e Brasília.',
                         chapters: [
                             {
-                                title: '1. A Proclamação e os Símbolos da Pátria 🌟',
-                                content: 'Em <b>15 de novembro de 1889</b>, o <b>Marechal Deodoro da Fonseca</b> proclamou a República. Nasceu a linda Bandeira Nacional com o lema <b>"Ordem e Progresso"</b> e as estrelas que representam nossos estados.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Proclama%C3%A7%C3%A3o_da_Rep%C3%BAblica_%28Benedito_Calixto%29.jpg/800px-Proclama%C3%A7%C3%A3o_da_Rep%C3%BAblica_%28Benedito_Calixto%29.jpg'
+                                title: '1. A Proclamação da República e os Símbolos Nacionais 🌟',
+                                content: 'Em <b>15 de novembro de 1889</b>, o <b>Marechal Deodoro da Fonseca</b> liderou a proclamação da República. Nasceu a bandeira verde, amarela, azul e branca com o lema <b>"Ordem e Progresso"</b> e a constelação do Cruzeiro do Sul refletindo o céu do Rio de Janeiro.',
+                                imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '2. O Ciclo do Café e os Imigrantes ☕',
-                                content: 'O café impulsionou ferrovias e cidades. Milhares de famílias de valorosos imigrantes italianos, alemães, japoneses, portugueses e libaneses vieram trabalhar e enriquecer a cultura brasileira.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Colheita_de_caf%C3%A9_-_Marc_Ferrez.jpg/800px-Colheita_de_caf%C3%A9_-_Marc_Ferrez.jpg'
+                                title: '2. Barão do Rio Branco: O Mestre da Diplomacia e Fronteiras 🖋️',
+                                content: '<b>José Maria da Silva Paranhos Júnior, o Barão do Rio Branco</b>, foi ministro das Relações Exteriores e, com profundo conhecimento geográfico e documentos históricos irrefutáveis, incorporou e garantiu mais de <b>900.000 km²</b> ao território brasileiro (incluindo o Acre) através de tratados pacíficos e arbitragens internacionais.',
+                                imageUrl: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '3. Santos Dumont: O Pai da Aviação ✈️',
-                                content: 'Em <b>23 de outubro de 1906</b> em Paris, o brasileiro <b>Alberto Santos Dumont</b> voou com o <b>14-Bis</b> com propulsão própria diante de juízes e da multidão, enchendo o Brasil de orgulho!',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/14-bis_flight_in_Paris.jpg/800px-14-bis_flight_in_Paris.jpg'
+                                title: '3. A Força do Trabalho: Imigrantes e o Ciclo do Café ☕',
+                                content: 'Nas últimas décadas do século XIX e início do século XX, milhões de famílias valorosas de italianos, alemães, japoneses, portugueses, espanhóis e libaneses chegaram ao Brasil. Trabalharam com afinco nas lavouras de café e nas indústrias, enriquecendo o mosaico genético e cultural da nossa gente.',
+                                imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '4. A Semana de Arte Moderna de 1922 🎨',
-                                content: 'No Teatro Municipal de SP, <b>Tarsila do Amaral</b>, Villa-Lobos e grandes autores revolucionaram a arte, incentivando os brasileiros a valorizarem com orgulho as nossas raízes e tradições.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Teatro_Municipal_de_S%C3%A3o_Paulo_-_1920.jpg/800px-Teatro_Municipal_de_S%C3%A3o_Paulo_-_1920.jpg'
+                                title: '4. Santos Dumont: O Pai da Aviação e o Voo do 14-Bis ✈️',
+                                content: 'Em <b>23 de outubro de 1906</b>, no Campo de Bagatelle em Paris, o brasileiro <b>Alberto Santos Dumont</b> realizou o primeiro voo homologado da história com um aparelho mais pesado que o ar: o <b>14-Bis</b>. Ele decolou com propulsão própria, sem catapultas ou rampas, assombrando o mundo e enchendo o Brasil de honra.',
+                                imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '5. A Construção de Brasília: A Capital do Brasil 🏛️',
-                                content: 'Nos anos 50, o presidente <b>Juscelino Kubitschek</b> e os pioneiros <b>Candangos</b> ergueram em tempo recorde no Planalto Central a capital em formato de avião, inaugurada em <b>21 de abril de 1960</b>.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Brasilia_construction.jpg/800px-Brasilia_construction.jpg'
+                                title: '5. A Semana de Arte Moderna de 1922 e a Alma Brasileira 🎨',
+                                content: 'No Teatro Municipal de São Paulo, artistas e poetas como <b>Tarsila do Amaral</b>, Heitor Villa-Lobos e Mário de Andrade renovaram a arte nacional, convidando o país a celebrar suas cores tropicais, suas lendas e suas raízes nativas com orgulho.',
+                                imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '6. A Epopeia dos Candangos e a Construção de Brasília (1960) 🏛️',
+                                content: 'O presidente <b>Juscelino Kubitschek (JK)</b> interiorizou o desenvolvimento do país erguendo a capital federal no coração do Planalto Central. Projetada por Oscar Niemeyer e Lúcio Costa em formato de avião, <b>Brasília</b> foi construída em menos de 4 anos pelo suor heroico dos trabalhadores pioneiros, os <b>Candangos</b>.',
+                                imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&auto=format&fit=crop&q=80'
                             }
                         ]
                     },
                     {
-                        id: 'ciencia_herois',
-                        name: 'Grandes Brasileiros e Ciência 🌿',
+                        id: 'moderno',
+                        name: 'Grandes Brasileiros, Ciência e Soberania 🔬',
                         icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
-                        description: 'Oswaldo Cruz, Vital Brazil e as riquezas naturais abençoadas da nossa pátria.',
+                        description: 'A Fiocruz de Oswaldo Cruz, o Instituto Butantan de Vital Brazil, os Pracinhas da FEB e a Embraer.',
                         chapters: [
                             {
-                                title: '1. Oswaldo Cruz, Vital Brazil e a Saúde Pública 🧪',
-                                content: '<b>Oswaldo Cruz</b> venceu epidemias e fundou a Fiocruz. O Dr. <b>Vital Brazil</b> descobriu os soros antiofídicos no Instituto Butantan, salvando incontáveis vidas humanas.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Oswaldo_Cruz.jpg/800px-Oswaldo_Cruz.jpg'
+                                title: '1. Oswaldo Cruz, Vital Brazil e a Medicina Tropical 🧪',
+                                content: 'O sanitarista <b>Oswaldo Cruz</b> erradicou a febre amarela e fundou a Fiocruz. O médico <b>Vital Brazil</b> descobriu a especificidade dos venenos ofídicos e criou no Instituto Butantan os primeiros soros que salvam milhares de picadas de serpentes no mundo até hoje.',
+                                imageUrl: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '2. A Majestade da Amazônia e Biomas Brasileiros 🦜',
-                                content: 'O Brasil detém a maior bacia hidrográfica e biodiversidade do mundo, com terras férteis que alimentam o planeta com o trabalho do nosso povo.',
-                                imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Amazon_River_%28aerial_view%29.jpg/800px-Amazon_River_%28aerial_view%29.jpg'
+                                title: '2. A Força Expedicionária Brasileira (FEB) na 2ª Guerra Mundial 🪖',
+                                content: 'Em 1944, mais de 25.000 valorosos soldados brasileiros, conhecidos como <b>Pracinhas</b>, cruzaram o oceano para combater o nazifascismo na Itália. Sob o lema <i>"A Cobra Vai Fumar"</i>, conquistaram vitórias lendárias nas montanhas de <b>Monte Castelo e Montese</b>, conquistando o respeito militar internacional.',
+                                imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. A Indústria Aeroespacial: Embraer e Soberania Tecnológica 🚀',
+                                content: 'Com a criação do ITA (Instituto Tecnológico de Aeronáutica) pelo pioneiro Casimiro Montenegro Filho e a fundação da <b>Embraer</b> por Ozires Silva em 1969, o Brasil tornou-se a 3ª maior fabricante mundial de aviões comerciais e de defesa (como o Tucano e o cargueiro KC-390).',
+                                imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1000&auto=format&fit=crop&q=80'
                             }
                         ]
                     }
                 ],
                 questions: [
                     { category: 'colonia', text: 'Em que dia e ano Pedro Álvares Cabral chegou ao Brasil?', options: ['7 de Setembro de 1822', '22 de Abril de 1500', '15 de Novembro de 1889', '13 de Maio de 1888'], correct: 1, explanation: 'As caravelas avistaram o Monte Pascoal no dia 22 de abril de 1500.' },
-                    { category: 'colonia', text: 'Qual árvore nativa deu origem ao nome do nosso país?', options: ['Ipê Amarelo', 'Seringueira', 'Pau-Brasil', 'Castanheira'], correct: 2, explanation: 'O Pau-Brasil produzia uma tinta cor de brasa (brasil) muito valorizada.' },
-                    { category: 'colonia', text: 'Como ficou conhecido o açúcar no período colonial?', options: ['Ouro Branco', 'Cristal Doce', 'Sal da Terra', 'Diamante Tropical'], correct: 0, explanation: 'O açúcar era uma iguaria rara e nobre na Europa, chamado de Ouro Branco.' },
-                    { category: 'colonia', text: 'Quem expandiu as fronteiras além do Tratado de Tordesilhas?', options: ['Piratas', 'Bandeirantes', 'Vikings', 'Centuriões'], correct: 1, explanation: 'Os Bandeirantes desbravaram o interior e ampliaram as fronteiras do Brasil.' },
-                    { category: 'colonia', text: 'Quem é o Patrono Cívico do Brasil pela Inconfidência Mineira?', options: ['Dom Pedro I', 'Tiradentes', 'Aleijadinho', 'José Bonifácio'], correct: 1, explanation: 'Joaquim José da Silva Xavier, o Tiradentes, deu a vida pela liberdade.' },
+                    { category: 'colonia', text: 'Qual batalha histórica simboliza o nascimento do Exército Brasileiro pela união de brancos, índios e negros?', options: ['Batalha de Waterloo', 'Batalha dos Guararapes (1648-1649)', 'Guerra de Troia', 'Batalha do Riachuelo'], correct: 1, explanation: 'A Batalha dos Guararapes em Pernambuco uniu Filipe Camarão, Henrique Dias e Fernandes Vieira na expulsão dos invasores holandeses.' },
+                    { category: 'colonia', text: 'Quem expandiu as fronteiras brasileiras para além do Tratado de Tordesilhas?', options: ['Piratas caribenhos', 'Bandeirantes paulistas', 'Vikings', 'Soldados romanos'], correct: 1, explanation: 'Os Bandeirantes desbravaram o sertão e desenharam o mapa continental do Brasil.' },
+                    { category: 'colonia', text: 'Quem é o Patrono Cívico da Nação Brasileira pela Inconfidência Mineira?', options: ['Dom Pedro I', 'Tiradentes (Joaquim José da Silva Xavier)', 'Aleijadinho', 'José Bonifácio'], correct: 1, explanation: 'Tiradentes deu a vida pelo ideal de liberdade e soberania da pátria.' },
                     
-                    { category: 'imperio', text: 'O que Dom João VI fez logo após chegar ao Brasil em 1808?', options: ['Proclamou a República', 'Abriu os portos às nações amigas e criou o Banco do Brasil', 'Assinou a Lei Áurea', 'Construiu Brasília'], correct: 1, explanation: 'D. João VI abriu os portos e criou o Banco do Brasil, a Imprensa e o Jardim Botânico.' },
-                    { category: 'imperio', text: 'Onde e em que data D. Pedro I proclamou a Independência?', options: ['Em Ouro Preto em 1500', 'Às margens do Ipiranga, em 7 de Setembro de 1822', 'No Rio de Janeiro em 1889', 'Em Salvador em 1808'], correct: 1, explanation: 'No dia 7 de Setembro de 1822, com o Grito do Ipiranga: Independência ou Morte!' },
-                    { category: 'imperio', text: 'Quem foi a primeira mulher soldado a combater pela Independência na Bahia?', options: ['Anita Garibaldi', 'Princesa Isabel', 'Maria Quitéria de Jesus', 'Chiquinha Gonzaga'], correct: 2, explanation: 'Maria Quitéria combateu com heroísmo e foi condecorada por Dom Pedro I.' },
-                    { category: 'imperio', text: 'Qual imperador governou o Brasil por quase 50 anos com amor à educação e ciência?', options: ['Dom João VI', 'Dom Pedro I', 'Dom Pedro II', 'Deodoro da Fonseca'], correct: 2, explanation: 'Dom Pedro II governou de 1840 a 1889, sendo admirado em todo o mundo.' },
-                    { category: 'imperio', text: 'Qual lei aboliu a escravidão no Brasil em 13 de Maio de 1888?', options: ['Lei do Ventre Livre', 'Lei Áurea', 'Lei dos Sexagenários', 'Lei de Terras'], correct: 1, explanation: 'A Lei Áurea foi assinada pela Princesa Isabel, a Redentora.' },
+                    { category: 'imperio', text: 'Quem é internacionalmente reconhecido como o "Patriarca da Independência"?', options: ['Duque de Caxias', 'José Bonifácio de Andrada e Silva', 'Tiradentes', 'Deodoro da Fonseca'], correct: 1, explanation: 'José Bonifácio foi cientista, mineralogista e o articulador moral da Independência do Brasil.' },
+                    { category: 'imperio', text: 'Onde e em que data D. Pedro I proclamou a Independência do Brasil?', options: ['Em Ouro Preto em 1500', 'Às margens do riacho Ipiranga, em 7 de Setembro de 1822', 'No Rio de Janeiro em 1889', 'Em Salvador em 1808'], correct: 1, explanation: 'No dia 7 de Setembro de 1822, com o Grito do Ipiranga: Independência ou Morte!' },
+                    { category: 'imperio', text: 'Quem foi a combatente baiana condecorada por D. Pedro I como primeira mulher soldado do Brasil?', options: ['Anita Garibaldi', 'Princesa Isabel', 'Maria Quitéria de Jesus', 'Chiquinha Gonzaga'], correct: 2, explanation: 'Maria Quitéria lutou bravamente nas lutas da independência na Bahia.' },
+                    { category: 'imperio', text: 'Qual grande militar é conhecido como o Pacificador e Patrono do Exército Brasileiro?', options: ['Marechal Deodoro', 'Duque de Caxias (Luís Alves de Lima e Silva)', 'Barão de Mauá', 'Tiradentes'], correct: 1, explanation: 'Duque de Caxias pacificou revoltas e garantiu a unidade territorial do Brasil.' },
+                    { category: 'imperio', text: 'Qual lei aboliu para sempre a escravidão no Brasil em 13 de Maio de 1888?', options: ['Lei do Ventre Livre', 'Lei Áurea', 'Lei dos Sexagenários', 'Lei de Terras'], correct: 1, explanation: 'A Lei Áurea foi assinada pela Princesa Isabel, a Redentora.' },
 
-                    { category: 'republica', text: 'Quem proclamou a República no Brasil em 15 de Novembro de 1889?', options: ['Duque de Caxias', 'Marechal Deodoro da Fonseca', 'Floriano Peixoto', 'Santos Dumont'], correct: 1, explanation: 'Deodoro da Fonseca proclamou a República e liderou o novo governo.' },
-                    { category: 'republica', text: 'Qual é o lema na faixa branca da Bandeira Nacional do Brasil?', options: ['Liberdade e Fraternidade', 'Ordem e Progresso', 'Paz e Prosperidade', 'União e Força'], correct: 1, explanation: 'O lema oficial da Bandeira Nacional é Ordem e Progresso.' },
-                    { category: 'republica', text: 'Qual avião consagrou Santos Dumont como o Pai da Aviação em 1906?', options: ['Boeing 707', '14-Bis', 'Concorde', 'Demoiselle Express'], correct: 1, explanation: 'O 14-Bis decolou com motor próprio no Campo de Bagatelle em 1906.' },
-                    { category: 'republica', text: 'Em que cidade e ano ocorreu a célebre Semana de Arte Moderna?', options: ['Rio de Janeiro em 1950', 'Salvador em 1822', 'São Paulo em 1922', 'Brasília em 1960'], correct: 2, explanation: 'A Semana de 22 ocorreu no Teatro Municipal de São Paulo.' },
-                    { category: 'republica', text: 'Qual presidente construiu a capital planejada de Brasília?', options: ['Getúlio Vargas', 'Juscelino Kubitschek (JK)', 'Dom Pedro II', 'Eurico Dutra'], correct: 1, explanation: 'Juscelino Kubitschek inaugurou Brasília em 21 de abril de 1960.' },
+                    { category: 'republica', text: 'Quem proclamou a República no Brasil em 15 de Novembro de 1889?', options: ['Duque de Caxias', 'Marechal Deodoro da Fonseca', 'Floriano Peixoto', 'Santos Dumont'], correct: 1, explanation: 'Deodoro da Fonseca proclamou a República e instituiu a nova bandeira nacional.' },
+                    { category: 'republica', text: 'Qual diplomata brasileiro incorporou mais de 900.000 km² ao mapa do Brasil de forma 100% pacífica?', options: ['Barão do Rio Branco', 'Visconde de Mauá', 'Juscelino Kubitschek', 'Rui Barbosa'], correct: 0, explanation: 'O Barão do Rio Branco resolveu disputas de fronteiras através de erudição e diplomacia impecável.' },
+                    { category: 'republica', text: 'Qual avião histórico decolou com motor próprio em Paris em 1906 pelas mãos de Santos Dumont?', options: ['Boeing 707', '14-Bis', 'Concorde', 'Demoiselle Express'], correct: 1, explanation: 'O 14-Bis consagrou Alberto Santos Dumont mundialmente como o Pai da Aviação.' },
+                    { category: 'republica', text: 'Qual presidente construiu a capital planejada de Brasília junto aos Candangos?', options: ['Getúlio Vargas', 'Juscelino Kubitschek (JK)', 'Dom Pedro II', 'Eurico Dutra'], correct: 1, explanation: 'Juscelino Kubitschek inaugurou Brasília em 21 de abril de 1960.' },
 
-                    { category: 'ciencia_herois', text: 'Qual médico brasileiro fundou o Butantan e criou os soros antiofídicos?', options: ['Vital Brazil', 'Oswaldo Cruz', 'Carlos Chagas', 'Santos Dumont'], correct: 0, explanation: 'Dr. Vital Brazil descobriu a especificidade dos venenos de cobras.' },
-                    { category: 'ciencia_herois', text: 'Qual bioma brasileiro abriga a maior reserva de biodiversidade do planeta?', options: ['Deserto do Saara', 'Floresta Amazônica', 'Tundra Siberiana', 'Pampa Seco'], correct: 1, explanation: 'A Amazônia possui a maior bacia hidrográfica e biodiversidade do mundo.' }
+                    { category: 'moderno', text: 'Qual médico brasileiro fundou o Butantan e desenvolveu os soros antiofídicos?', options: ['Dr. Vital Brazil', 'Oswaldo Cruz', 'Carlos Chagas', 'Santos Dumont'], correct: 0, explanation: 'Dr. Vital Brazil revolucionou a ciência médica mundial com soros antiveneno.' },
+                    { category: 'moderno', text: 'Em qual famosa batalha na Itália os Pracinhas da FEB alcançaram vitória heróica na Segunda Guerra?', options: ['Batalha de Monte Castelo', 'Batalha de Midway', 'Batalha de Stalingrado', 'Dia D'], correct: 0, explanation: 'A tomada de Monte Castelo em 1945 foi uma das maiores vitórias dos soldados brasileiros.' }
                 ]
             },
             geografia: {
@@ -447,31 +481,31 @@
                         id: 'regioes',
                         name: 'As 5 Grandes Regiões do Brasil 🗺️',
                         icon: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7',
-                        description: 'O mosaico do nosso país: Norte, Nordeste, Centro-Oeste, Sudeste e Sul com seus estados, capitais e culturas.',
+                        description: 'O mosaico do nosso país: Norte, Nordeste, Centro-Oeste, Sudeste e Sul com seus estados, capitais, relevo e culturas.',
                         chapters: [
                             {
                                 title: '1. Região Norte: O Coração Verde e a Bacia Amazônica 🌳',
-                                content: 'A <b>Região Norte</b> é a maior em extensão territorial (7 estados: Amazonas, Pará, Acre, Rondônia, Roraima, Amapá e Tocantins). É banhada pela majestosa <b>Bacia Amazônica</b>, lar de cidades como Manaus e Belém, do rico folclore do Boi-Bumbá e da saborosa culinária do açaí, pirarucu e tacacá.',
-                                imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&auto=format&fit=crop&q=80'
+                                content: 'A <b>Região Norte</b> é a maior em área territorial (7 estados: AM, PA, AC, RO, RR, AP, TO). Abriga a exuberante <b>Floresta Amazônica</b>, o grandioso Rio Amazonas, o Polo Industrial de Manaus, o folclore do Boi Garantido e Caprichoso e a saborosa culinária do açaí, castanha-do-pará e pirarucu.',
+                                imageUrl: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '2. Região Nordeste: Litoral Paradisíaco e a Força do Sertão 🏖️',
-                                content: 'Com 9 estados (BA, PE, CE, MA, PB, RN, AL, PI, SE), o <b>Nordeste</b> combina o litoral mais extenso e belo do Brasil com o semiárido do sertão. É berço de uma cultura rica e alegre com forró, frevo, maracatu, culinária saborosa e povo de imensa fé e bravura.',
+                                title: '2. Região Nordeste: Litoral Paradisíaco e a Resiliência do Sertão 🏖️',
+                                content: 'Com 9 estados (BA, PE, CE, MA, PB, RN, AL, PI, SE), o <b>Nordeste</b> combina o litoral mais extenso do Brasil com dunas e recifes ao semiárido sertanejo. É o berço da história brasileira, repleto de patrimônios históricos (Pelourinho, Olinda), ricos parques eólicos e forte produção de frutas irrigadas no Vale do São Francisco.',
                                 imageUrl: 'https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '3. Região Centro-Oeste: O Planalto Central e o Pantanal 🌾',
-                                content: 'Composta por Mato Grosso, Mato Grosso do Sul, Goiás e o Distrito Federal, a <b>Região Centro-Oeste</b> abriga a capital federal <b>Brasília</b>, o santuário de águas do <b>Pantanal</b> e as imensas lavouras de soja e milho que lideram o agronegócio mundial.',
+                                title: '3. Região Centro-Oeste: O Planalto Central, Brasília e o Pantanal 🌾',
+                                content: 'Composta por MT, MS, GO e o Distrito Federal, a <b>Região Centro-Oeste</b> abriga a capital federal <b>Brasília</b>, o santuário ecológico do <b>Pantanal</b> e as maiores e mais produtivas lavouras de grãos da Terra, liderando a produção sustentável de soja, milho e algodão.',
                                 imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
                                 title: '4. Região Sudeste: O Motor Industrial e Econômico 🏭',
-                                content: 'Formada por São Paulo, Rio de Janeiro, Minas Gerais e Espírito Santo, o <b>Sudeste</b> é a região mais populosa e industrializada do Brasil. Reúne grandes centros financeiros, serras exuberantes (Mantiqueira e Mar), portos como Santos e o Cristo Redentor.',
+                                content: 'Formada por SP, RJ, MG e ES, o <b>Sudeste</b> concentra a maior população e atividade industrial do país. Reúne a metrópole global de São Paulo, o Porto de Santos (maior da América Latina), as belezas naturais do Rio de Janeiro, o polo tecnológico de Campinas e a mineração de Minas Gerais.',
                                 imageUrl: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '5. Região Sul: Serras, Araucárias e Tradições Gaúchas 🏔️',
-                                content: 'Composta por Paraná, Santa Catarina e Rio Grande do Sul, o <b>Sul</b> destaca-se pelo clima subtropical (com geadas e neve nas serras), as espetaculares <b>Cataratas do Iguaçu</b>, as matas de pinheiros (Araucárias) e as tradições gaúchas e de imigrantes.',
+                                title: '5. Região Sul: Clima Subtropical, Araucárias e Cataratas 🏔️',
+                                content: 'Composta por PR, SC e RS, a <b>Região Sul</b> destaca-se pelo clima subtropical com as quatro estações bem definidas, matas de Pinheiro-do-Paraná (Araucárias), as espetaculares <b>Cataratas do Iguaçu</b> e prósperas colônias agrícolas e indústrias de precisão.',
                                 imageUrl: 'https://images.unsplash.com/photo-1551041777-575d3855ca71?w=1000&auto=format&fit=crop&q=80'
                             }
                         ]
@@ -480,83 +514,230 @@
                         id: 'biomas',
                         name: 'Os 6 Grandes Biomas Brasileiros 🌿',
                         icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
-                        description: 'Amazônia, Cerrado, Caatinga, Mata Atlântica, Pantanal e Pampas: a maior biodiversidade da Terra.',
+                        description: 'Amazônia, Cerrado, Caatinga, Mata Atlântica, Pantanal e Pampas: a maior biodiversidade do planeta.',
                         chapters: [
                             {
                                 title: '1. Floresta Amazônica e os Rios Voadores 🦜',
-                                content: 'A <b>Amazônia</b> é a maior floresta tropical úmida do planeta. As árvores gigantes liberam vapor de água que forma os célebres <b>"Rios Voadores"</b>, nuvens densas que levam chuvas preciosas para todo o centro-sul do Brasil.',
-                                imageUrl: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1000&auto=format&fit=crop&q=80'
+                                content: 'A <b>Amazônia</b> é a maior floresta tropical úmida do mundo. As árvores gigantes bombeiam vapor de água para a atmosfera, gerando os <b>"Rios Voadores"</b>, que viajam pelos ares e irrigam de chuva fértil as lavouras e reservatórios do Centro-Sul brasileiro.',
+                                imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '2. Cerrado: A Savana Brasileira e Berço das Águas 💧',
-                                content: 'O <b>Cerrado</b> cobre o coração do Brasil. Com árvores de casca grossa e raízes profundas que funcionam como esponjas, é conhecido como o <b>"Berço das Águas"</b>, pois abastece 8 das 12 principais bacias hidrográficas nacionais.',
+                                title: '2. Cerrado: A Savana Tropical e a "Caixa d\'Água do Brasil" 💧',
+                                content: 'O <b>Cerrado</b> cobre o planalto central. Suas árvores de raízes fundas funcionam como esponjas gigantes que recarregam os maiores lençóis freáticos do continente, alimentando 8 das 12 principais bacias hidrográficas nacionais.',
                                 imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '3. Caatinga: O Bioma Exclusivamente Brasileiro 🌵',
-                                content: 'A <b>Caatinga</b> (do tupi: "mata branca") é o único bioma presente apenas no território brasileiro. Plantas como o mandacaru e xique-xique armazenam água para florescer no sertão semiárido.',
+                                title: '3. Caatinga: O Bioma Único e Exclusivo do Brasil 🌵',
+                                content: 'A <b>Caatinga</b> (do tupi: "mata branca") é o único bioma exclusivo do território brasileiro. Plantas xerófitas como o mandacaru e o juazeiro desenvolveram adaptações genéticas fascinantes para estocar água e florescer no sertão.',
                                 imageUrl: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32f?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
                                 title: '4. Mata Atlântica, Pantanal e Pampas 🐆',
-                                content: 'A <b>Mata Atlântica</b> abraça a costa litorânea; o <b>Pantanal</b> é o maior ecossistema alagável do mundo repleto de onças, tuiuiús e jacarés; e os <b>Pampas</b> no Sul formam campos de pastagens naturais verdes.',
+                                content: 'A <b>Mata Atlântica</b> abraça a costa com riquíssima biodiversidade; o <b>Pantanal</b> é a maior planície alagada do planeta com a maior densidade de onças-pintadas e tuiuiús; e o <b>Pampa</b> no Sul forma extensos campos verdes naturais perfeitos para pecuária.',
                                 imageUrl: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef6?w=1000&auto=format&fit=crop&q=80'
                             }
                         ]
                     },
                     {
                         id: 'relevo_rios',
-                        name: 'Relevo, Rios e Climas do Brasil ⛰️',
+                        name: 'Relevo, Hidrografia e a Amazônia Azul ⛰️',
                         icon: 'M13 10V3L4 14h7v7l9-11h-7z',
-                        description: 'Planaltos, planícies, o Rio Amazonas, o Rio São Francisco e as estações climáticas.',
+                        description: 'Planaltos, Aquíferos Alter do Chão e Guarani, Rio São Francisco e os 4,5 milhões de km² de mar territorial.',
                         chapters: [
                             {
-                                title: '1. O Relevo Brasileiro: Planaltos, Serras e Planícies 🏞️',
-                                content: 'O relevo do Brasil é antigo e suavemente esculpido pela chuva e pelo vento ao longo de milhões de anos. Não temos vulcões ativos nem terremotos graves! O ponto mais alto do país é o <b>Pico da Neblina</b> (2.995m) no Amazonas.',
+                                title: '1. O Relevo Brasileiro: Planaltos, Chapadas e Serras 🏞️',
+                                content: 'O relevo do Brasil é geologicamente muito antigo e estável, sem terremotos ou vulcões ativos. Destacam-se o <b>Planalto Central</b>, as Chapadas (Diamantina, Veadeiros e Guimarães) e o <b>Pico da Neblina</b> (2.995m no Amazonas), ponto culminante da pátria.',
                                 imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '2. As Maiores Bacias Hidrográficas do Mundo 🌊',
-                                content: 'O Brasil é o país mais rico em água doce do planeta! O <b>Rio Amazonas</b> é o maior em volume do mundo. O <b>Rio São Francisco</b> (o Velho Chico) irriga o sertão nordestino e o <b>Rio Paraná</b> move a gigantesca Usina Hidrelétrica de Itaipu.',
+                                title: '2. Os Maiores Aquíferos do Planeta: Alter do Chão e Guarani 💧',
+                                content: 'Sob o solo do Brasil estão as maiores reservas de água doce subterrânea potável da Terra: o <b>Aquífero Alter do Chão</b> no Norte (o maior do mundo em volume de água doce) e o <b>Aquífero Guarani</b> no Centro-Sul.',
                                 imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. A Amazônia Azul: Nosso Mar Territorial e Riquezas do Pré-Sal ⚓',
+                                content: 'A <b>Amazônia Azul</b> abrange cerca de <b>4,5 milhões de km²</b> de águas jurisdicionais brasileiras no Oceano Atlântico. É uma área estratégica vigiada pela Marinha do Brasil, rica em biodiversidade marinha, rotas de comércio internacional e reservas do <b>Pré-Sal</b>.',
+                                imageUrl: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1000&auto=format&fit=crop&q=80'
                             }
                         ]
                     },
                     {
                         id: 'agro_economia',
-                        name: 'O Agro e as Riquezas que Alimentam o Mundo 🚜',
+                        name: 'Agro Tecnológico, Energia Limpa e Logística 🚜',
                         icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
-                        description: 'A força do produtor rural brasileiro, mineração de Carajás, o Pré-Sal e energia limpa.',
+                        description: 'A ciência da Embrapa, matriz energética renovável, minérios de Carajás, hidrovias e ferrovias.',
                         chapters: [
                             {
-                                title: '1. O Brasil como Celeiro de Alimentos do Planeta 🌽',
-                                content: 'Graças à pesquisa da Embrapa e à dedicação do homem do campo, o Brasil é o maior exportador mundial de <b>soja, café, suco de laranja, açúcar e carnes</b>, alimentando mais de 1 bilhão de pessoas em todos os continentes!',
+                                title: '1. A Revolução Científica da Embrapa e o Celeiro do Mundo 🌽',
+                                content: 'Através da ciência brasileira da <b>Embrapa</b>, o solo outrora ácido do Cerrado foi corrigido com calcário e fixação biológica de nitrogênio. O Brasil transformou-se no maior exportador mundial de soja, café, suco de laranja e carne bovina, alimentando 1 bilhão de pessoas no globo.',
                                 imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1000&auto=format&fit=crop&q=80'
                             },
                             {
-                                title: '2. Tesouros Minerais e Energia Limpa Renovável ⚡',
-                                content: 'O Brasil possui a maior mina de ferro do mundo em <b>Carajás</b> (Pará), reservas de petróleo no <b>Pré-Sal</b> e mais de 80% de sua matriz elétrica gerada por fontes limpas e renováveis (hidrelétricas, parques eólicos e solares).',
+                                title: '2. Liderança em Energia Limpa e Renovável ⚡',
+                                content: 'O Brasil possui uma das matrizes elétricas mais limpas do planeta (mais de 80% renovável), combinando a força de hidrelétricas como <b>Itaipu</b> com o estrondoso crescimento de parques solares e fazendas eólicas nos ventos do Nordeste.',
                                 imageUrl: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Logística de Integração: Hidrovias e Ferrovias 🚛',
+                                content: 'Para escoar a produção continental, o Brasil utiliza artérias logísticas como a <b>Hidrovia Tietê-Paraná</b> e Tapajós, a <b>Ferrovia Norte-Sul</b> e grandes rodovias que interligam os portos exportadores do Norte ao Sul.',
+                                imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1000&auto=format&fit=crop&q=80'
                             }
                         ]
                     }
                 ],
                 questions: [
-                    { category: 'regioes', text: 'Quantas e quais são as Grandes Regiões do Brasil?', options: ['3 Regiões: Norte, Centro e Sul', '5 Regiões: Norte, Nordeste, Centro-Oeste, Sudeste e Sul', '7 Regiões Continentais', '4 Regiões Cardeais'], correct: 1, explanation: 'O IBGE divide o Brasil em 5 macrorregiões: Norte, Nordeste, Centro-Oeste, Sudeste e Sul.' },
-                    { category: 'regioes', text: 'Qual é a maior região do Brasil em extensão territorial?', options: ['Região Sul', 'Região Sudeste', 'Região Norte', 'Região Nordeste'], correct: 2, explanation: 'A Região Norte ocupa mais de 45% de todo o território brasileiro.' },
-                    { category: 'regioes', text: 'Em qual região brasileira fica a capital federal Brasília?', options: ['Centro-Oeste', 'Sudeste', 'Nordeste', 'Sul'], correct: 0, explanation: 'Brasília fica no Distrito Federal, no coração da Região Centro-Oeste.' },
-                    { category: 'regioes', text: 'Qual região possui o maior polo industrial e econômico do país?', options: ['Norte', 'Sudeste (SP, RJ, MG, ES)', 'Sul', 'Nordeste'], correct: 1, explanation: 'O Sudeste lidera a indústria, os serviços e a economia nacional.' },
+                    { category: 'regioes', text: 'Quantas e quais são as Grandes Regiões do Brasil segundo o IBGE?', options: ['3 Regiões: Norte, Centro e Sul', '5 Regiões: Norte, Nordeste, Centro-Oeste, Sudeste e Sul', '7 Regiões Continentais', '4 Regiões Cardeais'], correct: 1, explanation: 'O IBGE divide o Brasil em 5 macrorregiões oficiais.' },
+                    { category: 'regioes', text: 'Qual é a maior região do Brasil em extensão territorial?', options: ['Região Sul', 'Região Sudeste', 'Região Norte (com 7 estados)', 'Região Nordeste'], correct: 2, explanation: 'A Região Norte ocupa mais de 45% do território brasileiro.' },
+                    { category: 'regioes', text: 'Em qual região brasileira está localizada a capital federal Brasília?', options: ['Centro-Oeste', 'Sudeste', 'Nordeste', 'Sul'], correct: 0, explanation: 'Brasília fica no Distrito Federal, no Planalto Central (Centro-Oeste).' },
                     
-                    { category: 'biomas', text: 'Como são chamadas as nuvens de vapor que a Amazônia envia para o Brasil?', options: ['Ventos Alísios', 'Rios Voadores', 'Furacões Tropicais', 'Monções'], correct: 1, explanation: 'Os Rios Voadores da Amazônia transportam umidade e chuvas para o Centro-Sul.' },
-                    { category: 'biomas', text: 'Qual bioma é chamado de "Berço das Águas" do Brasil?', options: ['Cerrado', 'Pampas', 'Caatinga', 'Deserto'], correct: 0, explanation: 'O Cerrado abastece importantes nascentes e aquíferos de todo o país.' },
-                    { category: 'biomas', text: 'Qual bioma é 100% exclusivo do território brasileiro?', options: ['Mata Atlântica', 'Caatinga', 'Pantanal', 'Floresta Boreal'], correct: 1, explanation: 'A Caatinga só existe no semiárido do Brasil e em nenhum outro lugar da Terra.' },
-                    { category: 'biomas', text: 'Qual é a maior planície alagável contínua do mundo?', options: ['Pantanal', 'Saara', 'Cerrado', 'Pampas'], correct: 0, explanation: 'O Pantanal abriga a maior concentração de vida selvagem e águas do continente.' },
+                    { category: 'biomas', text: 'Como a ciência chama as imensas massas de vapor que a Amazônia bombeia para o Brasil?', options: ['Ventos Alísios', 'Rios Voadores', 'Furacões Tropicais', 'Monções'], correct: 1, explanation: 'Os Rios Voadores transportam umidade da floresta para irrigar o Centro-Sul.' },
+                    { category: 'biomas', text: 'Qual bioma é 100% exclusivo do território do Brasil?', options: ['Mata Atlântica', 'Caatinga', 'Pantanal', 'Floresta Boreal'], correct: 1, explanation: 'A Caatinga é um bioma exclusivamente brasileiro do semiárido.' },
+                    { category: 'biomas', text: 'Por que o Cerrado é chamado de "Berço das Águas" do continente?', options: ['Porque não tem sol', 'Porque suas raízes absorvem água e abastecem 8 das 12 bacias do país', 'Porque fica no fundo do mar', 'Porque só chove neve'], correct: 1, explanation: 'O Cerrado recarrega lençóis freáticos e as principais bacias do Brasil.' },
 
-                    { category: 'relevo_rios', text: 'Qual é o ponto mais alto do relevo do Brasil?', options: ['Pão de Açúcar', 'Pico da Neblina (2.995m)', 'Pico das Agulhas Negras', 'Monte Roraima'], correct: 1, explanation: 'O Pico da Neblina, na Serra do Imeri (Amazonas), é o cume mais alto do país.' },
-                    { category: 'relevo_rios', text: 'Qual é o maior rio do mundo em volume de água doce?', options: ['Rio Nilo', 'Rio Amazonas', 'Rio Mississipi', 'Rio Danúbio'], correct: 1, explanation: 'O Rio Amazonas despeja cerca de 20% de toda a água doce que chega aos oceanos.' },
+                    { category: 'relevo_rios', text: 'Qual é o nome do gigantesco aquífero subterrâneo de água doce potável localizado na Amazônia?', options: ['Aquífero Alter do Chão', 'Mar Morto', 'Lago Titicaca', 'Fossa das Marianas'], correct: 0, explanation: 'O Aquífero Alter do Chão é o maior reservatório subterrâneo de água potável da Terra.' },
+                    { category: 'relevo_rios', text: 'O que representa o conceito estratégico de "Amazônia Azul"?', options: ['Um lago azul no Pantanal', 'Os 4,5 milhões de km² de território marítimo e riquezas oceânicas do Brasil', 'Uma piscina olímpica em Brasília', 'Um tipo de pássaro raro'], correct: 1, explanation: 'A Amazônia Azul é a vasta zona econômica exclusiva marítima do Brasil.' },
 
-                    { category: 'agro_economia', text: 'O agronegócio brasileiro é líder mundial na exportação de qual produto?', options: ['Soja, Café e Suco de Laranja', 'Trigo de Inverno', 'Azeite de Oliva', 'Maçã Fuji'], correct: 0, explanation: 'O Brasil é campeão mundial em soja, café, carne, açúcar e suco de laranja.' },
-                    { category: 'agro_economia', text: 'Qual é a principal fonte da matriz elétrica limpa do Brasil?', options: ['Usinas a Carvão', 'Usinas Hidrelétricas e Renováveis', 'Usinas Nucleares', 'Termelétricas a Óleo'], correct: 1, explanation: 'Mais de 80% da eletricidade do Brasil vem de fontes limpas como hidrelétricas, vento e sol.' }
+                    { category: 'agro_economia', text: 'Qual instituição pública de pesquisa foi o motor da revolução agrícola sustentável no Cerrado?', options: ['Embrapa (Empresa Brasileira de Pesquisa Agropecuária)', 'Nasa', 'Ibama', 'CERN'], correct: 0, explanation: 'A Embrapa desenvolveu biotecnologia e correção de solo tropical para alimentar o mundo.' },
+                    { category: 'agro_economia', text: 'Mais de 80% da eletricidade do Brasil é gerada por quais fontes?', options: ['Carvão e Usinas Poluidoras', 'Fontes Limpas e Renováveis (Hidrelétricas, Eólica e Solar)', 'Óleo Diesel e Gás Pesado', 'Usinas a Lenha'], correct: 1, explanation: 'O Brasil é modelo global em matriz elétrica limpa e renovável.' }
+                ]
+            },
+            ciencias: {
+                name: 'Ciências da Natureza',
+                categories: [
+                    {
+                        id: 'corpo_saude',
+                        name: 'O Corpo Humano, Nutrição e Saúde 🫀',
+                        icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
+                        description: 'A célula como fábrica da vida, sistemas circulatório e respiratório, o cérebro, vacinas e alimentação saudável.',
+                        chapters: [
+                            {
+                                title: '1. A Célula: A Menor Unidade da Vida 🧬',
+                                content: 'Todos os seres vivos são formados por <b>células</b>! Elas são como pequenas cidades inteligentes com membrana (muros de proteção), citoplasma (ruas e fábricas) e núcleo (onde fica o DNA, a receita secreta da nossa genética). O corpo humano tem cerca de 37 trilhões de células!',
+                                imageUrl: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. O Coração, Pulmões e a Circulação Sanguínea 🫀',
+                                content: 'O <b>coração</b> é uma bomba muscular incansável que bate cerca de 100 mil vezes por dia. Ele envia o sangue rico em oxigênio (captado pelos <b>pulmões</b>) para todas as partes do corpo através das artérias e recebe de volta o sangue pelas veias.',
+                                imageUrl: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. O Cérebro, Sentidos e o Sistema Nervoso 🧠',
+                                content: 'O <b>cérebro</b> é o supercomputador do corpo humano! Conectado a bilhões de neurônios, ele processa as informações dos cinco sentidos (visão, audição, olfato, paladar e tato), comanda nossos movimentos e guarda nossas melhores memórias e aprendizados.',
+                                imageUrl: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. Imunidade, Vacinas e a Defesa do Organismo 🛡️',
+                                content: 'Nosso <b>sistema imunológico</b> possui células soldados (glóbulos brancos) que combatem vírus e bactérias. As <b>vacinas</b> treinam nossos anticorpos de forma segura para reconhecer e vencer doenças perigosas, salvando milhões de vidas na história da humanidade!',
+                                imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '5. Alimentação Saudável e a Energia do Corpo 🥗',
+                                content: 'Para crescer forte e saudável, o corpo precisa de uma dieta equilibrada: <b>carboidratos</b> para dar energia, <b>proteínas</b> para construir músculos, <b>vitaminas e minerais</b> das frutas e legumes para proteger contra doenças e bastante água pura.',
+                                imageUrl: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'vida_reino',
+                        name: 'O Reino Vegetal e Animal no Brasil 🌿',
+                        icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+                        description: 'Fotossíntese, botânica, abelhas nativas polinizadoras, fauna brasileira e cadeias alimentares.',
+                        chapters: [
+                            {
+                                title: '1. A Fotossíntese: As Plantas Fabricando Energia 🍃',
+                                content: 'As plantas são os únicos seres vivos que produzem o próprio alimento através da <b>fotossíntese</b>. Usando a luz do Sol captada pela <b>clorofila</b>, água da raiz e gás carbônico do ar, elas produzem glicose (energia) e liberam o precioso <b>oxigênio</b> que todos respiramos.',
+                                imageUrl: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. Abelhas Nativas sem Ferrão e a Polinização 🐝',
+                                content: 'O Brasil é o lar de centenas de espécies de <b>abelhas nativas sem ferrão</b> (como a Jataí, Uruçu e Mandaçaia). Ao voar de flor em flor em busca de néctar, elas realizam a <b>polinização</b>, essencial para a reprodução de 90% das árvores frutíferas e florestas!',
+                                imageUrl: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Animais Incríveis da Fauna Brasileira 🐾',
+                                content: 'A fauna do Brasil possui campeões da natureza: a <b>Onça-Pintada</b> (maior felino das Américas e exímia nadadora), o <b>Tamanduá-Bandeira</b> (come milhares de formigas sem dentes), o <b>Peixe-Boi</b> amazônico e o pássaro <b>Tuiuiú</b> do Pantanal.',
+                                imageUrl: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef6?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. Cadeia Alimentar e Equilíbrio Ecológico 🦅',
+                                content: 'Na natureza todos dependem uns dos outros: as plantas são os <b>produtores</b>; os herbívoros (como a capivara) são os <b>consumidores primários</b>; os carnívoros são <b>predadores</b>; e os fungos e bactérias são os <b>decompositores</b> que reciclam os nutrientes de volta à terra.',
+                                imageUrl: 'https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'terra_universo',
+                        name: 'Planeta Terra, Água e o Universo 🌍',
+                        icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                        description: 'Camadas da Terra, ciclo hidrológico, rotação, translação, estações do ano, a Lua e o Sistema Solar.',
+                        chapters: [
+                            {
+                                title: '1. As Camadas do Planeta Terra 🌋',
+                                content: 'A Terra é formada por três camadas principais: a <b>Crosta Terrestre</b> (a casca rochosa onde pisamos e vivemos), o <b>Manto</b> (onde há rocha derretida chamada magma) e o <b>Núcleo</b> (uma esfera metálica incandescente de ferro e níquel no centro do planeta).',
+                                imageUrl: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. O Ciclo da Água na Natureza 💧',
+                                content: 'A água da Terra nunca acaba porque vive em constante ciclo: com o calor do Sol ela <b>evapora</b> de rios e oceanos; sobe e forma nuvens pela <b>condensação</b>; cai em forma de chuva pela <b>precipitação</b>; e <b>infiltra</b> no solo alimentando as nascentes.',
+                                imageUrl: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Rotação, Translação e as Estações do Ano ☀️',
+                                content: 'A Terra realiza dois movimentos fundamentais: o de <b>Rotação</b> (gira em torno de si mesma em 24 horas, criando o dia e a noite) e o de <b>Translação</b> (dá uma volta completa ao redor do Sol em 365 dias, gerando as 4 estações: Primavera, Verão, Outono e Inverno).',
+                                imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. A Lua, as Marés e a Exploração Espacial 🌙',
+                                content: 'A <b>Lua</b> é o único satélite natural da Terra. Conforme recebe luz do Sol, vemos suas quatro fases: Nova, Crescente, Cheia e Minguante. Sua força de gravidade atrai as águas dos oceanos, criando o ritmo das marés altas e baixas.',
+                                imageUrl: 'https://images.unsplash.com/photo-1522030299830-16b8d3d049fe?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'fisica_quimica',
+                        name: 'Física, Matéria e Grandes Invenções 💡',
+                        icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+                        description: 'Estados da matéria, magnetismo, eletricidade, luz, gravidade e o método científico de grandes inventores.',
+                        chapters: [
+                            {
+                                title: '1. Os Três Estados Físicos da Matéria 🧊',
+                                content: 'Tudo o que existe no universo é matéria e possui massa. Ela pode ser encontrada no estado <b>Sólido</b> (forma definida, como gelo), <b>Líquido</b> (flui e toma a forma do recipiente, como água) e <b>Gasoso</b> (expande-se pelo ar, como vapor). Mudanças de temperatura transformam os estados!',
+                                imageUrl: 'https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '2. A Força da Gravidade e o Movimento 🍎',
+                                content: 'Por que tudo o que sobe cai? Graças à <b>Força da Gravidade</b>, descoberta pelo físico Isaac Newton! A massa da Terra atrai todos os corpos para o seu centro, mantendo nossos pés no chão, o mar no lugar e a atmosfera ao nosso redor.',
+                                imageUrl: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '3. Magnetismo e Eletricidade: A Energia que Move o Mundo 🧲',
+                                content: 'Os <b>ímãs</b> possuem dois polos (Norte e Sul): polos iguais se repelem e polos opostos se atraem! A <b>eletricidade</b> é o fluxo de elétrons que acende lâmpadas, alimenta computadores e faz funcionar os motores elétricos modernos.',
+                                imageUrl: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1000&auto=format&fit=crop&q=80'
+                            },
+                            {
+                                title: '4. O Método Científico e o Amor pelo Conhecimento 🔬',
+                                content: 'A Ciência avança através da <b>curiosidade e do Método Científico</b>: observar a natureza, fazer perguntas, formular hipóteses, realizar experimentos práticos e comprovar os resultados com honestidade e rigor factual!',
+                                imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1000&auto=format&fit=crop&q=80'
+                            }
+                        ]
+                    }
+                ],
+                questions: [
+                    { category: 'corpo_saude', text: 'Qual é a menor unidade estrutural e funcional viva de todos os seres vivos?', options: ['O átomo', 'A célula', 'O cabelo', 'A unha'], correct: 1, explanation: 'A célula é o tijolo fundamental de toda a vida orgânica.' },
+                    { category: 'corpo_saude', text: 'Qual órgão bombeia o sangue oxigenado para todo o organismo humano?', options: ['O estômago', 'O coração', 'O fígado', 'O rim'], correct: 1, explanation: 'O coração bate incansavelmente enviando oxigênio e nutrientes pelas artérias.' },
+                    { category: 'corpo_saude', text: 'Como as vacinas atuam na proteção da saúde do corpo humano?', options: ['Tornando as pessoas mais altas', 'Treinando o sistema imunológico a produzir anticorpos contra doenças', 'Substituindo a necessidade de beber água', 'Mudando a cor dos olhos'], correct: 1, explanation: 'As vacinas preparam nossos glóbulos brancos e anticorpos para defender o corpo com segurança.' },
+
+                    { category: 'vida_reino', text: 'Qual processo vital permite às plantas verdes produzirem o próprio alimento e oxigênio?', options: ['Digestão estomacal', 'Fotossíntese', 'Respiração anaeróbica', 'Filtração mineral'], correct: 1, explanation: 'A fotossíntese utiliza luz solar, água e gás carbônico para produzir energia e oxigênio.' },
+                    { category: 'vida_reino', text: 'Por que as abelhas nativas são fundamentais para as florestas e agricultura?', options: ['Porque fazem barulho', 'Porque realizam a polinização das flores ao buscarem néctar', 'Porque comem madeira seca', 'Porque cavam túneis na pedra'], correct: 1, explanation: 'A polinização feita por abelhas garante a frutificação e a renovação das árvores.' },
+                    { category: 'vida_reino', text: 'Qual é o maior felino das Américas e símbolo do Pantanal brasileiro?', options: ['Leão Africano', 'Onça-Pintada', 'Tigre Siberiano', 'Guepardo'], correct: 1, explanation: 'A Onça-Pintada é o predador de topo e maior felino do nosso continente.' },
+
+                    { category: 'terra_universo', text: 'Quantas horas dura o movimento de ROTAÇÃO da Terra e o que ele produz?', options: ['12 horas e gera o eclipse', '24 horas e gera o ciclo do dia e da noite', '365 dias e gera as estações', '7 dias e gera as marés'], correct: 1, explanation: 'A rotação completa em 24 horas cria o nascer e o pôr do sol, alternando dia e noite.' },
+                    { category: 'terra_universo', text: 'Quais são as três camadas estruturais do planeta Terra?', options: ['Água, Fogo e Ar', 'Crosta Terrestre, Manto e Núcleo', 'Areia, Cascalho e Petróleo', 'Nuvem, Atmosfera e Espaço'], correct: 1, explanation: 'A Terra é dividida em crosta rochosa superficial, manto magmático e núcleo central de ferro.' },
+                    { category: 'terra_universo', text: 'O que provoca o fenômeno das marés altas e baixas nos oceanos?', options: ['O motor dos barcos', 'A atração gravitacional da Lua sobre as águas da Terra', 'Os peixes nadando juntos', 'O calor do fundo do mar'], correct: 1, explanation: 'A gravidade da Lua puxa as massas oceânicas gerando as marés.' },
+
+                    { category: 'fisica_quimica', text: 'Qual é o nome da força invisível que atrai todos os corpos em direção ao centro da Terra?', options: ['Força Magnética', 'Força da Gravidade', 'Pressão Atmosférica', 'Eletricidade Estática'], correct: 1, explanation: 'A gravidade mantém todos os objetos e seres presos com segurança ao chão.' },
+                    { category: 'fisica_quimica', text: 'O que acontece quando aproximamos dois polos IGUAIS de dois ímãs (Norte com Norte)?', options: ['Eles se grudam com força', 'Eles se repelem (afastam-se)', 'Eles pegam fogo', 'Eles viram água'], correct: 1, explanation: 'No magnetismo, polos iguais se repelem e polos opostos se atraem.' },
+                    { category: 'fisica_quimica', text: 'Como a ciência constrói o conhecimento verdadeiro sobre o mundo?', options: ['Por boatos e suposições', 'Pelo Método Científico: observação, hipóteses, experimentos e verificação', 'Por sorteios aleatórios', 'Ignorando a realidade'], correct: 1, explanation: 'O método científico baseia-se em evidências empíricas, testes e fatos verificáveis.' }
                 ]
             }
         };
@@ -564,7 +745,7 @@
         // ==========================================
         // 4. ESTADO GERAL DA APLICAÇÃO
         // ==========================================
-        let currentSubjectId = 'historia'; // 'historia' ou 'geografia'
+        let currentSubjectId = 'historia'; // 'historia', 'geografia' ou 'ciencias'
         let appData = {};
         let currentState = 'PORTAL_HUB';
         let currentUser = null;
@@ -628,11 +809,11 @@
 
         function loadLocalData() {
             try {
-                const savedCourse = localStorage.getItem('expedicao_courses_db_v3');
+                const savedCourse = localStorage.getItem('expedicao_courses_db_v5');
                 if (savedCourse) window.coursesDatabase = JSON.parse(savedCourse);
                 else window.coursesDatabase = JSON.parse(JSON.stringify(initialCoursesDatabase));
 
-                const savedProgress = localStorage.getItem('expedicao_students_progress_v3');
+                const savedProgress = localStorage.getItem('expedicao_students_progress_v5');
                 if (savedProgress) studentsProgress = JSON.parse(savedProgress);
             } catch (e) {
                 console.warn("Erro ao ler localStorage:", e);
@@ -643,8 +824,8 @@
 
         function saveLocalData() {
             try {
-                localStorage.setItem('expedicao_courses_db_v3', JSON.stringify(window.coursesDatabase));
-                localStorage.setItem('expedicao_students_progress_v3', JSON.stringify(studentsProgress));
+                localStorage.setItem('expedicao_courses_db_v5', JSON.stringify(window.coursesDatabase));
+                localStorage.setItem('expedicao_students_progress_v5', JSON.stringify(studentsProgress));
             } catch (e) {
                 console.warn("Erro ao salvar localStorage:", e);
             }
@@ -654,7 +835,7 @@
             loadLocalData();
             if (!auth || !auth.currentUser) return;
             try {
-                const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi', 'main');
+                const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi_v5', 'main');
                 const docSnap = await getDoc(contentRef);
                 if (docSnap.exists()) {
                     window.coursesDatabase = docSnap.data();
@@ -672,7 +853,7 @@
         async function fetchCloudProgress() {
             if (!auth || !auth.currentUser) return;
             try {
-                const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress_multi');
+                const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress_multi_v5');
                 const snapshot = await getDocs(progressColl);
                 studentsProgress = {};
                 snapshot.forEach(docItem => {
@@ -691,7 +872,7 @@
                 window.customAlert("💾 Conteúdo salvo localmente com sucesso!");
                 return;
             }
-            const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi', 'main');
+            const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi_v5', 'main');
             try {
                 await setDoc(contentRef, window.coursesDatabase);
                 window.customAlert("✅ Cursos atualizados na nuvem com sucesso para todas as disciplinas!");
@@ -719,7 +900,7 @@
             saveLocalData();
 
             if (!auth || !auth.currentUser) return;
-            const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'progress_multi', studentName);
+            const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'progress_multi_v5', studentName);
             try {
                 await setDoc(studentRef, { progress: studentsProgress[studentName] }, { merge: true });
             } catch (e) {
@@ -736,10 +917,10 @@
             
             if (auth && auth.currentUser) {
                 try {
-                    const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress_multi');
+                    const progressColl = collection(db, 'artifacts', appId, 'public', 'data', 'progress_multi_v5');
                     const snapshot = await getDocs(progressColl);
                     for (const docItem of snapshot.docs) {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'progress_multi', docItem.id));
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'progress_multi_v5', docItem.id));
                     }
                     window.customAlert("Histórico de todos os alunos apagado na nuvem e localmente.");
                     window.renderAdminDashboard();
@@ -830,7 +1011,7 @@
                                 <p class="text-xs text-gray-400 leading-relaxed mb-6">${subj.desc}</p>
                             </div>
                             <button disabled class="w-full bg-gray-200 text-gray-400 font-bold py-2.5 px-4 rounded-2xl text-xs cursor-not-allowed">
-                                Em Desenvolvimento
+                                Em Breve
                             </button>
                         </div>
                     `;
@@ -844,7 +1025,7 @@
                             <span>🇧🇷</span> Portal Educacional Expedição Brasil
                         </div>
                         <h2 class="text-3xl md:text-5xl font-black text-gray-800 tracking-tight mb-2">Escolha sua Disciplina</h2>
-                        <p class="text-gray-500 text-sm md:text-base max-w-lg mx-auto">Aulas narradas, quizzes didáticos, medalhas cívicas e certificados de conclusão para cada matéria!</p>
+                        <p class="text-gray-500 text-sm md:text-base max-w-lg mx-auto">Aulas ilustradas e narradas, fatos reais sem manipulação, ciência comprovada, quizzes didáticos e certificados oficiais!</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -856,7 +1037,7 @@
                             <div class="text-4xl">👨‍🏫</div>
                             <div>
                                 <h4 class="font-black text-base">Área do Professor e Gestão Escolar</h4>
-                                <p class="text-xs text-indigo-200">Acesse o boletim geral, exporte planilhas de turmas e edite aulas.</p>
+                                <p class="text-xs text-indigo-200">Acesse o boletim geral de História, Geografia e Ciências, exporte planilhas e edite aulas.</p>
                             </div>
                         </div>
                         <button onclick="window.soundClick(); window.changeState('ADMIN_LOGIN')" class="bg-white text-gray-900 hover:bg-gray-100 font-black px-6 py-3 rounded-2xl shadow-lg transition text-xs shrink-0">
@@ -890,10 +1071,13 @@
                 </label>
             `).join('');
 
+            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬' };
+            const subIcon = iconMap[currentSubjectId] || '🧭';
+
             window.showModal(`
                 <div class="text-left">
                     <div class="flex items-center gap-3 mb-3">
-                        <span class="text-3xl">${currentSubjectId === 'geografia' ? '🌍' : '🇧🇷'}</span>
+                        <span class="text-3xl">${subIcon}</span>
                         <div>
                             <h3 class="text-2xl font-black text-gray-800">Bem-vindo à Expedição!</h3>
                             <p class="text-xs text-gray-500">Curso: <b>${appData.name}</b></p>
@@ -965,6 +1149,8 @@
                 const hasQuizScore = prog.quizScore !== null;
                 const totalQuestions = appData.questions.filter(q => q.category === cat.id).length;
                 
+                const firstChapterImage = cat.chapters[0]?.imageUrl || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80';
+
                 let actionBtnHTML = '';
                 if (progressPercent > 0 && !isFinished) {
                     actionBtnHTML = `
@@ -1013,22 +1199,27 @@
 
                 return `
                     <div class="bg-white border-2 border-indigo-50 hover:border-indigo-200 rounded-3xl p-6 shadow-md hover:shadow-xl transition-all flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-indigo-100/50 to-transparent rounded-bl-full pointer-events-none"></div>
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-indigo-100/50 to-transparent rounded-bl-full pointer-events-none"></div>
                         
                         <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <!-- Imagem Miniatura do Módulo -->
+                            <div class="h-32 w-full rounded-2xl overflow-hidden mb-4 relative shadow-sm">
+                                <img src="${firstChapterImage}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80'" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-3">
+                                    <span class="text-white font-black text-xs drop-shadow">Módulo ${idx + 1} &bull; ${totalChaps} Aulas Ilustradas</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 shadow-inner">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${cat.icon}" />
                                     </svg>
                                 </div>
-                                <div>
-                                    <div class="text-[10px] font-black uppercase tracking-wider text-indigo-500">Módulo ${idx + 1}</div>
-                                    <h3 class="font-black text-lg text-gray-800 leading-tight">${cat.name}</h3>
-                                </div>
+                                <h3 class="font-black text-base text-gray-800 leading-tight">${cat.name}</h3>
                             </div>
                             
-                            <p class="text-xs text-gray-500 mb-4 leading-relaxed line-clamp-3">${cat.description}</p>
+                            <p class="text-xs text-gray-500 mb-4 leading-relaxed line-clamp-2">${cat.description}</p>
                             
                             <div class="mb-4 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
                                 <div class="flex justify-between text-[11px] font-bold text-gray-500 mb-1">
@@ -1122,9 +1313,9 @@
                     </div>
 
                     <div class="bg-white rounded-3xl overflow-hidden shadow-2xl flex-grow flex flex-col border-4 border-indigo-50">
-                        <div class="h-56 md:h-80 w-full bg-gray-900 relative group overflow-hidden">
-                            <img src="${chapter.imageUrl}" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90" />
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                        <div class="h-64 md:h-96 w-full bg-gray-900 relative group overflow-hidden">
+                            <img src="${chapter.imageUrl}" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-95" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"></div>
                             
                             <div class="absolute bottom-4 left-6 right-6">
                                 <span class="bg-emerald-500 text-white text-[10px] uppercase tracking-widest font-black px-2.5 py-1 rounded-md mb-2 inline-block shadow">Aula Ilustrada &bull; ${appData.name}</span>
@@ -1134,7 +1325,7 @@
 
                         <div class="p-6 md:p-8 flex-grow flex flex-col justify-between">
                             <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">Leitura e Compreensão</span>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">Leitura e Compreensão Ilustrada</span>
                                 <button id="btn-tts-speaker" onclick="window.toggleReadAloud(document.getElementById('lesson-content-text').innerText)" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-4 rounded-xl shadow-sm transition flex items-center gap-2 text-sm border border-indigo-200">
                                     🔊 Ouvir Aula em Voz Alta
                                 </button>
@@ -1259,7 +1450,7 @@
                     
                     <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-2xl mb-6">
                         <h4 class="font-black text-blue-900 flex items-center gap-2 mb-1 text-sm">
-                            <span class="text-lg">💡</span> Você Sabia? (Explicação)
+                            <span class="text-lg">💡</span> Você Sabia? (Explicação Factual)
                         </h4>
                         <p class="text-blue-800 text-xs md:text-sm leading-relaxed">${q.explanation}</p>
                     </div>
@@ -1349,6 +1540,8 @@
             }).join('');
 
             const averagePercentage = totalPossible > 0 ? Math.round((totalScores / totalPossible) * 100) : 0;
+            const iconMap = { historia: '🇧🇷', geografia: '🌍', ciencias: '🔬' };
+            const subIcon = iconMap[currentSubjectId] || '🧭';
 
             window.showModal(`
                 <div class="text-center">
@@ -1364,7 +1557,7 @@
                     </div>
 
                     <div id="certificate-print-area" class="bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100 p-6 rounded-3xl border-4 border-amber-300 shadow-inner mb-4 relative text-center">
-                        <div class="text-4xl mb-1">${currentSubjectId === 'geografia' ? '🌍' : '🇧🇷'}</div>
+                        <div class="text-4xl mb-1">${subIcon}</div>
                         <h4 class="text-lg font-black text-amber-900 tracking-wider uppercase">Certificado de Honra ao Mérito</h4>
                         <p class="text-[11px] text-amber-800 italic mb-3">Expedição Brasil &bull; Curso de ${appData.name}</p>
                         
@@ -1397,7 +1590,7 @@
                     <div class="text-center mb-6">
                         <div class="text-5xl mb-2">👨‍🏫</div>
                         <h2 class="text-2xl font-black text-gray-800">Painel Central do Professor</h2>
-                        <p class="text-gray-500 text-xs mt-1">Gestão Unificada de História, Geografia e Turmas</p>
+                        <p class="text-gray-500 text-xs mt-1">Gestão de História, Geografia, Ciências e Turmas</p>
                     </div>
                     
                     <div class="space-y-4">
@@ -1623,7 +1816,7 @@
                                     <h2 class="text-2xl md:text-3xl font-black text-gray-800">Boletim Consolidado</h2>
                                     ${auth && auth.currentUser ? '<span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-black rounded-full border border-emerald-300">🟢 Nuvem Online</span>' : '<button onclick="window.openFirebaseConfigModal()" class="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full border border-amber-300 hover:bg-amber-200 transition cursor-pointer">🟡 Modo Local</button>'}
                                 </div>
-                                <p class="text-xs text-gray-500">Acompanhe as notas de todas as matérias e turmas.</p>
+                                <p class="text-xs text-gray-500">Acompanhe as notas de História, Geografia e Ciências da Natureza.</p>
                             </div>
                             
                             <div class="flex items-center gap-2">
@@ -1720,7 +1913,7 @@
             }
         };
 
-        window.addChapter = function(catId) { const course = window.coursesDatabase[adminEditingSubject]; const cat = course.categories.find(c => c.id === catId); cat.chapters.push({ title: 'Nova Aula', content: 'Escreva o texto pedagógico da aula aqui...', imageUrl: '' }); window.renderAdminEditor(); };
+        window.addChapter = function(catId) { const course = window.coursesDatabase[adminEditingSubject]; const cat = course.categories.find(c => c.id === catId); cat.chapters.push({ title: 'Nova Aula', content: 'Escreva o texto pedagógico da aula aqui...', imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&auto=format&fit=crop&q=80' }); window.renderAdminEditor(); };
         window.removeChapter = function(catId, index) { const course = window.coursesDatabase[adminEditingSubject]; const cat = course.categories.find(c => c.id === catId); cat.chapters.splice(index, 1); window.renderAdminEditor(); };
         window.addQuestion = function(catId) { const course = window.coursesDatabase[adminEditingSubject]; course.questions.push({ category: catId, text: 'Nova pergunta do quiz?', options: ['Alternativa A', 'Alternativa B', 'Alternativa C', 'Alternativa D'], correct: 0, explanation: 'Explicação didática para o Você Sabia.' }); window.renderAdminEditor(); };
         window.removeQuestion = function(globalIndex) { const course = window.coursesDatabase[adminEditingSubject]; course.questions.splice(globalIndex, 1); window.renderAdminEditor(); };
@@ -1743,6 +1936,9 @@
                     </button>
                     <button onclick="window.changeAdminEditingSubject('geografia')" class="px-4 py-2 rounded-xl text-xs font-black transition ${adminEditingSubject === 'geografia' ? 'bg-emerald-600 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-100'}">
                         🌍 Geografia do Brasil
+                    </button>
+                    <button onclick="window.changeAdminEditingSubject('ciencias')" class="px-4 py-2 rounded-xl text-xs font-black transition ${adminEditingSubject === 'ciencias' ? 'bg-cyan-600 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-100'}">
+                        🔬 Ciências da Natureza
                     </button>
                 </div>
             `;
@@ -1827,7 +2023,7 @@
                                                 <select onchange="window.updateQuestion(${globalIndex}, 'correct', this.value)" class="w-full px-3 py-1.5 border rounded-lg bg-emerald-50 text-emerald-800 font-bold mb-2">
                                                     ${q.options.map((_, i) => `<option value="${i}" ${q.correct === i ? 'selected' : ''}>Opção ${String.fromCharCode(65 + i)}</option>`).join('')}
                                                 </select>
-                                                <label class="block font-black text-gray-500 uppercase text-[10px] mb-1">Explicação Didática (Você Sabia?)</label>
+                                                <label class="block font-black text-gray-500 uppercase text-[10px] mb-1">Explicação Factual (Você Sabia?)</label>
                                                 <textarea onchange="window.updateQuestion(${globalIndex}, 'explanation', this.value)" class="w-full px-3 py-1.5 border rounded-lg text-xs" rows="2">${q.explanation}</textarea>
                                             </div>
                                         </div>
@@ -1869,7 +2065,7 @@
                         <div class="p-6 border-b border-gray-200 bg-white flex justify-between items-center shrink-0 shadow-sm">
                             <div>
                                 <h2 class="text-2xl font-black text-gray-800">Editor de Conteúdo</h2>
-                                <p class="text-xs text-gray-500">Adicione ou edite aulas e perguntas em qualquer disciplina.</p>
+                                <p class="text-xs text-gray-500">Adicione ou edite aulas e perguntas de História, Geografia e Ciências.</p>
                             </div>
                             <div class="flex items-center gap-2">
                                 <button onclick="window.soundClick(); window.customConfirm('Isso restaurará os textos originais de todos os cursos!', 'window.restoreDefaultData()')" class="px-3 py-2 text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl font-bold text-xs transition bg-white">
@@ -1902,7 +2098,7 @@
                         <h3 class="text-xl font-bold text-gray-800">Conexão com Firebase Firestore</h3>
                     </div>
                     <p class="text-xs text-gray-500 mb-3 leading-relaxed">Credenciais para sincronização online do Portal:</p>
-                    <textarea id="firebase-json-input" class="w-full h-44 p-3 border-2 border-indigo-100 rounded-xl font-mono text-xs focus:border-indigo-500 focus:outline-none bg-slate-900 text-emerald-400 mb-4" placeholder='{\n  "apiKey": "...",\n  "projectId": "..."\n}'>${currentCfgStr}</textarea>
+                    <textarea id="firebase-json-input" class="w-full h-44 p-3 border-2 border-indigo-100 rounded-xl font-mono text-xs focus:border-indigo-500 focus:outline-none bg-slate-900 text-emerald-400 mb-4" placeholder='{\\n  "apiKey": "...",\\n  "projectId": "..."\\n}'>${currentCfgStr}</textarea>
                     <div class="flex gap-2 justify-end">
                         <button onclick="window.hideModal()" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg text-xs">Cancelar</button>
                         <button onclick="window.saveFirebaseConfigFromModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold shadow-md text-xs">Salvar e Conectar</button>
@@ -1917,7 +2113,7 @@
                 let parsed = null;
                 if (txt.startsWith('{')) parsed = JSON.parse(txt);
                 else {
-                    const match = txt.match(/\{[\s\S]*\}/);
+                    const match = txt.match(/\\{[\\s\\S]*\\}/);
                     if (match) parsed = (new Function('return ' + match[0]))();
                 }
                 if (parsed && parsed.apiKey) {
