@@ -4687,6 +4687,9 @@ let audioCtx = null;
                                     <span class="text-2xl p-1.5 rounded-xl ${s.isCompleted ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'} shrink-0">${s.icon}</span>
                                     <div>
                                         <div class="flex items-center gap-2 flex-wrap">
+                                <button onclick="window.copyAIPromptTemplate()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102 active:scale-98" title="Copiar o prompt estruturado para gerar conteúdo no ChatGPT ou Gemini">
+                                    <span>✨</span> Copiar Prompt IA
+                                </button>
                                             <h5 class="text-xs font-black text-gray-800">${s.name}</h5>
                                             <span class="bg-indigo-100 text-indigo-900 font-black text-[9px] px-2 py-0.5 rounded-full">${s.hours} Horas</span>
                                             ${s.isCompleted ? '<span class="bg-emerald-100 text-emerald-900 border border-emerald-300 font-black text-[9px] px-2 py-0.5 rounded-full">✨ APROVADO</span>' : ''}
@@ -7565,16 +7568,22 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
 
                     <textarea id="ai-raw-text-input" rows="10" class="w-full p-3.5 rounded-2xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none bg-purple-50/30 text-xs font-sans mb-4 leading-relaxed custom-scrollbar" placeholder="Cole aqui a resposta do ChatGPT ou Gemini (ex: Título: ..., Texto: ..., Desafio: ..., A) ..., B) ..., Gabarito: ...)..."></textarea>
 
-                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-                        <button onclick="window.copyAIPromptTemplate()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
-                            <span>📋</span> Copiar Prompt Modelo
-                        </button>
-                        <div class="flex items-center gap-2">
-                            <button onclick="window.hideModal()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition cursor-pointer">
-                                Cancelar
+                    <div class="space-y-3 pt-3 border-t border-gray-100">
+                        <div class="p-3.5 bg-purple-50 border-2 border-purple-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <div>
+                                <span class="text-xs font-black text-purple-950 block">Passo 1: Copiar o modelo para a IA</span>
+                                <span class="text-[11px] text-purple-800">Copie o prompt padrão, abra o ChatGPT ou Gemini e envie lá com o tema desejado.</span>
+                            </div>
+                            <button onclick="window.copyAIPromptTemplate()" class="bg-purple-700 hover:bg-purple-800 text-white text-xs font-black px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer shrink-0">
+                                <span>📋</span> Copiar Prompt Agora
                             </button>
-                            <button onclick="window.applyAITextToChapter(${cIdx})" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black px-6 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                                <span>✨</span> Processar & Preencher Aula
+                        </div>
+                        <div class="flex items-center justify-between pt-1">
+                            <button onclick="window.hideModal()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition cursor-pointer">
+                                Fechar
+                            </button>
+                            <button onclick="window.applyAITextToChapter(${cIdx})" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black px-6 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102">
+                                <span>✨</span> Passo 2: Processar & Preencher Aula
                             </button>
                         </div>
                     </div>
@@ -7867,9 +7876,14 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
                             <h3 class="font-black text-sm text-gray-800 uppercase tracking-wide flex items-center gap-2">
                                 <span>📖</span> Aulas & Tópicos deste Módulo (${activeCat.chapters ? activeCat.chapters.length : 0})
                             </h3>
-                            <button onclick="window.addNewChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102 active:scale-98">
-                                <span>➕</span> Adicionar Nova Aula / Tópico
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="window.copyAIPromptTemplate()" class="bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 font-black text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer" title="Copiar o prompt estruturado">
+                                    <span>✨</span> Copiar Prompt IA
+                                </button>
+                                <button onclick="window.addNewChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102 active:scale-98">
+                                    <span>➕</span> Adicionar Nova Aula / Tópico
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Lista de Aulas do Módulo Ativo -->
