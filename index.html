@@ -4850,9 +4850,7 @@ let audioCtx = null;
                         </button>
                     </div>
 
-                    <div id="validator-result-box" class="min-h-[100px]">
-                        ${prefillCode ? '<script>setTimeout(() => window.queryCertificateCode(), 100);</script>' : ''}
-                    </div>
+                    <div id="validator-result-box" class="min-h-[100px]"></div>
 
                     <div class="pt-3 border-t border-gray-100 flex justify-between items-center mt-3">
                         <button onclick="window.showPedagogicalProposalModal()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
@@ -4888,7 +4886,7 @@ let audioCtx = null;
             let cert = issued[rawCode];
 
             // Se for um formato válido EXP-XXX-YYYY-NNNNN mesmo sem ter sido gerado na sessão local atual
-            if (!cert && /^EXP-[A-Z]{3}-d{4}-d+$/i.test(rawCode)) {
+            if (!cert && /^EXP-[A-Z]{3}-\\d{4}-\\d+$/i.test(rawCode)) {
                 const parts = rawCode.split('-');
                 const subjPrefix = parts[1].toLowerCase();
                 const year = parts[2];
