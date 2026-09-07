@@ -30,9 +30,9 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="font-black text-lg md:text-xl tracking-wide text-white">Expedição Brasil</h1>
-                        <span class="bg-emerald-500/90 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-sm">Portal EAD</span>
+                        <span class="bg-emerald-500/90 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-sm">Plataforma Educacional</span>
                     </div>
-                    <p class="text-[10px] text-indigo-200">Plataforma Gamificada de Ensino Fundamental • Factual & Ilustrada</p>
+                    <p class="text-[10px] text-indigo-200">Plataforma Educacional Gamificada • Conteúdos de Apoio e Reforço Escolar</p>
                 </div>
             </div>
 
@@ -77,9 +77,9 @@
                 <div class="flex items-center gap-2 justify-center md:justify-start mb-1">
                     <span class="text-lg">🇧🇷</span>
                     <strong class="text-gray-800 font-black text-sm">Expedição Brasil</strong>
-                    <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9px] font-black uppercase px-2 py-0.2 rounded-full">Portal EAD Gamificado</span>
+                    <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9px] font-black uppercase px-2 py-0.2 rounded-full">Plataforma Educacional Interativa</span>
                 </div>
-                <p class="text-[11px] text-gray-400">Plataforma de Reforço Escolar, Cultura e Educação Cívica/Científica • Ensino Fundamental</p>
+                <p class="text-[11px] text-gray-400">Plataforma de Apoio ao Aprendizado, Cultura e Reforço Escolar • Ensino Fundamental</p>
             </div>
 
             <!-- Links Institucionais e Legais -->
@@ -4634,7 +4634,7 @@ let audioCtx = null;
 
             const achievements = [
                 { id: 'first_step', icon: '🌟', title: 'Primeiros Passos', desc: 'Concluiu a primeira aula no portal', unlocked: totalLessonsRead >= 1 },
-                { id: 'quiz_master', icon: '🎯', title: 'Mestre do Conhecimento', desc: 'Concluiu ao menos 1 Quiz oficial', unlocked: totalQuizzesPassed >= 1 },
+                { id: 'quiz_master', icon: '🎯', title: 'Mestre do Conhecimento', desc: 'Concluiu ao menos 1 Desafio de Matéria', unlocked: totalQuizzesPassed >= 1 },
                 { id: 'coin_collector', icon: '🪙', title: 'Cofre Dourado', desc: 'Acumulou mais de 10 moedas de ouro', unlocked: coins >= 10 },
                 { id: 'explorer_pro', icon: '🧭', title: 'Navegador Dedicado', desc: 'Leu mais de 15 capítulos pedagógicos', unlocked: totalLessonsRead >= 15 },
                 { id: 'champion', icon: '🏆', title: 'Expedição Completa', desc: 'Atingiu mais de 30 aulas concluídas', unlocked: totalLessonsRead >= 30 }
@@ -4736,7 +4736,7 @@ let audioCtx = null;
                                             <span>🏆</span> Emitir Certificado (${s.hours}h)
                                         </button>
                                     ` : `
-                                        <button onclick="window.soundWrong(); window.customAlert('🔒 <b>Certificado em Andamento!</b><br>Para desbloquear seu Certificado Oficial de <b>${s.hours} Horas</b> em <b>${s.name}</b>, conclua todas as ${s.totalChaps} aulas desta disciplina! (Progresso atual: ${s.percent}%)')" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold text-[11px] py-2 px-3.5 rounded-xl border border-gray-200 transition flex items-center justify-center gap-1 cursor-pointer">
+                                        <button onclick="window.soundWrong(); window.customAlert('🔒 <b>Certificado em Andamento!</b><br>Para desbloquear seu Certificado de Conclusão de <b>${s.hours} Horas de Estudos</b> em <b>${s.name}</b>, conclua todas as ${s.totalChaps} aulas desta disciplina! (Progresso atual: ${s.percent}%)')" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold text-[11px] py-2 px-3.5 rounded-xl border border-gray-200 transition flex items-center justify-center gap-1 cursor-pointer">
                                             <span>🔒</span> Bloqueado (${s.percent}%)
                                         </button>
                                     `}
@@ -4790,12 +4790,12 @@ let audioCtx = null;
 
                         <div class="flex items-center justify-center gap-2 mb-2">
                             <span class="text-3xl">🏛️</span>
-                            <span class="text-xs font-black uppercase tracking-widest text-amber-900">Portal Educacional Gamificado • Expedição Brasil</span>
+                            <span class="text-xs font-black uppercase tracking-widest text-amber-900">Plataforma Educacional Complementar • Expedição Brasil</span>
                             <span class="text-3xl">🏛️</span>
                         </div>
 
                         <h2 class="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-wider mb-2 font-serif">
-                            Certificado de Conclusão de Curso Livre
+                            Certificado de Conclusão de Estudos Complementares
                         </h2>
                         <span class="inline-block bg-amber-100 text-amber-950 font-black text-[10px] uppercase px-3 py-1 rounded-full border border-amber-300 mb-4">
                             Carga Horária Estimada: ${hours} Horas-Aula
@@ -4814,7 +4814,7 @@ let audioCtx = null;
 
                         <!-- Base Legal Discreta no Certificado -->
                         <p class="text-[9px] text-gray-500 max-w-lg mx-auto leading-tight italic mb-6">
-                            Certificado emitido como Curso Livre de Educação Não-Formal em conformidade com o Art. 205 da CF/88, Lei nº 9.394/1996 (LDB - Art. 39 a 42), Decreto Presidencial nº 5.154/2004 e Deliberação CEE 14/97.
+                            Certificado de Curso Livre emitido para fins de comprovação de conclusão e carga horária informada de estudos independentes (Lei nº 9.394/96 e Dec. nº 5.154/04). Destinado a enriquecimento curricular e portfólio. A aceitação para fins escolares ou acadêmicos depende das normas da instituição receptora.
                         </p>
 
                         <!-- Rodapé com Assinatura Institucional & Autenticidade -->
@@ -4822,7 +4822,7 @@ let audioCtx = null;
                             <div class="text-center">
                                 <div class="w-36 border-b border-gray-400 mb-1 mx-auto"></div>
                                 <span class="font-black text-gray-900 block text-[11px]">Conselho Pedagógico</span>
-                                <span class="text-[9px] text-gray-500">Expedição Brasil EAD</span>
+                                <span class="text-[9px] text-gray-500">Expedição Brasil • Plataforma Educacional</span>
                             </div>
 
                             <!-- Selo de Honra -->
@@ -4865,13 +4865,13 @@ let audioCtx = null;
                     <div class="flex items-center gap-3 pb-3 border-b border-gray-100 mb-4">
                         <span class="text-3xl p-2 bg-indigo-50 text-indigo-800 rounded-2xl border border-indigo-200">🔍</span>
                         <div>
-                            <h3 class="text-lg font-black text-gray-800">Validador Oficial de Certificados</h3>
-                            <p class="text-xs text-indigo-600 font-bold">Consulta Pública de Autenticidade & Registro EAD</p>
+                            <h3 class="text-lg font-black text-gray-800">Validador de Autenticidade de Certificados</h3>
+                            <p class="text-xs text-indigo-600 font-bold">Consulta Pública de Autenticidade de Estudos Complementares</p>
                         </div>
                     </div>
 
                     <p class="text-xs text-gray-600 mb-3 leading-relaxed">
-                        Digite o <b>Código de Registro</b> impresso no rodapé do certificado (ex: <code>EXP-HIS-2026-83921</code>) para confirmar sua autenticidade, carga horária e emissão oficial:
+                        Digite o <b>Código de Registro</b> impresso no rodapé do certificado (ex: <code>EXP-HIS-2026-83921</code>) para confirmar sua autenticidade, carga horária estimada e registro na plataforma:
                     </p>
 
                     <div class="flex gap-2 mb-4">
@@ -7090,7 +7090,7 @@ const ATLAS_ITEMS = {
                                 <div class="flex justify-between items-center bg-white p-5 rounded-3xl border border-gray-200 shadow-sm">
                                     <div>
                                         <h3 class="text-lg font-black text-gray-800">Corpo Docente & Educadores Cadastrados</h3>
-                                        <p class="text-xs text-gray-500">Acesso seguro e restrito à equipe pedagógica da instituição</p>
+                                        <p class="text-xs text-gray-500">Recursos de apoio pedagógico e materiais complementares para educadores e famílias</p>
                                     </div>
                                     <button onclick="window.setAdminLoginTab('register'); window.changeState('ADMIN_LOGIN');" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1.5">
                                         ➕ Cadastrar Novo Professor
@@ -9071,7 +9071,7 @@ window.nextChapter = function() {
         };
 
         window.finishModuleAndGoToQuiz = function(catId) {
-            window.customAlert('🎉 <b>Parabéns!</b><br>Você leu todas as aulas deste módulo! O Quiz oficial foi <b>DESBLOQUEADO</b>!');
+            window.customAlert('🎉 <b>Parabéns!</b><br>Você leu todas as aulas deste módulo! O Desafio Final da Matéria foi <b>DESBLOQUEADO</b>!');
             window.changeState('CATEGORY_SELECT');
         };
 
