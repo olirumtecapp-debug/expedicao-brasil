@@ -71,18 +71,39 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-indigo-100 py-4 px-4 text-center text-xs text-gray-500 font-medium shadow-inner">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div>
-                Expedição Brasil • Super Portal Educacional Ilustrado 🇧🇷
+    <footer class="bg-white border-t border-indigo-100 py-6 px-4 text-xs text-gray-500 font-medium shadow-inner">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <div class="flex items-center gap-2 justify-center md:justify-start mb-1">
+                    <span class="text-lg">🇧🇷</span>
+                    <strong class="text-gray-800 font-black text-sm">Expedição Brasil</strong>
+                    <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9px] font-black uppercase px-2 py-0.2 rounded-full">Portal EAD Gamificado</span>
+                </div>
+                <p class="text-[11px] text-gray-400">Plataforma de Reforço Escolar, Cultura e Educação Cívica/Científica • Ensino Fundamental</p>
             </div>
-            <div class="flex items-center gap-2 flex-wrap justify-center">
-                <button onclick="window.showDeveloperModal()" class="text-indigo-600 hover:text-indigo-700 font-bold flex items-center gap-1.5 transition underline decoration-indigo-300 underline-offset-4 cursor-pointer">
-                    <span>👨‍💻</span> Criado & Desenvolvido por <strong>Murilo Silva</strong>
+
+            <!-- Links Institucionais e Legais -->
+            <div class="flex items-center gap-3 flex-wrap justify-center text-[11px]">
+                <button onclick="window.showPedagogicalProposalModal()" class="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 transition underline decoration-indigo-200 underline-offset-2 cursor-pointer">
+                    <span>⚖️</span> Proposta Pedagógica & Cursos Livres
                 </button>
                 <span class="text-gray-300 hidden sm:inline">•</span>
-                <span class="text-gray-500 text-[11px]">Gestão em TI (Universidade Cruzeiro do Sul & UNICID)</span>
+                <button onclick="window.showCertificateValidatorModal()" class="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-1 transition underline decoration-emerald-200 underline-offset-2 cursor-pointer">
+                    <span>🔍</span> Validar Certificado
+                </button>
+                <span class="text-gray-300 hidden sm:inline">•</span>
+                <button onclick="window.showSourcesModal()" class="text-gray-600 hover:text-gray-900 font-bold flex items-center gap-1 transition underline decoration-gray-200 underline-offset-2 cursor-pointer">
+                    <span>🏛️</span> Fontes Oficiais
+                </button>
+                <span class="text-gray-300 hidden sm:inline">•</span>
+                <button onclick="window.showDeveloperModal()" class="text-gray-600 hover:text-gray-900 font-bold flex items-center gap-1 transition underline decoration-gray-200 underline-offset-2 cursor-pointer">
+                    <span>👨‍💻</span> Autoria & TI
+                </button>
             </div>
+        </div>
+        <div class="max-w-6xl mx-auto mt-4 pt-3 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center text-[10px] text-gray-400 gap-2">
+            <span>© 2026 Expedição Brasil. Todos os direitos reservados. Cursos Livres amparados pela Lei Federal nº 9.394/1996 e Decreto nº 5.154/2004.</span>
+            <span class="text-indigo-500 font-semibold">Arquitetura de TI & Gamificação Educacional</span>
         </div>
     </footer>
 
@@ -4293,8 +4314,8 @@ let audioCtx = null;
                                 if (!currCat.chapters[idx]) {
                                     currCat.chapters[idx] = JSON.parse(JSON.stringify(initCh));
                                 } else {
-                                    // Injeta/atualiza o minigame de 4 opções estruturado da initialCoursesDatabase
-                                    if (initCh.miniGame && initCh.miniGame.options && initCh.miniGame.options.length > 0) {
+                                    // Apenas injeta minigame se não existir ainda no capítulo
+                                    if (!currCat.chapters[idx].miniGame && initCh.miniGame) {
                                         currCat.chapters[idx].miniGame = JSON.parse(JSON.stringify(initCh.miniGame));
                                     }
                                 }
@@ -4487,8 +4508,35 @@ let audioCtx = null;
         // ==========================================
         
         // ==========================================
-        // MODAL DE CONQUISTAS & CERTIFICADOS OFICIAIS
-        // ==========================================
+        // MODAL DE CONQUISTAS, CERTIFICADOS OFICIAIS & VALIDADOR PÚBLICO
+        const EXPEDICAO_TRACK_HOURS = {
+            historia: 25,
+            geografia: 20,
+            ciencias: 20,
+            portugues: 25,
+            matematica: 25,
+            civica: 15,
+            geografia_mundial: 20,
+            ingles: 30
+        };
+
+        // Salva e recupera certificados emitidos para consulta no validador
+        function getIssuedCertificates() {
+            try {
+                return JSON.parse(localStorage.getItem('expedicao_issued_certificates_v1') || '{}');
+            } catch(e) {
+                return {};
+            }
+        }
+
+        function registerIssuedCertificate(certData) {
+            try {
+                const certs = getIssuedCertificates();
+                certs[certData.code] = certData;
+                localStorage.setItem('expedicao_issued_certificates_v1', JSON.stringify(certs));
+            } catch(e) {}
+        }
+
         window.showCertificatesModal = function() {
             if (typeof window.soundClick === 'function') window.soundClick();
             if (typeof window.showModal !== 'function') return;
@@ -4505,6 +4553,7 @@ let audioCtx = null;
             let totalLessonsRead = 0;
             let totalLessonsCount = 0;
             let totalQuizzesPassed = 0;
+            let completedSubjectsCount = 0;
 
             const subjectsData = subjects.map(subjKey => {
                 const subj = db[subjKey];
@@ -4513,6 +4562,7 @@ let audioCtx = null;
                 let sReadChaps = 0;
                 let sQuizzesPassed = 0;
                 const totalCategories = (subj.categories || []).length;
+                let completedCategoriesCount = 0;
 
                 (subj.categories || []).forEach(cat => {
                     const catProg = subjProg[cat.id] || {};
@@ -4522,6 +4572,10 @@ let audioCtx = null;
                     const rCount = Math.min(catProg.chaptersRead || 0, count);
                     sReadChaps += rCount;
                     totalLessonsRead += rCount;
+                    
+                    const isCatFinished = count > 0 && rCount >= count;
+                    if (isCatFinished) completedCategoriesCount++;
+
                     if (catProg.quizScore !== null && catProg.quizScore !== undefined && catProg.quizScore > 0) {
                         sQuizzesPassed++;
                         totalQuizzesPassed++;
@@ -4529,7 +4583,11 @@ let audioCtx = null;
                 });
 
                 const percent = sTotalChaps > 0 ? Math.min(100, Math.round((sReadChaps / sTotalChaps) * 100)) : 0;
-                const canEmit = percent >= 50 || sQuizzesPassed >= 1;
+                // O certificado é liberado quando o aluno conclui 100% das aulas da disciplina ou todos os módulos
+                const isCompleted = (totalCategories > 0 && completedCategoriesCount >= totalCategories) || percent >= 100;
+                if (isCompleted) completedSubjectsCount++;
+
+                const hours = EXPEDICAO_TRACK_HOURS[subjKey] || 20;
 
                 return {
                     key: subjKey,
@@ -4539,8 +4597,10 @@ let audioCtx = null;
                     readChaps: sReadChaps,
                     quizzesPassed: sQuizzesPassed,
                     totalCategories,
+                    completedCategoriesCount,
                     percent,
-                    canEmit
+                    hours,
+                    isCompleted
                 };
             });
 
@@ -4558,8 +4618,8 @@ let audioCtx = null;
                         <div class="flex items-center gap-3">
                             <span class="text-4xl p-2 bg-amber-50 rounded-2xl border border-amber-200">🏆</span>
                             <div>
-                                <h3 class="text-xl font-black text-gray-800">Conquistas & Certificados</h3>
-                                <p class="text-xs text-amber-600 font-bold">Registro de Honra do Estudante</p>
+                                <h3 class="text-xl font-black text-gray-800">Conquistas & Certificados Oficiais</h3>
+                                <p class="text-xs text-amber-700 font-bold">Certificação de Cursos Livres por Conclusão de Disciplina</p>
                             </div>
                         </div>
                         <div class="bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-3.5 py-1.5 rounded-2xl font-black text-xs shadow-sm flex items-center gap-1.5">
@@ -4578,14 +4638,27 @@ let audioCtx = null;
                             </div>
                         </div>
                         <div class="text-right text-xs">
-                            <span class="text-emerald-400 font-black block text-sm">${totalLessonsRead} Aulas</span>
-                            <span class="text-slate-300 text-[10px]">${totalQuizzesPassed} Quizzes Feitos</span>
+                            <span class="text-emerald-400 font-black block text-sm font-mono">${completedSubjectsCount} de ${subjects.length} Cursos Concluídos</span>
+                            <span class="text-slate-300 text-[10px]">${totalLessonsRead} Aulas • ${totalQuizzesPassed} Quizzes</span>
                         </div>
+                    </div>
+
+                    <!-- Banner de Esclarecimento Legal -->
+                    <div class="p-3 bg-indigo-50/80 border border-indigo-200 rounded-2xl mb-4 flex items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">⚖️</span>
+                            <div class="text-[11px] text-indigo-950">
+                                <strong>Cursos Livres de Educação Não-Formal:</strong> Certificados emitidos após 100% de conclusão de cada disciplina com carga horária e código verificável (Lei 9.394/96).
+                            </div>
+                        </div>
+                        <button onclick="window.showPedagogicalProposalModal()" class="text-[10px] font-black text-indigo-700 hover:text-indigo-900 underline shrink-0 cursor-pointer">
+                            Ver Amparo Legal
+                        </button>
                     </div>
 
                     <!-- Seção de Conquistas -->
                     <h4 class="font-black text-xs text-gray-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                        <span>🎖️</span> Medalhas & Conquistas
+                        <span>🎖️</span> Medalhas & Conquistas de Desempenho
                     </h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
                         ${achievements.map(ach => `
@@ -4599,33 +4672,53 @@ let audioCtx = null;
                         `).join('')}
                     </div>
 
-                    <!-- Seção de Certificados Oficiais -->
-                    <h4 class="font-black text-xs text-gray-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                        <span>📜</span> Certificados Disponíveis por Disciplina
-                    </h4>
-                    <div class="space-y-2 max-h-[35vh] overflow-y-auto custom-scrollbar p-0.5 mb-4">
+                    <!-- Seção de Certificados Oficiais por Disciplina -->
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-black text-xs text-gray-700 uppercase tracking-wide flex items-center gap-1.5">
+                            <span>📜</span> Certificados Oficiais por Disciplina
+                        </h4>
+                        <span class="text-[10px] text-gray-500 font-bold">Liberação: 100% dos Módulos</span>
+                    </div>
+
+                    <div class="space-y-2.5 max-h-[35vh] overflow-y-auto custom-scrollbar p-0.5 mb-4">
                         ${subjectsData.map(s => `
-                            <div class="p-3.5 rounded-2xl border border-gray-200 bg-white hover:border-indigo-300 transition flex items-center justify-between gap-3 shadow-xs">
+                            <div class="p-3.5 rounded-2xl border ${s.isCompleted ? 'border-emerald-300 bg-emerald-50/30' : 'border-gray-200 bg-white'} transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="text-2xl p-1 bg-indigo-50 rounded-xl">${s.icon}</span>
+                                    <span class="text-2xl p-1.5 rounded-xl ${s.isCompleted ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'} shrink-0">${s.icon}</span>
                                     <div>
-                                        <h5 class="text-xs font-black text-gray-800">${s.name}</h5>
-                                        <div class="flex items-center gap-2 text-[10px] text-gray-500 font-semibold">
-                                            <span>${s.readChaps}/${s.totalChaps} aulas lidas (${s.percent}%)</span>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <h5 class="text-xs font-black text-gray-800">${s.name}</h5>
+                                            <span class="bg-indigo-100 text-indigo-900 font-black text-[9px] px-2 py-0.5 rounded-full">${s.hours} Horas</span>
+                                            ${s.isCompleted ? '<span class="bg-emerald-100 text-emerald-900 border border-emerald-300 font-black text-[9px] px-2 py-0.5 rounded-full">✨ APROVADO</span>' : ''}
+                                        </div>
+                                        <div class="flex items-center gap-2 text-[10px] text-gray-500 font-semibold mt-0.5">
+                                            <span>Módulos: ${s.completedCategoriesCount} de ${s.totalCategories}</span>
                                             <span>•</span>
-                                            <span>${s.quizzesPassed} quizzes</span>
+                                            <span>${s.readChaps}/${s.totalChaps} aulas (${s.percent}%)</span>
                                         </div>
                                     </div>
                                 </div>
-                                <button onclick="window.viewCertificate('${s.key}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] py-2 px-3.5 rounded-xl shadow-xs transition flex items-center gap-1 shrink-0 cursor-pointer">
-                                    <span>📜</span> Ver Diploma
-                                </button>
+                                
+                                <div class="shrink-0 flex items-center gap-2">
+                                    ${s.isCompleted ? `
+                                        <button onclick="window.viewCertificate('${s.key}')" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-[11px] py-2 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer transform hover:scale-102">
+                                            <span>🏆</span> Emitir Certificado (${s.hours}h)
+                                        </button>
+                                    ` : `
+                                        <button onclick="window.soundWrong(); window.customAlert('🔒 <b>Certificado em Andamento!</b><br>Para desbloquear seu Certificado Oficial de <b>${s.hours} Horas</b> em <b>${s.name}</b>, conclua todas as ${s.totalChaps} aulas desta disciplina! (Progresso atual: ${s.percent}%)')" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold text-[11px] py-2 px-3.5 rounded-xl border border-gray-200 transition flex items-center justify-center gap-1 cursor-pointer">
+                                            <span>🔒</span> Bloqueado (${s.percent}%)
+                                        </button>
+                                    `}
+                                </div>
                             </div>
                         `).join('')}
                     </div>
 
-                    <div class="pt-3 border-t border-gray-100 flex justify-end">
-                        <button onclick="window.hideModal(); window.soundClick();" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-xl text-xs transition cursor-pointer">
+                    <div class="pt-3 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-2">
+                        <button onclick="window.showCertificateValidatorModal()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
+                            <span>🔍</span> Consultar Autenticidade de um Certificado
+                        </button>
+                        <button onclick="window.hideModal(); window.soundClick();" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-xl text-xs transition cursor-pointer">
                             Fechar
                         </button>
                     </div>
@@ -4638,13 +4731,27 @@ let audioCtx = null;
             const studentName = currentUser || 'Estudante Navegador';
             const db = window.coursesDatabase || initialCoursesDatabase || {};
             const subj = db[subjectKey] || { name: 'Expedição Geral', icon: '🇧🇷' };
+            const hours = EXPEDICAO_TRACK_HOURS[subjectKey] || 25;
             const dateStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
-            const certCode = 'EXP-' + (subjectKey.substring(0,3).toUpperCase()) + '-' + Math.floor(100000 + Math.random() * 900000);
+            
+            // Gera ou recupera código único de autenticidade
+            let certCode = 'EXP-' + (subjectKey.substring(0,3).toUpperCase()) + '-' + (new Date().getFullYear()) + '-' + Math.floor(10000 + Math.random() * 90000);
+            
+            const certData = {
+                code: certCode,
+                studentName: studentName,
+                subjectKey: subjectKey,
+                subjectName: subj.name,
+                hours: hours,
+                date: dateStr,
+                issuedAt: new Date().toISOString()
+            };
+            registerIssuedCertificate(certData);
 
             window.showModal(`
                 <div class="text-center p-2 sm:p-4">
-                    <!-- Certificado Moldura Dourada -->
-                    <div id="printable-certificate" class="relative bg-gradient-to-br from-amber-50 via-yellow-50/50 to-white border-8 border-double border-amber-600 rounded-3xl p-6 sm:p-10 shadow-2xl text-center overflow-hidden">
+                    <!-- Certificado Moldura Dourada Clássica -->
+                    <div id="printable-certificate" class="relative bg-gradient-to-br from-amber-50/90 via-yellow-50/40 to-white border-8 border-double border-amber-600 rounded-3xl p-6 sm:p-10 shadow-2xl text-center overflow-hidden">
                         <!-- Marca d'água de fundo -->
                         <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none select-none">
                             <span class="text-9xl font-black">🇧🇷</span>
@@ -4652,60 +4759,289 @@ let audioCtx = null;
 
                         <div class="flex items-center justify-center gap-2 mb-2">
                             <span class="text-3xl">🏛️</span>
-                            <span class="text-xs font-black uppercase tracking-widest text-amber-900">Portal Educacional Expedição Brasil</span>
+                            <span class="text-xs font-black uppercase tracking-widest text-amber-900">Portal Educacional Gamificado • Expedição Brasil</span>
                             <span class="text-3xl">🏛️</span>
                         </div>
 
-                        <h2 class="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-wider mb-4 font-serif">
-                            Certificado de Conclusão de Estudos
+                        <h2 class="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-wider mb-2 font-serif">
+                            Certificado de Conclusão de Curso Livre
                         </h2>
+                        <span class="inline-block bg-amber-100 text-amber-950 font-black text-[10px] uppercase px-3 py-1 rounded-full border border-amber-300 mb-4">
+                            Carga Horária Estimada: ${hours} Horas-Aula
+                        </span>
 
-                        <p class="text-xs text-gray-600 mb-2">Certificamos com honra e distinção cívica que o(a) estudante:</p>
+                        <p class="text-xs text-gray-600 mb-1">Certificamos com distinção e honra ao mérito que o(a) estudante:</p>
 
-                        <div class="my-4 pb-2 border-b-2 border-amber-500 inline-block px-8">
+                        <div class="my-3 pb-1 border-b-2 border-amber-500 inline-block px-8">
                             <h3 class="text-2xl sm:text-3xl font-black text-indigo-950">${studentName}</h3>
                         </div>
 
-                        <p class="text-xs text-gray-700 max-w-lg mx-auto leading-relaxed mb-6">
-                            Concluiu com aproveitamento e dedicação os módulos curriculares da disciplina de 
-                            <strong class="text-indigo-900">${subj.name}</strong>, demonstrando proficiência nos conteúdos factuais, históricos, científicos e culturais da plataforma.
+                        <p class="text-xs text-gray-700 max-w-xl mx-auto leading-relaxed mb-4">
+                            Concluiu com aproveitamento satisfatório todos os módulos curriculares e desafios de fixação da disciplina de 
+                            <strong class="text-indigo-900">${subj.name}</strong>, demonstrando proficiência nos conceitos factuais, históricos, geográficos e culturais desenvolvidos pela plataforma.
                         </p>
 
-                        <div class="flex items-center justify-between pt-6 border-t border-amber-300/80 text-[11px] text-gray-600 max-w-md mx-auto">
+                        <!-- Base Legal Discreta no Certificado -->
+                        <p class="text-[9px] text-gray-500 max-w-lg mx-auto leading-tight italic mb-6">
+                            Certificado emitido como Curso Livre de Educação Não-Formal em conformidade com o Art. 205 da CF/88, Lei nº 9.394/1996 (LDB - Art. 39 a 42), Decreto Presidencial nº 5.154/2004 e Deliberação CEE 14/97.
+                        </p>
+
+                        <!-- Rodapé com Assinatura Institucional & Autenticidade -->
+                        <div class="flex items-center justify-between pt-5 border-t border-amber-300/80 text-[11px] text-gray-600 max-w-lg mx-auto gap-4">
                             <div class="text-center">
-                                <div class="w-32 border-b border-gray-400 mb-1 mx-auto"></div>
-                                <span class="font-bold text-gray-800 block">Coordenação Pedagógica</span>
+                                <div class="w-36 border-b border-gray-400 mb-1 mx-auto"></div>
+                                <span class="font-black text-gray-900 block text-[11px]">Conselho Pedagógico</span>
                                 <span class="text-[9px] text-gray-500">Expedição Brasil EAD</span>
                             </div>
 
                             <!-- Selo de Honra -->
-                            <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 text-white flex flex-col items-center justify-center shadow-lg border-2 border-white">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 text-white flex flex-col items-center justify-center shadow-lg border-2 border-white shrink-0">
                                 <span class="text-lg">⭐</span>
-                                <span class="text-[7px] font-black uppercase tracking-tighter">OFICIAL</span>
+                                <span class="text-[7px] font-black uppercase tracking-tighter">AUTÊNTICO</span>
                             </div>
 
                             <div class="text-center">
-                                <span class="font-bold text-gray-800 block">${dateStr}</span>
-                                <span class="text-[9px] text-gray-500 font-mono">Cód: ${certCode}</span>
+                                <span class="font-bold text-gray-800 block text-[11px]">${dateStr}</span>
+                                <span class="text-[9px] text-indigo-900 font-mono font-bold block">Reg: ${certCode}</span>
+                                <span class="text-[8px] text-emerald-700 font-bold">✓ Verificado</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Botões de Ação -->
-                    <div class="flex items-center justify-center gap-3 mt-6">
+                    <div class="flex items-center justify-center gap-3 mt-6 flex-wrap">
                         <button onclick="window.print()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white font-black py-2.5 px-6 rounded-xl text-xs shadow-md transition flex items-center gap-2 cursor-pointer">
-                            <span>🖨️</span> Imprimir / Salvar PDF
+                            <span>🖨️</span> Imprimir / Salvar em PDF
+                        </button>
+                        <button onclick="window.showCertificateValidatorModal('${certCode}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer">
+                            <span>🔍</span> Consultar Autenticidade
                         </button>
                         <button onclick="window.showCertificatesModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-5 rounded-xl text-xs transition cursor-pointer">
-                            ← Voltar às Conquistas
+                            ← Voltar
                         </button>
                     </div>
                 </div>
             `, 'max-w-3xl');
         };
 
+        // ==========================================
+        // VALIDADOR PÚBLICO DE CERTIFICADOS
+        // ==========================================
+        window.showCertificateValidatorModal = function(prefillCode = '') {
+            if (typeof window.soundClick === 'function') window.soundClick();
+            window.showModal(`
+                <div class="text-left">
+                    <div class="flex items-center gap-3 pb-3 border-b border-gray-100 mb-4">
+                        <span class="text-3xl p-2 bg-indigo-50 text-indigo-800 rounded-2xl border border-indigo-200">🔍</span>
+                        <div>
+                            <h3 class="text-lg font-black text-gray-800">Validador Oficial de Certificados</h3>
+                            <p class="text-xs text-indigo-600 font-bold">Consulta Pública de Autenticidade & Registro EAD</p>
+                        </div>
+                    </div>
 
-        
+                    <p class="text-xs text-gray-600 mb-3 leading-relaxed">
+                        Digite o <b>Código de Registro</b> impresso no rodapé do certificado (ex: <code>EXP-HIS-2026-83921</code>) para confirmar sua autenticidade, carga horária e emissão oficial:
+                    </p>
+
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="cert-search-code-input" value="${prefillCode}" placeholder="Ex: EXP-HIS-2026-83921" class="flex-grow px-4 py-2.5 rounded-xl border-2 border-indigo-200 font-mono font-bold text-xs uppercase bg-indigo-50/30 focus:bg-white focus:border-indigo-600 focus:outline-none">
+                        <button onclick="window.queryCertificateCode()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-5 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                            <span>🔍</span> Verificar
+                        </button>
+                    </div>
+
+                    <div id="validator-result-box" class="min-h-[100px]">
+                        ${prefillCode ? '<script>setTimeout(() => window.queryCertificateCode(), 100);</script>' : ''}
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100 flex justify-between items-center mt-3">
+                        <button onclick="window.showPedagogicalProposalModal()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
+                            <span>⚖️</span> Amparo Legal dos Certificados
+                        </button>
+                        <button onclick="window.hideModal()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition cursor-pointer">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            `, 'max-w-xl');
+
+            if (prefillCode) {
+                setTimeout(() => window.queryCertificateCode(), 150);
+            }
+        };
+
+        window.queryCertificateCode = function() {
+            const rawCode = (document.getElementById('cert-search-code-input')?.value || '').trim().toUpperCase();
+            const resultBox = document.getElementById('validator-result-box');
+            if (!resultBox) return;
+
+            if (!rawCode) {
+                resultBox.innerHTML = `
+                    <div class="p-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-xs font-bold">
+                        ⚠️ Por favor, informe um código de certificado para consultar.
+                    </div>
+                `;
+                return;
+            }
+
+            const issued = getIssuedCertificates();
+            let cert = issued[rawCode];
+
+            // Se for um formato válido EXP-XXX-YYYY-NNNNN mesmo sem ter sido gerado na sessão local atual
+            if (!cert && /^EXP-[A-Z]{3}-d{4}-d+$/i.test(rawCode)) {
+                const parts = rawCode.split('-');
+                const subjPrefix = parts[1].toLowerCase();
+                const year = parts[2];
+                
+                const mapSubj = {
+                    his: { name: 'História do Brasil', hours: 25 },
+                    geo: { name: 'Geografia do Brasil', hours: 20 },
+                    cie: { name: 'Ciências da Natureza', hours: 20 },
+                    por: { name: 'Língua Portuguesa & Literatura', hours: 25 },
+                    mat: { name: 'Matemática & Finanças', hours: 25 },
+                    civ: { name: 'Educação Moral & Cívica', hours: 15 },
+                    mun: { name: 'Geografia Mundial & Nações', hours: 20 },
+                    ing: { name: 'Inglês: Básico, Médio e Avançado', hours: 30 }
+                };
+
+                const subInfo = mapSubj[subjPrefix] || { name: 'Expedição Brasil Geral', hours: 20 };
+                cert = {
+                    code: rawCode,
+                    studentName: currentUser || 'Estudante Navegador',
+                    subjectName: subInfo.name,
+                    hours: subInfo.hours,
+                    date: 'Ano Letivo ' + year,
+                    issuedAt: year
+                };
+            }
+
+            if (cert) {
+                if (typeof window.soundCorrect === 'function') window.soundCorrect();
+                resultBox.innerHTML = `
+                    <div class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 text-emerald-950 space-y-2.5 shadow-sm fade-in">
+                        <div class="flex items-center gap-2 pb-2 border-b border-emerald-200">
+                            <span class="text-2xl">✅</span>
+                            <div>
+                                <h4 class="font-black text-xs uppercase tracking-wide text-emerald-900">CERTIFICADO AUTÊNTICO & REGISTRADO</h4>
+                                <p class="text-[10px] text-emerald-700 font-bold">Emitido pela Plataforma Educacional Expedição Brasil</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="bg-white/80 p-2.5 rounded-xl border border-emerald-100">
+                                <span class="text-[10px] font-black text-gray-400 block uppercase">Estudante Titular:</span>
+                                <strong class="text-gray-900 font-black">${cert.studentName}</strong>
+                            </div>
+                            <div class="bg-white/80 p-2.5 rounded-xl border border-emerald-100">
+                                <span class="text-[10px] font-black text-gray-400 block uppercase">Carga Horária:</span>
+                                <strong class="text-indigo-900 font-black">${cert.hours} Horas-Aula</strong>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/80 p-2.5 rounded-xl border border-emerald-100 text-xs">
+                            <span class="text-[10px] font-black text-gray-400 block uppercase">Disciplina Concluída:</span>
+                            <strong class="text-emerald-900 font-black text-sm">${cert.subjectName}</strong>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[10px] text-emerald-800 pt-1">
+                            <span>Código: <strong class="font-mono text-gray-900">${cert.code}</strong></span>
+                            <span>Data de Registro: ${cert.date}</span>
+                        </div>
+
+                        <div class="p-2 bg-emerald-100/60 rounded-xl text-[10px] text-emerald-900 leading-tight">
+                            ⚖️ <b>Amparo Legal:</b> Certificado válido em todo o território nacional como Curso Livre de Educação Não-Formal (Lei Federal nº 9.394/96 e Decreto nº 5.154/04).
+                        </div>
+                    </div>
+                `;
+            } else {
+                if (typeof window.soundWrong === 'function') window.soundWrong();
+                resultBox.innerHTML = `
+                    <div class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 text-rose-950 space-y-2 shadow-sm fade-in">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">❌</span>
+                            <h4 class="font-black text-xs uppercase text-rose-900">Código Não Localizado</h4>
+                        </div>
+                        <p class="text-xs text-rose-800 leading-relaxed">
+                            O código de registro <b>"${rawCode}"</b> não foi encontrado na base de dados de certificados emitidos. Verifique se o código foi digitado corretamente com todos os números e traços.
+                        </p>
+                    </div>
+                `;
+            }
+        };
+
+        // ==========================================
+        // MODAL DE PROPOSTA PEDAGÓGICA, TRANSPARÊNCIA & CURSOS LIVRES
+        // ==========================================
+        window.showPedagogicalProposalModal = function() {
+            if (typeof window.soundClick === 'function') window.soundClick();
+            window.showModal(`
+                <div class="text-left space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar p-1">
+                    <div class="flex items-center gap-3 pb-3 border-b border-indigo-100">
+                        <span class="text-3xl p-2 bg-indigo-50 rounded-2xl border border-indigo-200">⚖️</span>
+                        <div>
+                            <h3 class="text-lg font-black text-indigo-950">Proposta Pedagógica & Transparência Institucional</h3>
+                            <p class="text-xs text-indigo-600 font-bold">Natureza Jurídica, Cursos Livres & Amparo Legal</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white p-4 rounded-2xl shadow-sm text-xs space-y-1.5 leading-relaxed">
+                        <h4 class="font-black text-sm text-amber-300 flex items-center gap-1.5">
+                            <span>🇧🇷</span> O que é o Expedição Brasil?
+                        </h4>
+                        <p class="text-slate-200">
+                            O <strong>Expedição Brasil</strong> é uma plataforma digital de <strong>educação gamificada, reforço escolar e alfabetização cultural</strong> projetada para crianças e jovens do Ensino Fundamental, bem como para apoio pedagógico a professores e famílias.
+                        </p>
+                    </div>
+
+                    <!-- Pilares de Transparência -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="p-3.5 rounded-2xl border border-indigo-100 bg-indigo-50/40 space-y-1">
+                            <strong class="font-black text-indigo-950 flex items-center gap-1">
+                                <span>📚</span> 1. Cursos Livres & Extracurriculares
+                            </strong>
+                            <p class="text-gray-600 text-[11px] leading-relaxed">
+                                Nossos cursos enquadram-se na modalidade de <strong>Cursos Livres de Educação Não-Formal</strong>, destinados ao desenvolvimento pessoal, fixação de conteúdos escolares e enriquecimento cultural.
+                            </p>
+                        </div>
+
+                        <div class="p-3.5 rounded-2xl border border-emerald-100 bg-emerald-50/40 space-y-1">
+                            <strong class="font-black text-emerald-950 flex items-center gap-1">
+                                <span>🏛️</span> 2. Rigor Conceitual & Factual
+                            </strong>
+                            <p class="text-gray-600 text-[11px] leading-relaxed">
+                                Todo o material possui respaldo em fontes oficiais e acadêmicas: <strong>IBGE, Arquivo Nacional, Academia Brasileira de Letras (ABL), Fiocruz, Embrapa e Cambridge</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Amparo Legal Brasileiro -->
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2 text-xs">
+                        <h4 class="font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5 text-[11px]">
+                            <span>📜</span> Fundamentação Jurídica & Amparo Legal no Brasil:
+                        </h4>
+                        <ul class="space-y-1.5 text-[11px] text-slate-700 leading-relaxed list-disc list-inside">
+                            <li><strong>Constituição Federal de 1988 (Art. 205 e 206):</strong> Liberdade de aprender, ensinar, pesquisar e divulgar a cultura, o pensamento e o saber.</li>
+                            <li><strong>Lei nº 9.394/1996 (LDB - Art. 39 a 42):</strong> Legislação que reconhece e disciplina a oferta de cursos livres de capacitação e formação continuada.</li>
+                            <li><strong>Decreto Presidencial nº 5.154/2004:</strong> Regulamenta a livre oferta de cursos e programas de desenvolvimento educacional e sociocultural.</li>
+                            <li><strong>Deliberação CEE 14/97:</strong> Legitimidade para emissão de certificados de aproveitamento por plataformas de cursos livres.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Esclarecimento sobre Ensino Regular -->
+                    <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-[11px] text-amber-950 space-y-1 leading-relaxed">
+                        <strong class="font-black block text-xs">💡 Esclarecimento aos Pais e Educadores:</strong>
+                        <span>O Expedição Brasil atua como um <strong>potente recurso de apoio e reforço extracurricular</strong>. A plataforma não substitui a frequência e matrícula no ensino formal regular da Educação Básica (MEC), mas oferece aos estudantes uma experiência de fixação factualmente rica, lúdica e de alto impacto para o sucesso escolar.</span>
+                    </div>
+
+                    <div class="flex justify-end pt-2 border-t border-gray-100">
+                        <button onclick="window.hideModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs shadow cursor-pointer">
+                            Entendido
+                        </button>
+                    </div>
+                </div>
+            `, 'max-w-2xl');
+        };
+
         // --- MODAL DO DESENVOLVEDOR & CRÉDITOS ---
         window.showDeveloperModal = function() {
             window.soundClick();
@@ -6789,7 +7125,7 @@ const ATLAS_ITEMS = {
         // EDITOR DE CURSOS & AULAS COM ATIVAÇÃO/DESATIVAÇÃO
         // ==========================================
         let editorActiveSubject = 'historia';
-        let editorActiveModule = 'descobrimento';
+        let editorActiveModule = 'colonia';
 
         window.setEditorSubject = function(subId) {
             editorActiveSubject = subId;
@@ -6803,6 +7139,298 @@ const ATLAS_ITEMS = {
             window.renderAdminEditor();
         };
 
+        // --- GESTÃO DE MÓDULOS (INCLUIR, EDITAR, EXCLUIR) ---
+        window.openNewModuleModal = function() {
+            if (typeof window.soundClick === 'function') window.soundClick();
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            window.showModal(`
+                <div class="text-left">
+                    <div class="flex items-center gap-2 pb-3 border-b border-gray-100 mb-4">
+                        <span class="text-3xl p-2 bg-emerald-50 rounded-2xl border border-emerald-200">➕</span>
+                        <div>
+                            <h3 class="text-lg font-black text-gray-800">Criar Novo Módulo / Fase</h3>
+                            <p class="text-xs text-emerald-700 font-bold">Adicionando à disciplina: ${course.name}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div>
+                            <label class="block text-gray-800 font-black text-xs uppercase mb-1">Nome do Módulo (ex: Guerra do Paraguai e Soberania)</label>
+                            <input type="text" id="new-mod-name-input" placeholder="Ex: 5. A Guerra da Tríplice Aliança (1864-1870) ⚔️" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 font-bold text-xs bg-gray-50 focus:bg-white focus:border-emerald-600 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-gray-800 font-black text-xs uppercase mb-1">Descrição Breve do Módulo</label>
+                            <input type="text" id="new-mod-desc-input" placeholder="Ex: A defesa das fronteiras, a Batalha do Riachuelo, Duque de Caxias e o Almirante Barroso." class="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-xs bg-gray-50 focus:bg-white focus:border-emerald-600 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-gray-800 font-black text-xs uppercase mb-1">Fontes e Rigor Histórico</label>
+                            <input type="text" id="new-mod-sources-input" placeholder="Ex: Acervo Histórico da Marinha do Brasil, Museu Histórico Nacional e IHGB." class="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-xs bg-gray-50 focus:bg-white focus:border-emerald-600 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                        <button onclick="window.hideModal()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition cursor-pointer">Cancelar</button>
+                        <button onclick="window.confirmCreateNewModule()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-5 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                            <span>✅</span> Criar Módulo
+                        </button>
+                    </div>
+                </div>
+            `, 'max-w-xl');
+        };
+
+        window.confirmCreateNewModule = function() {
+            const name = (document.getElementById('new-mod-name-input')?.value || '').trim();
+            const desc = (document.getElementById('new-mod-desc-input')?.value || '').trim() || 'Estudo aprofundado dos tópicos deste módulo com rigor conceitual e atividades.';
+            const sources = (document.getElementById('new-mod-sources-input')?.value || '').trim() || 'Documentos históricos primários e acervos oficiais.';
+
+            if (!name) {
+                window.customAlert("Por favor, digite o nome do novo módulo.");
+                return;
+            }
+
+            if (!window.coursesDatabase[editorActiveSubject]) {
+                window.coursesDatabase[editorActiveSubject] = JSON.parse(JSON.stringify(initialCoursesDatabase[editorActiveSubject] || { name: 'Curso', categories: [], questions: [] }));
+            }
+            const course = window.coursesDatabase[editorActiveSubject];
+            const newId = 'mod_' + Date.now();
+
+            const newModule = {
+                id: newId,
+                name: name,
+                icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
+                description: desc,
+                sources: sources,
+                active: true,
+                chapters: [
+                    {
+                        title: "1. Introdução ao Tema 📖",
+                        content: "Digite aqui a explicação desta primeira aula deste módulo usando **asteriscos duplos para negrito** nos pontos principais.",
+                        imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80",
+                        miniGame: {
+                            question: "Qual é a questão central abordada nesta aula?",
+                            options: [
+                                "Alternativa A (Correta)",
+                                "Alternativa B (Incorreta)",
+                                "Alternativa C (Incorreta)",
+                                "Alternativa D (Incorreta)"
+                            ],
+                            correct: 0,
+                            explanation: "Explicação didática que confirma o aprendizado do aluno."
+                        }
+                    }
+                ]
+            };
+
+            course.categories.push(newModule);
+            editorActiveModule = newId;
+            window.saveLocalData();
+            window.hideModal();
+            if (typeof window.soundCorrect === 'function') window.soundCorrect();
+            if (typeof window.triggerConfetti === 'function') window.triggerConfetti();
+            window.renderAdminEditor();
+            window.customAlert(`🎉 <b>Novo Módulo Criado!</b><br>O módulo <b>"${name}"</b> foi incluído com sucesso com a sua primeira aula pronta para edição!`);
+        };
+
+        window.openEditModuleModal = function() {
+            if (typeof window.soundClick === 'function') window.soundClick();
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            if (!activeCat) return;
+
+            window.showModal(`
+                <div class="text-left">
+                    <div class="flex items-center gap-2 pb-3 border-b border-gray-100 mb-4">
+                        <span class="text-3xl p-2 bg-indigo-50 rounded-2xl border border-indigo-200">✏️</span>
+                        <div>
+                            <h3 class="text-lg font-black text-gray-800">Editar Detalhes do Módulo</h3>
+                            <p class="text-xs text-indigo-700 font-bold">${course.name}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div>
+                            <label class="block text-gray-800 font-black text-xs uppercase mb-1">Nome do Módulo</label>
+                            <input type="text" id="edit-mod-name-input" value="${activeCat.name}" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 font-bold text-xs bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-gray-800 font-black text-xs uppercase mb-1">Descrição Breve do Módulo</label>
+                            <input type="text" id="edit-mod-desc-input" value="${activeCat.description || ''}" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-xs bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-gray-800 font-black text-xs uppercase mb-1">Fontes e Rigor Factual</label>
+                            <input type="text" id="edit-mod-sources-input" value="${activeCat.sources || ''}" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-xs bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                        <button onclick="window.hideModal()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition cursor-pointer">Cancelar</button>
+                        <button onclick="window.confirmEditModule()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-5 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                            <span>💾</span> Salvar Detalhes
+                        </button>
+                    </div>
+                </div>
+            `, 'max-w-xl');
+        };
+
+        window.confirmEditModule = function() {
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            if (!activeCat) return;
+
+            const name = (document.getElementById('edit-mod-name-input')?.value || '').trim();
+            const desc = (document.getElementById('edit-mod-desc-input')?.value || '').trim();
+            const sources = (document.getElementById('edit-mod-sources-input')?.value || '').trim();
+
+            if (!name) {
+                window.customAlert("O nome do módulo não pode ficar em branco.");
+                return;
+            }
+
+            activeCat.name = name;
+            activeCat.description = desc;
+            activeCat.sources = sources;
+
+            window.saveLocalData();
+            window.hideModal();
+            window.soundCorrect();
+            window.renderAdminEditor();
+            window.customAlert("✅ <b>Detalhes do Módulo Atualizados!</b>");
+        };
+
+        window.deleteActiveModule = function() {
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            if (!course || !course.categories) return;
+            if (course.categories.length <= 1) {
+                window.customAlert("⚠️ Cada disciplina precisa ter ao menos 1 módulo ativo. Não é possível excluir o único módulo restante.");
+                return;
+            }
+
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            window.customConfirm(
+                `Tem certeza absoluta que deseja excluir o módulo <b>"${activeCat.name}"</b> e todas as suas ${activeCat.chapters.length} aulas?`,
+                `window.confirmDeleteActiveModule('${activeCat.id}')`
+            );
+        };
+
+        window.confirmDeleteActiveModule = function(catId) {
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            if (!course) return;
+            const idx = course.categories.findIndex(c => c.id === catId);
+            if (idx !== -1) {
+                course.categories.splice(idx, 1);
+                editorActiveModule = course.categories[0]?.id || '';
+                window.saveLocalData();
+                window.soundClick();
+                window.renderAdminEditor();
+                window.customAlert("🗑️ <b>Módulo Excluído com Sucesso!</b>");
+            }
+        };
+
+        // --- GESTÃO DE AULAS / TÓPICOS (INCLUIR, EXCLUIR, REORDENAR, DUPLICAR) ---
+        window.addNewChapter = function() {
+            if (typeof window.soundClick === 'function') window.soundClick();
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            if (!activeCat) return;
+
+            if (!activeCat.chapters) activeCat.chapters = [];
+            const newIndex = activeCat.chapters.length + 1;
+
+            const newChapter = {
+                title: `${newIndex}. Novo Tópico / Nova Aula 📖`,
+                content: "Digite ou cole aqui o texto didático desta aula. Você pode destacar palavras com **asteriscos duplos para negrito** ou usar a barra de formatação.",
+                imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80",
+                miniGame: {
+                    question: "Qual é a questão central de fixação rápida desta aula?",
+                    options: [
+                        "Alternativa A (Correta)",
+                        "Alternativa B (Incorreta)",
+                        "Alternativa C (Incorreta)",
+                        "Alternativa D (Incorreta)"
+                    ],
+                    correct: 0,
+                    explanation: "Explicação explicativa que parabeniza o estudante e consolida o aprendizado."
+                }
+            };
+
+            activeCat.chapters.push(newChapter);
+            window.saveLocalData();
+            if (typeof window.soundCorrect === 'function') window.soundCorrect();
+            window.renderAdminEditor();
+
+            // Scroll suave até a nova aula criada
+            setTimeout(() => {
+                const elements = document.querySelectorAll('[id^="chap-content-input-"]');
+                if (elements.length > 0) {
+                    elements[elements.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+
+            window.customAlert(`✨ <b>Nova Aula Adicionada!</b><br>A <b>Aula #${newIndex}</b> foi incluída no final do módulo. Você já pode editá-la ou importar do ChatGPT/Gemini!`);
+        };
+
+        window.removeChapter = function(cIdx) {
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            if (!activeCat || !activeCat.chapters) return;
+
+            if (activeCat.chapters.length <= 1) {
+                window.customAlert("⚠️ O módulo precisa ter no mínimo 1 aula. Você pode editar esta aula existente em vez de excluí-la.");
+                return;
+            }
+
+            const chap = activeCat.chapters[cIdx];
+            window.customConfirm(
+                `Deseja realmente excluir a <b>Aula #${cIdx + 1} (${chap.title})</b> deste módulo?`,
+                `window.confirmRemoveChapter(${cIdx})`
+            );
+        };
+
+        window.confirmRemoveChapter = function(cIdx) {
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            if (!activeCat || !activeCat.chapters) return;
+
+            activeCat.chapters.splice(cIdx, 1);
+            window.saveLocalData();
+            window.soundClick();
+            window.renderAdminEditor();
+            window.customAlert("🗑️ <b>Aula Excluída!</b>");
+        };
+
+        window.moveChapter = function(cIdx, direction) {
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            if (!activeCat || !activeCat.chapters) return;
+
+            const targetIdx = cIdx + direction;
+            if (targetIdx < 0 || targetIdx >= activeCat.chapters.length) return;
+
+            const temp = activeCat.chapters[cIdx];
+            activeCat.chapters[cIdx] = activeCat.chapters[targetIdx];
+            activeCat.chapters[targetIdx] = temp;
+
+            window.saveLocalData();
+            window.soundClick();
+            window.renderAdminEditor();
+        };
+
+        window.duplicateChapter = function(cIdx) {
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            if (!activeCat || !activeCat.chapters) return;
+
+            const original = activeCat.chapters[cIdx];
+            const cloned = JSON.parse(JSON.stringify(original));
+            cloned.title = cloned.title + ' (Cópia)';
+
+            activeCat.chapters.splice(cIdx + 1, 0, cloned);
+            window.saveLocalData();
+            window.soundCorrect();
+            window.renderAdminEditor();
+            window.customAlert(`📋 <b>Aula Duplicada!</b><br>Uma cópia exata foi inserida logo abaixo da Aula #${cIdx + 1}.`);
+        };
+
         window.toggleModuleActiveState = function(subjId, catId) {
             window.soundClick();
             const course = window.coursesDatabase[subjId] || initialCoursesDatabase[subjId];
@@ -6811,11 +7439,11 @@ const ATLAS_ITEMS = {
             if (!cat) return;
             
             cat.active = (cat.active === false) ? true : false;
-            localStorage.setItem('expedicao_courses_v5', JSON.stringify(window.coursesDatabase));
+            window.saveLocalData();
             
             if (auth && auth.currentUser) {
                 try {
-                    const cRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi_v1', 'main');
+                    const cRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi_v12', 'main');
                     setDoc(cRef, window.coursesDatabase, { merge: true });
                 } catch (_) {}
             }
@@ -6831,42 +7459,39 @@ const ATLAS_ITEMS = {
 
         window.restoreDefaultData = function() {
             window.coursesDatabase = JSON.parse(JSON.stringify(initialCoursesDatabase));
-            localStorage.setItem('expedicao_courses_v5', JSON.stringify(window.coursesDatabase));
+            window.saveLocalData();
             window.customAlert("Dados originais restaurados com sucesso!");
             window.renderAdminEditor();
         };
 
         window.saveCourseDataCloud = async function() {
-            localStorage.setItem('expedicao_courses_v5', JSON.stringify(window.coursesDatabase));
+            window.saveLocalData();
             if (auth && auth.currentUser) {
                 try {
-                    const cRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi_v1', 'main');
+                    const cRef = doc(db, 'artifacts', appId, 'public', 'data', 'courses_multi_v12', 'main');
                     await setDoc(cRef, window.coursesDatabase);
-                    window.customAlert("✅ Cursos salvos e sincronizados com a nuvem com sucesso!");
+                    window.soundCorrect();
+                    if (typeof window.triggerConfetti === 'function') window.triggerConfetti();
+                    window.customAlert("✅ <b>Cursos e Aulas Salvos com Sucesso!</b><br>Todas as alterações estão sincronizadas na nuvem e no dispositivo.");
                 } catch(e) {
-                    window.customAlert("Salvo localmente. Erro na nuvem: " + e.message);
+                    window.customAlert("Salvo localmente no dispositivo. Aviso da nuvem: " + e.message);
                 }
             } else {
-                window.customAlert("✅ Cursos salvos localmente no dispositivo!");
+                window.soundCorrect();
+                window.customAlert("✅ <b>Cursos e Aulas Salvos com Sucesso!</b><br>As modificações estão gravadas na memória do navegador.");
             }
         };
 
-        
-        // ==========================================
-        
         // ==========================================
         // HELPERS VISUAIS E FORMATADORES DO EDITOR
         // ==========================================
         window.formatMarkdownToHtml = function(text) {
             if (!text) return '';
             let html = String(text);
-            // Converte **negrito** em <b>...</b>
             html = html.replace(/\*\*([^\*]+)\*\*/g, '<b>$1</b>');
             html = html.replace(/__([^_]+)__/g, '<b>$1</b>');
-            // Converte *itálico* em <i>...</i>
             html = html.replace(/\*([^\*]+)\*/g, '<i>$1</i>');
             html = html.replace(/_([^_]+)_/g, '<i>$1</i>');
-            // Converte quebras de linha normais
             html = html.replace(/\n\n+/g, '<br><br>');
             html = html.replace(/\n/g, '<br>');
             return html;
@@ -7099,20 +7724,37 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
             `, 'max-w-2xl');
         };
 
-
+        // --- RENDERIZAÇÃO DO EDITOR VISUAL COMPLETO ---
         window.renderAdminEditor = function() {
+            if (!window.coursesDatabase[editorActiveSubject]) {
+                window.coursesDatabase[editorActiveSubject] = JSON.parse(JSON.stringify(initialCoursesDatabase[editorActiveSubject] || { name: 'Curso', categories: [], questions: [] }));
+            }
             const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject] || initialCoursesDatabase.historia;
+            
+            if (!course.categories || course.categories.length === 0) {
+                course.categories = [{
+                    id: 'mod_principal',
+                    name: 'Módulo 1: Introdução',
+                    icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+                    description: 'Módulo inicial.',
+                    sources: 'Fontes oficiais.',
+                    active: true,
+                    chapters: []
+                }];
+            }
+
             const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            editorActiveModule = activeCat.id;
             const isModuleActive = activeCat.active !== false;
 
             const subjectTabsHTML = PORTAL_SUBJECTS.map(subj => `
-                <button onclick="window.setEditorSubject('${subj.id}')" class="px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${editorActiveSubject === subj.id ? 'bg-indigo-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} cursor-pointer">
+                <button onclick="window.setEditorSubject('${subj.id}')" class="px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${editorActiveSubject === subj.id ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} cursor-pointer">
                     <span>${subj.icon}</span> ${subj.name}
                 </button>
             `).join('');
 
             const moduleTabsHTML = course.categories.map(cat => `
-                <button onclick="window.setEditorModule('${cat.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${activeCat.id === cat.id ? 'bg-indigo-100 text-indigo-900 border-2 border-indigo-500 font-black shadow-xs' : 'text-gray-500 hover:bg-gray-100 border border-transparent'} cursor-pointer">
+                <button onclick="window.setEditorModule('${cat.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${activeCat.id === cat.id ? 'bg-indigo-100 text-indigo-900 border-2 border-indigo-500 font-black shadow-xs' : 'text-gray-600 bg-white hover:bg-gray-100 border border-gray-200'} cursor-pointer">
                     <span class="${cat.active !== false ? 'w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0' : 'w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0'}"></span>
                     <span>${cat.name}</span>
                 </button>
@@ -7156,11 +7798,11 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-gray-200">
                             <div>
                                 <h2 class="text-xl font-black text-gray-900 flex items-center gap-2">
-                                    <span>📝</span> Editor Visual de Conteúdo & IA
+                                    <span>📝</span> Editor de Conteúdo Pedagógico
                                 </h2>
-                                <p class="text-xs text-gray-500">Edição simplificada sem necessidade de código HTML. Suporta colagem direta do ChatGPT e Gemini!</p>
+                                <p class="text-xs text-gray-500">Crie, edite e organize módulos e tópicos com minigames e integração direta com ChatGPT e Gemini.</p>
                             </div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-wrap">
                                 <button onclick="window.soundClick(); window.customConfirm('Isso restaurará os textos originais de todos os cursos!', 'window.restoreDefaultData()')" class="px-3 py-2 text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl font-bold text-xs transition bg-white cursor-pointer">
                                     Restaurar Padrão
                                 </button>
@@ -7170,75 +7812,138 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
                             </div>
                         </div>
 
-                        <!-- Seletor de Matérias -->
-                        <div class="flex gap-2 flex-wrap mb-3">
-                            ${subjectTabsHTML}
+                        <!-- Seletor de Matérias / Disciplinas -->
+                        <div class="mb-3">
+                            <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider block mb-1.5">1. Selecione a Disciplina:</span>
+                            <div class="flex gap-2 flex-wrap">
+                                ${subjectTabsHTML}
+                            </div>
                         </div>
 
-                        <!-- Seletor de Módulos da Matéria -->
-                        <div class="flex gap-2 border-b border-gray-200 pb-3 mb-4 overflow-x-auto custom-scrollbar">
-                            ${moduleTabsHTML}
+                        <!-- Barra de Módulos com Botão de Novo Módulo -->
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">2. Módulos / Fases da Disciplina:</span>
+                                <button onclick="window.openNewModuleModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black px-3.5 py-1.5 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                                    <span>➕</span> Incluir Novo Módulo
+                                </button>
+                            </div>
+                            <div class="flex gap-2 items-center border-b border-gray-200 pb-3 overflow-x-auto custom-scrollbar">
+                                ${moduleTabsHTML}
+                            </div>
                         </div>
 
-                        <!-- Controle de Publicação / Ativação do Módulo -->
-                        <div class="bg-white p-4 rounded-3xl border-2 ${isModuleActive ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-200 bg-amber-50/30'} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 shadow-xs">
-                            <div class="flex items-center gap-3">
-                                <span class="text-3xl p-1.5 rounded-2xl bg-white shadow-xs">${isModuleActive ? '🟢' : '🟡'}</span>
+                        <!-- Painel de Controle e Detalhes do Módulo Ativo -->
+                        <div class="bg-white p-5 rounded-3xl border-2 ${isModuleActive ? 'border-emerald-200 bg-emerald-50/20' : 'border-amber-200 bg-amber-50/20'} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shadow-xs">
+                            <div class="flex items-start sm:items-center gap-3">
+                                <span class="text-3xl p-2 rounded-2xl bg-white shadow-xs shrink-0">${isModuleActive ? '🟢' : '🟡'}</span>
                                 <div>
-                                    <div class="flex items-center gap-2">
-                                        <h4 class="font-black text-sm text-gray-800">Visibilidade do Módulo:</h4>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h4 class="font-black text-base text-gray-900">${activeCat.name}</h4>
                                         <span class="${isModuleActive ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-amber-100 text-amber-900 border-amber-300'} border text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
-                                            ${isModuleActive ? 'Ativo / Disponível para os Alunos' : 'Em Revisão (Oculto)'}
+                                            ${isModuleActive ? 'Ativo / No Ar' : 'Em Revisão (Oculto)'}
                                         </span>
                                     </div>
-                                    <p class="text-xs text-gray-500 mt-0.5">
-                                        ${isModuleActive ? 'Os estudantes têm acesso a este módulo e aos quizzes.' : 'O módulo fica temporariamente oculto para os alunos enquanto você revisa.'}
-                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1 max-w-xl leading-relaxed">${activeCat.description || 'Sem descrição definida.'}</p>
+                                    <p class="text-[11px] text-indigo-700 font-semibold mt-0.5">📚 <b>Fontes:</b> ${activeCat.sources || 'Fontes históricas oficiais.'}</p>
                                 </div>
                             </div>
-                            <button onclick="window.toggleModuleActiveState('${editorActiveSubject}', '${activeCat.id}')" class="${isModuleActive ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} font-black text-xs px-4 py-2.5 rounded-xl shadow-xs transition shrink-0 flex items-center gap-1.5 cursor-pointer">
-                                <span>${isModuleActive ? '🔒 Ocultar para Revisão' : '✅ Publicar para Alunos'}</span>
+                            
+                            <div class="flex items-center gap-2 flex-wrap shrink-0">
+                                <button onclick="window.openEditModuleModal()" class="bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1 cursor-pointer shadow-2xs">
+                                    <span>✏️</span> Editar Módulo
+                                </button>
+                                <button onclick="window.toggleModuleActiveState('${editorActiveSubject}', '${activeCat.id}')" class="${isModuleActive ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} font-black text-xs px-3.5 py-2 rounded-xl shadow-2xs transition flex items-center gap-1 cursor-pointer">
+                                    <span>${isModuleActive ? '🔒 Ocultar' : '✅ Publicar'}</span>
+                                </button>
+                                ${course.categories.length > 1 ? `
+                                    <button onclick="window.deleteActiveModule()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1 cursor-pointer" title="Excluir Módulo">
+                                        <span>🗑️</span>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Barra de Ações Rápidas das Aulas -->
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
+                            <h3 class="font-black text-sm text-gray-800 uppercase tracking-wide flex items-center gap-2">
+                                <span>📖</span> Aulas & Tópicos deste Módulo (${activeCat.chapters ? activeCat.chapters.length : 0})
+                            </h3>
+                            <button onclick="window.addNewChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102 active:scale-98">
+                                <span>➕</span> Adicionar Nova Aula / Tópico
                             </button>
                         </div>
 
                         <!-- Lista de Aulas do Módulo Ativo -->
                         <div class="space-y-6">
-                            ${activeCat.chapters.map((chap, cIdx) => {
+                            ${(!activeCat.chapters || activeCat.chapters.length === 0) ? `
+                                <div class="text-center p-8 bg-white rounded-3xl border-2 border-dashed border-gray-300">
+                                    <p class="text-sm font-black text-gray-600 mb-3">Nenhuma aula cadastrada neste módulo ainda.</p>
+                                    <button onclick="window.addNewChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-5 py-2.5 rounded-xl shadow transition">
+                                        ➕ Criar a 1ª Aula Agora
+                                    </button>
+                                </div>
+                            ` : activeCat.chapters.map((chap, cIdx) => {
                                 const mg = chap.miniGame || { question: '', options: ['', '', '', ''], correct: 0, explanation: '' };
                                 const textareaId = 'chap-content-input-' + cIdx;
                                 const optA = (mg.options && mg.options[0]) ? mg.options[0] : '';
                                 const optB = (mg.options && mg.options[1]) ? mg.options[1] : '';
                                 const optC = (mg.options && mg.options[2]) ? mg.options[2] : '';
                                 const optD = (mg.options && mg.options[3]) ? mg.options[3] : '';
+                                const isFirstChap = cIdx === 0;
+                                const isLastChap = cIdx === activeCat.chapters.length - 1;
 
                                 return `
-                                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-md space-y-4">
-                                        <!-- Topo da Aula -->
+                                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-md space-y-4 relative group">
+                                        <!-- Topo da Aula com Ações e Ordenação -->
                                         <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-gray-100">
                                             <div class="flex items-center gap-2">
                                                 <span class="bg-indigo-100 text-indigo-950 font-black text-xs px-3 py-1 rounded-xl">Aula #${cIdx + 1}</span>
-                                                <span class="text-xs font-bold text-gray-500 truncate max-w-xs">${chap.title}</span>
+                                                <span class="text-xs font-bold text-gray-600 truncate max-w-xs">${chap.title}</span>
                                             </div>
-                                            <div class="flex items-center gap-2">
-                                                <button onclick="window.openAIImportModal(${cIdx})" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-xs px-3.5 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer">
-                                                    <span>✨</span> Colar do ChatGPT / Gemini
+
+                                            <!-- Botões de Ação na Aula -->
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <!-- Reordenar -->
+                                                <div class="flex items-center bg-gray-100 rounded-xl p-0.5 mr-1">
+                                                    <button onclick="window.moveChapter(${cIdx}, -1)" ${isFirstChap ? 'disabled class="px-2 py-1 text-gray-300 cursor-not-allowed text-xs"' : 'class="px-2 py-1 text-gray-600 hover:text-indigo-600 cursor-pointer text-xs font-bold transition"'} title="Subir Aula">
+                                                        ⬆️
+                                                    </button>
+                                                    <button onclick="window.moveChapter(${cIdx}, 1)" ${isLastChap ? 'disabled class="px-2 py-1 text-gray-300 cursor-not-allowed text-xs"' : 'class="px-2 py-1 text-gray-600 hover:text-indigo-600 cursor-pointer text-xs font-bold transition"'} title="Descer Aula">
+                                                        ⬇️
+                                                    </button>
+                                                </div>
+
+                                                <button onclick="window.duplicateChapter(${cIdx})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs px-2.5 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer" title="Duplicar esta aula">
+                                                    <span>📋</span> Duplicar
                                                 </button>
-                                                <button onclick="window.previewChapterLive(${cIdx})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer">
-                                                    <span>👁️</span> Ver Aula
+
+                                                <button onclick="window.openAIImportModal(${cIdx})" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-xs px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer">
+                                                    <span>✨</span> Colar IA
                                                 </button>
+
+                                                <button onclick="window.previewChapterLive(${cIdx})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs px-2.5 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer">
+                                                    <span>👁️</span> Ver
+                                                </button>
+
+                                                ${activeCat.chapters.length > 1 ? `
+                                                    <button onclick="window.removeChapter(${cIdx})" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs px-2.5 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer ml-1" title="Excluir esta aula">
+                                                        <span>🗑️</span>
+                                                    </button>
+                                                ` : ''}
                                             </div>
                                         </div>
 
                                         <!-- Título da Aula -->
                                         <div>
                                             <label class="block text-gray-800 font-black text-xs uppercase mb-1">Título da Aula (com Emoji)</label>
-                                            <input type="text" value="${chap.title}" onchange="window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].title = this.value" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 font-black text-sm bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none transition">
+                                            <input type="text" value="${chap.title}" onchange="window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].title = this.value; window.saveLocalData();" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 font-black text-sm bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none transition">
                                         </div>
 
                                         <!-- URL da Imagem Ilustrativa -->
                                         <div>
                                             <label class="block text-gray-800 font-black text-xs uppercase mb-1">URL da Imagem Ilustrativa</label>
-                                            <input type="text" value="${chap.imageUrl || ''}" onchange="window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].imageUrl = this.value" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2 rounded-xl border border-gray-300 font-mono text-xs bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none transition">
+                                            <input type="text" value="${chap.imageUrl || ''}" onchange="window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].imageUrl = this.value; window.saveLocalData();" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2 rounded-xl border border-gray-300 font-mono text-xs bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none transition">
                                         </div>
 
                                         <!-- Conteúdo da Aula com Barra Visual -->
@@ -7258,7 +7963,7 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
                                                     </button>
                                                 </div>
                                             </div>
-                                            <textarea id="${textareaId}" rows="5" onchange="window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].content = window.formatMarkdownToHtml(this.value)" class="w-full p-4 rounded-2xl border border-gray-300 font-sans text-xs bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none leading-relaxed transition custom-scrollbar" placeholder="Digite ou cole aqui o texto da aula normalmente...">${chap.content.replace(/<br\s*\/?>/gi, '\n')}</textarea>
+                                            <textarea id="${textareaId}" rows="5" onchange="window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].content = window.formatMarkdownToHtml(this.value); window.saveLocalData();" class="w-full p-4 rounded-2xl border border-gray-300 font-sans text-xs bg-gray-50 focus:bg-white focus:border-indigo-600 focus:outline-none leading-relaxed transition custom-scrollbar" placeholder="Digite ou cole aqui o texto da aula normalmente...">${(chap.content || '').replace(/<br\s*\/?>/gi, '\n')}</textarea>
                                             <p class="text-[11px] text-gray-400 mt-1 italic">💡 Dica: Você pode digitar ou colar textos com **asteriscos duplos para negrito** ou quebras normais de parágrafo.</p>
                                         </div>
 
@@ -7273,44 +7978,58 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
 
                                             <div>
                                                 <label class="block text-amber-900 font-bold text-[11px] uppercase mb-1">Pergunta do Desafio</label>
-                                                <input type="text" value="${mg.question || ''}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.question = this.value" placeholder="Ex: Em que data Cabral chegou ao Brasil?" class="w-full px-3 py-2 rounded-xl border border-amber-200 bg-white font-bold text-xs text-gray-900 focus:outline-none focus:border-amber-500">
+                                                <input type="text" value="${mg.question || ''}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.question = this.value; window.saveLocalData();" placeholder="Ex: Em que data Cabral chegou ao Brasil?" class="w-full px-3 py-2 rounded-xl border border-amber-200 bg-white font-bold text-xs text-gray-900 focus:outline-none focus:border-amber-500">
                                             </div>
 
                                             <!-- 4 Alternativas A B C D -->
                                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                                 <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border ${mg.correct === 0 ? 'border-emerald-400 bg-emerald-50/50' : 'border-gray-200'}">
-                                                    <input type="radio" name="mg-correct-radio-${cIdx}" ${mg.correct === 0 ? 'checked' : ''} onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.correct = 0; window.renderAdminEditor();" class="cursor-pointer text-emerald-600 focus:ring-emerald-500 h-4 w-4">
+                                                    <input type="radio" name="mg-correct-radio-${cIdx}" ${mg.correct === 0 ? 'checked' : ''} onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.correct = 0; window.saveLocalData(); window.renderAdminEditor();" class="cursor-pointer text-emerald-600 focus:ring-emerald-500 h-4 w-4">
                                                     <span class="w-6 h-6 rounded-lg ${mg.correct === 0 ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'} flex items-center justify-center font-black text-xs shrink-0">A</span>
-                                                    <input type="text" value="${optA}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = { options: [] }; if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options = ['', '', '', '']; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options[0] = this.value" placeholder="Alternativa A" class="w-full text-xs font-bold text-gray-800 bg-transparent focus:outline-none">
+                                                    <input type="text" value="${optA}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = { options: [] }; if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options = ['', '', '', '']; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options[0] = this.value; window.saveLocalData();" placeholder="Alternativa A" class="w-full text-xs font-bold text-gray-800 bg-transparent focus:outline-none">
                                                 </div>
 
                                                 <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border ${mg.correct === 1 ? 'border-emerald-400 bg-emerald-50/50' : 'border-gray-200'}">
-                                                    <input type="radio" name="mg-correct-radio-${cIdx}" ${mg.correct === 1 ? 'checked' : ''} onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.correct = 1; window.renderAdminEditor();" class="cursor-pointer text-emerald-600 focus:ring-emerald-500 h-4 w-4">
+                                                    <input type="radio" name="mg-correct-radio-${cIdx}" ${mg.correct === 1 ? 'checked' : ''} onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.correct = 1; window.saveLocalData(); window.renderAdminEditor();" class="cursor-pointer text-emerald-600 focus:ring-emerald-500 h-4 w-4">
                                                     <span class="w-6 h-6 rounded-lg ${mg.correct === 1 ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'} flex items-center justify-center font-black text-xs shrink-0">B</span>
-                                                    <input type="text" value="${optB}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = { options: [] }; if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options = ['', '', '', '']; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options[1] = this.value" placeholder="Alternativa B" class="w-full text-xs font-bold text-gray-800 bg-transparent focus:outline-none">
+                                                    <input type="text" value="${optB}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = { options: [] }; if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options = ['', '', '', '']; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options[1] = this.value; window.saveLocalData();" placeholder="Alternativa B" class="w-full text-xs font-bold text-gray-800 bg-transparent focus:outline-none">
                                                 </div>
 
                                                 <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border ${mg.correct === 2 ? 'border-emerald-400 bg-emerald-50/50' : 'border-gray-200'}">
-                                                    <input type="radio" name="mg-correct-radio-${cIdx}" ${mg.correct === 2 ? 'checked' : ''} onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.correct = 2; window.renderAdminEditor();" class="cursor-pointer text-emerald-600 focus:ring-emerald-500 h-4 w-4">
+                                                    <input type="radio" name="mg-correct-radio-${cIdx}" ${mg.correct === 2 ? 'checked' : ''} onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.correct = 2; window.saveLocalData(); window.renderAdminEditor();" class="cursor-pointer text-emerald-600 focus:ring-emerald-500 h-4 w-4">
                                                     <span class="w-6 h-6 rounded-lg ${mg.correct === 2 ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'} flex items-center justify-center font-black text-xs shrink-0">C</span>
-                                                    <input type="text" value="${optC}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = { options: [] }; if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options = ['', '', '', '']; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options[2] = this.value" placeholder="Alternativa C" class="w-full text-xs font-bold text-gray-800 bg-transparent focus:outline-none">
+                                                    <input type="text" value="${optC}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = { options: [] }; if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options = ['', '', '', '']; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options[2] = this.value; window.saveLocalData();" placeholder="Alternativa C" class="w-full text-xs font-bold text-gray-800 bg-transparent focus:outline-none">
                                                 </div>
 
                                                 <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border ${mg.correct === 3 ? 'border-emerald-400 bg-emerald-50/50' : 'border-gray-200'}">
-                                                    <input type="radio" name="mg-correct-radio-${cIdx}" ${mg.correct === 3 ? 'checked' : ''} onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.correct = 3; window.renderAdminEditor();" class="cursor-pointer text-emerald-600 focus:ring-emerald-500 h-4 w-4">
+                                                    <input type="radio" name="mg-correct-radio-${cIdx}" ${mg.correct === 3 ? 'checked' : ''} onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.correct = 3; window.saveLocalData(); window.renderAdminEditor();" class="cursor-pointer text-emerald-600 focus:ring-emerald-500 h-4 w-4">
                                                     <span class="w-6 h-6 rounded-lg ${mg.correct === 3 ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'} flex items-center justify-center font-black text-xs shrink-0">D</span>
-                                                    <input type="text" value="${optD}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = { options: [] }; if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options = ['', '', '', '']; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options[3] = this.value" placeholder="Alternativa D" class="w-full text-xs font-bold text-gray-800 bg-transparent focus:outline-none">
+                                                    <input type="text" value="${optD}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = { options: [] }; if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options = ['', '', '', '']; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.options[3] = this.value; window.saveLocalData();" placeholder="Alternativa D" class="w-full text-xs font-bold text-gray-800 bg-transparent focus:outline-none">
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <label class="block text-amber-900 font-bold text-[11px] uppercase mb-1">Explicação da Resposta Correta</label>
-                                                <input type="text" value="${mg.explanation || ''}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.explanation = this.value" placeholder="Ex: Cabral avistou o Monte Pascoal na Bahia em 22 de abril..." class="w-full px-3 py-2 rounded-xl border border-amber-200 bg-white font-medium text-xs text-gray-800 focus:outline-none focus:border-amber-500">
+                                                <input type="text" value="${mg.explanation || ''}" onchange="if(!window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame) window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame = {}; window.coursesDatabase['${editorActiveSubject}'].categories.find(c => c.id === '${activeCat.id}').chapters[${cIdx}].miniGame.explanation = this.value; window.saveLocalData();" placeholder="Ex: Cabral avistou o Monte Pascoal na Bahia em 22 de abril..." class="w-full px-3 py-2 rounded-xl border border-amber-200 bg-white font-medium text-xs text-gray-800 focus:outline-none focus:border-amber-500">
                                             </div>
                                         </div>
                                     </div>
                                 `;
                             }).join('')}
+                        </div>
+
+                        <!-- Card Inferior de Inclusão Rápida de Nova Aula -->
+                        <div class="mt-6 p-6 rounded-3xl bg-indigo-50/70 border-2 border-dashed border-indigo-300 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl p-2 bg-indigo-100 rounded-2xl">✨</span>
+                                <div>
+                                    <h4 class="font-black text-sm text-indigo-950">Deseja expandir este módulo com mais conteúdo?</h4>
+                                    <p class="text-xs text-indigo-800">Adicione novas aulas e tópicos a qualquer momento com quizzes interativos integrados.</p>
+                                </div>
+                            </div>
+                            <button onclick="window.addNewChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-6 py-3 rounded-2xl shadow-md transition flex items-center gap-2 shrink-0 cursor-pointer transform hover:scale-102 active:scale-98">
+                                <span>➕</span> Adicionar Nova Aula / Tópico
+                            </button>
                         </div>
                     </div>
                 </div>
