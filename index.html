@@ -7540,7 +7540,453 @@ const ATLAS_ITEMS = {
             el.setSelectionRange(start + tagOpen.length, start + tagOpen.length + selected.length);
         };
 
-        window.copyAIPromptTemplate = function() {
+        
+        // ==========================================
+        // SISTEMA INTELIGENTE DE CRIAÇÃO POR IA (MÓDULOS & AULAS)
+        // ==========================================
+        window.MODULE_PROMPT_TEMPLATE = `Crie um módulo educativo completo para crianças e jovens do Ensino Fundamental para a plataforma Expedição Brasil.
+
+Disciplina: [HISTÓRIA / GEOGRAFIA / CIÊNCIAS / PORTUGUÊS / MATEMÁTICA / INGLÊS]
+Tema do Módulo: [DIGITE O TEMA DO MÓDULO AQUI, ex: A Era Vargas e a Industrialização]
+Número de Aulas: [DIGITE A QUANTIDADE, ex: 3 ou 4]
+
+Por favor, responda exatamente na seguinte estrutura (sem enrolação):
+
+Módulo: [Nome chamativo do Módulo com Emoji no final]
+Descrição: [Resumo envolvente do módulo em 1 ou 2 frases]
+Fontes: [Fontes oficiais primárias e acervos históricos ou científicos]
+
+--- AULA 1 ---
+Título: [Título da Aula 1 com Emoji no final]
+Texto: [Texto explicativo em 2 ou 3 parágrafos envolventes, colocando termos importantes entre **asteriscos duplos para negrito**]
+Desafio: [Uma pergunta direta e objetiva de fixação rápida sobre o texto]
+A) [Alternativa A]
+B) [Alternativa B]
+C) [Alternativa C]
+D) [Alternativa D]
+Gabarito: [Apenas a letra: A, B, C ou D]
+Explicação: [Explicação curta e motivadora do porquê a resposta está correta]
+
+--- AULA 2 ---
+Título: [Título da Aula 2 com Emoji no final]
+Texto: [Texto da Aula 2 em 2 ou 3 parágrafos com termos em **negrito**]
+Desafio: [Pergunta direta de fixação]
+A) [Alternativa A]
+B) [Alternativa B]
+C) [Alternativa C]
+D) [Alternativa D]
+Gabarito: [A, B, C ou D]
+Explicação: [Explicação curta da resposta]
+
+(Continue repetindo o bloco --- AULA X --- para as demais aulas solicitadas)`;
+
+        window.LESSON_PROMPT_TEMPLATE = `Crie uma aula educativa para crianças e jovens do Ensino Fundamental para a plataforma Expedição Brasil.
+
+Tema da Aula: [DIGITE O TEMA DA AULA AQUI]
+Matéria: [HISTÓRIA / GEOGRAFIA / CIÊNCIAS / PORTUGUÊS / MATEMÁTICA / INGLÊS]
+
+Por favor, responda exatamente na seguinte estrutura (sem enrolação):
+
+Título: [Título chamativo com um emoji no final]
+Texto: [Texto explicativo em 2 ou 3 parágrafos envolventes, colocando termos e palavras-chave importantes entre **asteriscos duplos para negrito**]
+Desafio: [Uma pergunta direta e objetiva de fixação rápida sobre o texto]
+A) [Alternativa A]
+B) [Alternativa B]
+C) [Alternativa C]
+D) [Alternativa D]
+Gabarito: [Apenas a letra da alternativa correta: A, B, C ou D]
+Explicação: [Explicação curta e motivadora do porquê a resposta está correta]`;
+
+        window.copyAISingleLessonPrompt = function() {
+            navigator.clipboard.writeText(window.LESSON_PROMPT_TEMPLATE).then(() => {
+                if (typeof window.soundCorrect === 'function') window.soundCorrect();
+                window.customAlert("📋 <b>Prompt de Aula Individual Copiado!</b><br>Cole no ChatGPT ou Gemini, preencha o tema da aula e copie o resultado de volta!");
+            }).catch(() => {
+                window.customAlert("Copie o texto manualmente da caixa de diálogo.");
+            });
+        };
+
+        window.copyAIModulePrompt = function() {
+            navigator.clipboard.writeText(window.MODULE_PROMPT_TEMPLATE).then(() => {
+                if (typeof window.soundCorrect === 'function') window.soundCorrect();
+                window.customAlert("📋 <b>Prompt de Módulo Completo Copiado!</b><br>Cole no ChatGPT ou Gemini, preencha o tema geral e copie o resultado para criar o módulo e todas as aulas de uma vez só!");
+            }).catch(() => {
+                window.customAlert("Copie o texto manualmente da caixa de diálogo.");
+            });
+        };
+
+        window.openAIPromptsCenterModal = function() {
+            if (typeof window.soundClick === 'function') window.soundClick();
+            window.showModal(`
+                <div class="text-left space-y-4">
+                    <div class="flex items-center gap-3 pb-3 border-b border-gray-100">
+                        <span class="text-3xl p-2.5 bg-purple-50 rounded-2xl border border-purple-200">✨</span>
+                        <div>
+                            <h3 class="text-lg font-black text-gray-900">Central de Criação com IA (ChatGPT & Gemini)</h3>
+                            <p class="text-xs text-purple-700 font-bold">Escolha como deseja criar o conteúdo para sua disciplina</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Card 1: Criar 1 Aula Individual -->
+                        <div class="bg-gradient-to-br from-indigo-50/50 to-purple-50/30 p-4 rounded-2xl border border-indigo-100 flex flex-col justify-between space-y-3">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-xl">📝</span>
+                                    <h4 class="font-black text-sm text-indigo-950">1. Criar Aula Individual (Tópico)</h4>
+                                </div>
+                                <p class="text-xs text-gray-600 leading-relaxed">
+                                    Ideal para adicionar um tópico rápido ou aula de aprofundamento dentro de um módulo existente.
+                                </p>
+                            </div>
+                            <div class="pt-2 border-t border-indigo-100 flex items-center justify-between gap-2">
+                                <button onclick="window.copyAISingleLessonPrompt()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <span>📋</span> Copiar Prompt de Aula
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Criar Módulo Inteiro com Várias Aulas -->
+                        <div class="bg-gradient-to-br from-emerald-50/50 to-teal-50/30 p-4 rounded-2xl border border-emerald-100 flex flex-col justify-between space-y-3">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-xl">🚀</span>
+                                    <h4 class="font-black text-sm text-emerald-950">2. Criar Módulo Completo (3 a 5 Aulas)</h4>
+                                </div>
+                                <p class="text-xs text-gray-600 leading-relaxed">
+                                    Cria uma fase inteira com nome, descrição, fontes e todas as aulas estruturadas com minigames em 1 clique!
+                                </p>
+                            </div>
+                            <div class="pt-2 border-t border-emerald-100 flex items-center justify-between gap-2">
+                                <button onclick="window.copyAIModulePrompt()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <span>📋</span> Copiar Prompt de Módulo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-gray-50 border border-gray-200 rounded-2xl flex items-center justify-between">
+                        <span class="text-xs text-gray-500">Quer importar um módulo completo agora?</span>
+                        <button onclick="window.hideModal(); window.openAIModuleImportModal();" class="bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-4 py-2 rounded-xl shadow transition cursor-pointer flex items-center gap-1.5">
+                            <span>✨</span> Colar Módulo Gerado
+                        </button>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button onclick="window.hideModal()" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition cursor-pointer">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            `, 'max-w-2xl');
+        };
+
+        // Modal para Importar Módulo Completo de IA
+        window.openAIModuleImportModal = function() {
+            if (typeof window.soundClick === 'function') window.soundClick();
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+
+            window.showModal(`
+                <div class="text-left space-y-4">
+                    <div class="flex items-center gap-3 pb-3 border-b border-gray-100">
+                        <span class="text-3xl p-2.5 bg-emerald-50 rounded-2xl border border-emerald-200">🚀</span>
+                        <div>
+                            <h3 class="text-lg font-black text-gray-900">Criar Módulo Completo com IA</h3>
+                            <p class="text-xs text-emerald-700 font-bold">Importe um módulo inteiro com várias aulas para: ${course.name}</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-purple-50 border border-purple-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-black text-purple-950 block">Passo 1: Copiar o Modelo de Módulo</span>
+                            <span class="text-[11px] text-purple-800">Gere no ChatGPT ou Gemini a estrutura com 3 a 5 aulas.</span>
+                        </div>
+                        <button onclick="window.copyAIModulePrompt()" class="bg-purple-700 hover:bg-purple-800 text-white text-xs font-black px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer shrink-0">
+                            <span>📋</span> Copiar Prompt Modelo
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-800 font-black text-xs uppercase mb-1.5">Passo 2: Cole a resposta bruta da IA abaixo</label>
+                        <textarea id="ai-module-raw-input" rows="9" class="w-full p-3.5 rounded-2xl border-2 border-emerald-200 focus:border-emerald-600 focus:outline-none bg-emerald-50/20 text-xs font-sans leading-relaxed custom-scrollbar" placeholder="Cole aqui a resposta do ChatGPT ou Gemini com o Módulo e as Aulas (ex: Módulo: ..., Descrição: ..., --- AULA 1 --- Título: ...)..."></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                        <button onclick="window.hideModal()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button onclick="window.applyAICompleteModule()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black px-6 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102">
+                            <span>✨</span> Processar & Criar Módulo com Aulas
+                        </button>
+                    </div>
+                </div>
+            `, 'max-w-2xl');
+        };
+
+        window.applyAICompleteModule = function() {
+            const rawText = (document.getElementById('ai-module-raw-input')?.value || '').trim();
+            if (!rawText) {
+                window.customAlert("Por favor, cole o texto do ChatGPT ou Gemini na caixa de texto.");
+                return;
+            }
+
+            const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+            let modName = '';
+            let modDesc = '';
+            let modSources = '';
+            let rawLessons = [];
+            let currentLessonLines = [];
+
+            lines.forEach(line => {
+                if (/^m[óo]dulo\s*:\s*/i.test(line)) {
+                    modName = line.replace(/^m[óo]dulo\s*:\s*/i, '').trim();
+                } else if (/^descri[çc][ãa]o\s*:\s*/i.test(line)) {
+                    modDesc = line.replace(/^descri[çc][ãa]o\s*:\s*/i, '').trim();
+                } else if (/^fontes?\s*:\s*/i.test(line)) {
+                    modSources = line.replace(/^fontes?\s*:\s*/i, '').trim();
+                } else if (/^(---|===)?\s*aula\s*\d+/i.test(line) || /^---\s*aula/i.test(line)) {
+                    if (currentLessonLines.length > 0) {
+                        rawLessons.push(currentLessonLines.join('\n'));
+                        currentLessonLines = [];
+                    }
+                } else {
+                    currentLessonLines.push(line);
+                }
+            });
+
+            if (currentLessonLines.length > 0) {
+                rawLessons.push(currentLessonLines.join('\n'));
+            }
+
+            const chapters = rawLessons.map((lText, idx) => {
+                const lLines = lText.split('\n').map(l => l.trim()).filter(Boolean);
+                let title = `Aula ${idx + 1}`;
+                let contentLines = [];
+                let question = '';
+                let options = [];
+                let correctIdx = 0;
+                let explanation = '';
+                let readingContent = false;
+
+                lLines.forEach(l => {
+                    if (/^t[íi]tulo\s*:\s*/i.test(l)) {
+                        title = l.replace(/^t[íi]tulo\s*:\s*/i, '').trim();
+                        readingContent = false;
+                    } else if (/^texto\s*:\s*/i.test(l)) {
+                        readingContent = true;
+                        const rest = l.replace(/^texto\s*:\s*/i, '').trim();
+                        if (rest) contentLines.push(rest);
+                    } else if (/^desafio\s*:\s*/i.test(l) || /^pergunta\s*:\s*/i.test(l)) {
+                        readingContent = false;
+                        question = l.replace(/^(desafio|pergunta)\s*:\s*/i, '').trim();
+                    } else if (/^[aA]\s*[\)\-\.]\s*/i.test(l)) {
+                        readingContent = false;
+                        options[0] = l.replace(/^[aA]\s*[\)\-\.]\s*/i, '').trim();
+                    } else if (/^[bB]\s*[\)\-\.]\s*/i.test(l)) {
+                        readingContent = false;
+                        options[1] = l.replace(/^[bB]\s*[\)\-\.]\s*/i, '').trim();
+                    } else if (/^[cC]\s*[\)\-\.]\s*/i.test(l)) {
+                        readingContent = false;
+                        options[2] = l.replace(/^[cC]\s*[\)\-\.]\s*/i, '').trim();
+                    } else if (/^[dD]\s*[\)\-\.]\s*/i.test(l)) {
+                        readingContent = false;
+                        options[3] = l.replace(/^[dD]\s*[\)\-\.]\s*/i, '').trim();
+                    } else if (/^gabarito\s*:\s*/i.test(l)) {
+                        readingContent = false;
+                        const letter = l.replace(/^gabarito\s*:\s*/i, '').trim().toUpperCase().charAt(0);
+                        if (letter === 'B') correctIdx = 1;
+                        else if (letter === 'C') correctIdx = 2;
+                        else if (letter === 'D') correctIdx = 3;
+                        else correctIdx = 0;
+                    } else if (/^explica[çc][ãa]o\s*:\s*/i.test(l)) {
+                        readingContent = false;
+                        explanation = l.replace(/^explica[çc][ãa]o\s*:\s*/i, '').trim();
+                    } else if (readingContent) {
+                        contentLines.push(l);
+                    }
+                });
+
+                while (options.length < 4) {
+                    options.push(`Alternativa ${String.fromCharCode(65 + options.length)}`);
+                }
+
+                const rawJoinedContent = contentLines.join('\n\n') || 'Texto explicativo gerado por IA.';
+                const formattedHtml = window.formatMarkdownToHtml(rawJoinedContent);
+
+                return {
+                    title: title || `Aula #${idx + 1}`,
+                    content: formattedHtml,
+                    imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80',
+                    miniGame: {
+                        question: question || 'Qual é o conceito principal desta aula?',
+                        options: options.slice(0, 4),
+                        correct: correctIdx,
+                        explanation: explanation || 'Muito bem! Fixação de conteúdo realizada com sucesso.'
+                    }
+                };
+            });
+
+            if (chapters.length === 0) {
+                window.customAlert("Não conseguimos identificar as aulas no texto colado. Verifique se o formato contém '--- AULA 1 ---', 'Título:', etc.");
+                return;
+            }
+
+            if (!window.coursesDatabase[editorActiveSubject]) {
+                window.coursesDatabase[editorActiveSubject] = JSON.parse(JSON.stringify(initialCoursesDatabase[editorActiveSubject] || { name: 'Curso', categories: [] }));
+            }
+            const course = window.coursesDatabase[editorActiveSubject];
+            if (!course.categories) course.categories = [];
+
+            const newModId = 'mod_ia_' + Date.now();
+            const newModule = {
+                id: newModId,
+                name: modName || `Novo Módulo IA (${course.categories.length + 1})`,
+                icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
+                description: modDesc || 'Módulo criado automaticamente com auxílio de Inteligência Artificial.',
+                sources: modSources || 'Fontes históricas e científicas oficiais.',
+                active: true,
+                chapters: chapters
+            };
+
+            course.categories.push(newModule);
+            editorActiveModule = newModId;
+            window.saveLocalData();
+            window.hideModal();
+            if (typeof window.soundCorrect === 'function') window.soundCorrect();
+            if (typeof window.triggerConfetti === 'function') window.triggerConfetti();
+            window.renderAdminEditor();
+            window.customAlert(`🎉 <b>Módulo Completo Criado com Sucesso!</b><br>O módulo <b>"${newModule.name}"</b> foi criado com <b>${chapters.length} aulas completas</b> e minigames prontos!`);
+        };
+
+        // Modal para Adicionar Aula com IA diretamente no módulo ativo
+        window.openAddLessonWithAIModal = function() {
+            if (typeof window.soundClick === 'function') window.soundClick();
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            const nextIdx = activeCat.chapters ? activeCat.chapters.length + 1 : 1;
+
+            window.showModal(`
+                <div class="text-left space-y-4">
+                    <div class="flex items-center gap-3 pb-3 border-b border-gray-100">
+                        <span class="text-3xl p-2.5 bg-purple-50 rounded-2xl border border-purple-200">✨</span>
+                        <div>
+                            <h3 class="text-lg font-black text-gray-900">Adicionar Nova Aula com IA</h3>
+                            <p class="text-xs text-purple-700 font-bold">Módulo: ${activeCat.name} (Aula #${nextIdx})</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-purple-50 border border-purple-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-black text-purple-950 block">Passo 1: Copiar Modelo de Aula</span>
+                            <span class="text-[11px] text-purple-800">Copie o prompt, envie ao ChatGPT ou Gemini com o tema da aula.</span>
+                        </div>
+                        <button onclick="window.copyAISingleLessonPrompt()" class="bg-purple-700 hover:bg-purple-800 text-white text-xs font-black px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer shrink-0">
+                            <span>📋</span> Copiar Prompt de Aula
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-800 font-black text-xs uppercase mb-1.5">Passo 2: Cole a resposta da IA abaixo</label>
+                        <textarea id="ai-new-lesson-raw-input" rows="8" class="w-full p-3.5 rounded-2xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none bg-purple-50/20 text-xs font-sans leading-relaxed custom-scrollbar" placeholder="Cole aqui a resposta gerada (Título: ..., Texto: ..., Desafio: ..., A) ..., B) ..., Gabarito: ...)..."></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                        <button onclick="window.hideModal()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button onclick="window.applyNewLessonFromAI()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black px-6 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102">
+                            <span>✨</span> Processar & Inserir Nova Aula
+                        </button>
+                    </div>
+                </div>
+            `, 'max-w-2xl');
+        };
+
+        window.applyNewLessonFromAI = function() {
+            const rawText = (document.getElementById('ai-new-lesson-raw-input')?.value || '').trim();
+            if (!rawText) {
+                window.customAlert("Por favor, cole o texto da aula gerado pela IA.");
+                return;
+            }
+
+            const course = window.coursesDatabase[editorActiveSubject] || initialCoursesDatabase[editorActiveSubject];
+            const activeCat = course.categories.find(c => c.id === editorActiveModule) || course.categories[0];
+            if (!activeCat.chapters) activeCat.chapters = [];
+
+            const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+            let title = '';
+            let contentLines = [];
+            let question = '';
+            let options = [];
+            let correctIdx = 0;
+            let explanation = '';
+            let readingContent = false;
+
+            lines.forEach(l => {
+                if (/^t[íi]tulo\s*:\s*/i.test(l)) {
+                    title = l.replace(/^t[íi]tulo\s*:\s*/i, '').trim();
+                    readingContent = false;
+                } else if (/^texto\s*:\s*/i.test(l)) {
+                    readingContent = true;
+                    const rest = l.replace(/^texto\s*:\s*/i, '').trim();
+                    if (rest) contentLines.push(rest);
+                } else if (/^desafio\s*:\s*/i.test(l) || /^pergunta\s*:\s*/i.test(l)) {
+                    readingContent = false;
+                    question = l.replace(/^(desafio|pergunta)\s*:\s*/i, '').trim();
+                } else if (/^[aA]\s*[\)\-\.]\s*/i.test(l)) {
+                    readingContent = false;
+                    options[0] = l.replace(/^[aA]\s*[\)\-\.]\s*/i, '').trim();
+                } else if (/^[bB]\s*[\)\-\.]\s*/i.test(l)) {
+                    readingContent = false;
+                    options[1] = l.replace(/^[bB]\s*[\)\-\.]\s*/i, '').trim();
+                } else if (/^[cC]\s*[\)\-\.]\s*/i.test(l)) {
+                    readingContent = false;
+                    options[2] = l.replace(/^[cC]\s*[\)\-\.]\s*/i, '').trim();
+                } else if (/^[dD]\s*[\)\-\.]\s*/i.test(l)) {
+                    readingContent = false;
+                    options[3] = l.replace(/^[dD]\s*[\)\-\.]\s*/i, '').trim();
+                } else if (/^gabarito\s*:\s*/i.test(l)) {
+                    readingContent = false;
+                    const letter = l.replace(/^gabarito\s*:\s*/i, '').trim().toUpperCase().charAt(0);
+                    if (letter === 'B') correctIdx = 1;
+                    else if (letter === 'C') correctIdx = 2;
+                    else if (letter === 'D') correctIdx = 3;
+                    else correctIdx = 0;
+                } else if (/^explica[çc][ãa]o\s*:\s*/i.test(l)) {
+                    readingContent = false;
+                    explanation = l.replace(/^explica[çc][ãa]o\s*:\s*/i, '').trim();
+                } else if (readingContent) {
+                    contentLines.push(l);
+                }
+            });
+
+            while (options.length < 4) {
+                options.push(`Alternativa ${String.fromCharCode(65 + options.length)}`);
+            }
+
+            const rawJoined = contentLines.join('\n\n') || 'Texto da aula gerado via IA.';
+            const newChapter = {
+                title: title || `Aula #${activeCat.chapters.length + 1}`,
+                content: window.formatMarkdownToHtml(rawJoined),
+                imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80',
+                miniGame: {
+                    question: question || 'Qual é a principal lição desta aula?',
+                    options: options.slice(0, 4),
+                    correct: correctIdx,
+                    explanation: explanation || 'Excelente resposta!'
+                }
+            };
+
+            activeCat.chapters.push(newChapter);
+            window.saveLocalData();
+            window.hideModal();
+            if (typeof window.soundCorrect === 'function') window.soundCorrect();
+            window.renderAdminEditor();
+            window.customAlert(`🎉 <b>Nova Aula Adicionada!</b><br>A aula <b>"${newChapter.title}"</b> foi inserida com sucesso no módulo!`);
+        };
+
+        window.copyAIPromptTemplate = function() { window.openAIPromptsCenterModal(); };
+        window.copyOldAIPrompt = function() {
             const template = `Crie uma aula educativa para crianças e jovens do Ensino Fundamental para a plataforma Expedição Brasil.
 
 Tema da Aula: [DIGITE O TEMA AQUI]
@@ -7859,9 +8305,14 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
                         <div class="mb-4">
                             <div class="flex items-center justify-between mb-1.5">
                                 <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">2. Módulos / Fases da Disciplina:</span>
-                                <button onclick="window.openNewModuleModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black px-3.5 py-1.5 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer">
-                                    <span>➕</span> Incluir Novo Módulo
-                                </button>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="window.openAIModuleImportModal()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black px-3.5 py-1.5 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102" title="Criar módulo inteiro com várias aulas via IA">
+                                        <span>✨</span> Criar Módulo com IA
+                                    </button>
+                                    <button onclick="window.openNewModuleModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black px-3.5 py-1.5 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                                        <span>➕</span> Novo Módulo
+                                    </button>
+                                </div>
                             </div>
                             <div class="flex gap-2 items-center border-b border-gray-200 pb-3 overflow-x-auto custom-scrollbar">
                                 ${moduleTabsHTML}
@@ -7904,12 +8355,15 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
                             <h3 class="font-black text-sm text-gray-800 uppercase tracking-wide flex items-center gap-2">
                                 <span>📖</span> Aulas & Tópicos deste Módulo (${activeCat.chapters ? activeCat.chapters.length : 0})
                             </h3>
-                            <div class="flex items-center gap-2">
-                                <button onclick="window.copyAIPromptTemplate()" class="bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 font-black text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer" title="Copiar o prompt estruturado">
-                                    <span>✨</span> Copiar Prompt IA
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <button onclick="window.openAIPromptsCenterModal()" class="bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-300 font-black text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer" title="Abrir Central de Prompts">
+                                    <span>📋</span> Prompts IA
                                 </button>
-                                <button onclick="window.addNewChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102 active:scale-98">
-                                    <span>➕</span> Adicionar Nova Aula / Tópico
+                                <button onclick="window.openAddLessonWithAIModal()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer transform hover:scale-102" title="Adicionar aula preenchida por IA neste módulo">
+                                    <span>✨</span> Adicionar Aula com IA
+                                </button>
+                                <button onclick="window.addNewChapter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                                    <span>➕</span> Nova Aula em Branco
                                 </button>
                             </div>
                         </div>
