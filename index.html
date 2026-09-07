@@ -8392,21 +8392,21 @@ Explicação: [Explicação curta e motivadora do porquê a resposta está corre
 
                     <!-- Conteúdo do Editor -->
                     <div class="flex-grow bg-slate-50 flex flex-col p-6 overflow-y-auto custom-scrollbar">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-gray-200">
+                        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 mb-4 pb-3 border-b border-gray-200">
                             <div>
                                 <h2 class="text-xl font-black text-gray-900 flex items-center gap-2">
                                     <span>📝</span> Editor de Conteúdo Pedagógico
                                 </h2>
-                                <p class="text-xs text-gray-500">Crie, edite e organize módulos e tópicos com minigames e integração direta com ChatGPT e Gemini.</p>
+                                <p class="text-xs text-gray-500">Crie, edite e organize módulos e aulas com minigames e IA.</p>
                             </div>
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <button onclick="window.openTutorialModal()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap transform hover:scale-102" title="Guia passo a passo e diferença entre Módulo e Aula">
+                            <div class="flex items-center gap-2 shrink-0 flex-nowrap w-full lg:w-auto justify-start lg:justify-end overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
+                                <button onclick="window.openTutorialModal()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-black text-xs px-3.5 py-2 rounded-xl transition shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 transform hover:scale-102 active:scale-98" title="Guia passo a passo e diferença entre Módulo e Aula">
                                     <span>💡</span> Como Criar? (Guia)
                                 </button>
-                                <button onclick="window.soundClick(); window.customConfirm('Isso restaurará os textos originais de todos os cursos!', 'window.restoreDefaultData()')" class="bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap" title="Restaurar textos originais">
+                                <button onclick="window.soundClick(); window.customConfirm('Isso restaurará os textos originais de todos os cursos!', 'window.restoreDefaultData()')" class="bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 font-black text-xs px-3.5 py-2 rounded-xl transition shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0" title="Restaurar textos originais">
                                     <span>🔄</span> Restaurar Padrão
                                 </button>
-                                <button onclick="window.soundClick(); window.saveCourseDataCloud()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs px-5 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5 cursor-pointer whitespace-nowrap transform hover:scale-102 active:scale-98">
+                                <button onclick="window.soundClick(); window.saveCourseDataCloud()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs px-4.5 py-2 rounded-xl transition shadow-sm flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 transform hover:scale-102 active:scale-98">
                                     <span>☁️</span> Salvar & Publicar
                                 </button>
                             </div>
