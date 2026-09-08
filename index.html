@@ -9097,6 +9097,7 @@ window.nextChapter = function() {
             const category = appData.categories.find(c => c.id === selectedCategoryId);
             if (currentChapterIndex < category.chapters.length - 1) {
                 currentChapterIndex++;
+                saveNavigationSession();
                 window.renderModuleView();
             } else {
                 window.finishModuleAndGoToQuiz(category.id);
@@ -9106,6 +9107,7 @@ window.nextChapter = function() {
         window.prevChapter = function() {
             if (currentChapterIndex > 0) {
                 currentChapterIndex--;
+                saveNavigationSession();
                 window.renderModuleView();
             }
         };
@@ -9525,9 +9527,27 @@ window.nextChapter = function() {
 
         // GERENCIADOR DE ESTADOS & NAVEGAÇÃO
         // ==========================================
+        // PERSISTÊNCIA DE SESSÃO & ANTI-REFRESH ACIDENTAL
+        // ==========================================
+        function saveNavigationSession() {
+            try {
+                const navData = {
+                    currentState,
+                    currentSubjectId,
+                    selectedCategoryId,
+                    currentChapterIndex,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('expedicao_nav_state_v2', JSON.stringify(navData));
+                sessionStorage.setItem('expedicao_nav_state_v1', JSON.stringify(navData));
+            } catch (_) {}
+        }
+        window.saveNavigationSession = saveNavigationSession;
+
         window.changeState = function(newState) {
             stopAudioSpeech();
             currentState = newState;
+            saveNavigationSession();
             switch(currentState) {
                 case 'PORTAL_HUB': renderPortalHub(); break;
                 case 'CATEGORY_SELECT': renderCategorySelect(); break;
@@ -9597,7 +9617,37 @@ window.nextChapter = function() {
                 }
             } catch (_) {}
 
-            window.changeState('PORTAL_HUB');
+                        // Restaurar estado de navegação (anti-refresh / continuidade de estudos)
+            let targetState = 'PORTAL_HUB';
+            try {
+                const savedNav = localStorage.getItem('expedicao_nav_state_v2') || sessionStorage.getItem('expedicao_nav_state_v1');
+                if (savedNav) {
+                    const nav = JSON.parse(savedNav);
+                    if (nav && nav.currentState) {
+                        if (nav.currentSubjectId) currentSubjectId = nav.currentSubjectId;
+                        if (nav.selectedCategoryId) selectedCategoryId = nav.selectedCategoryId;
+                        if (typeof nav.currentChapterIndex === 'number') currentChapterIndex = nav.currentChapterIndex;
+
+                        if (window.coursesDatabase && window.coursesDatabase[currentSubjectId]) {
+                            appData = window.coursesDatabase[currentSubjectId];
+                        } else if (typeof initialCoursesDatabase !== 'undefined' && initialCoursesDatabase[currentSubjectId]) {
+                            appData = initialCoursesDatabase[currentSubjectId];
+                        }
+
+                        if (['CATEGORY_SELECT', 'MODULE_VIEW', 'PORTAL_HUB', 'QUIZ'].includes(nav.currentState)) {
+                            if (nav.currentState === 'MODULE_VIEW' || nav.currentState === 'QUIZ') {
+                                const hasCat = appData?.categories?.some(c => c.id === selectedCategoryId);
+                                if (hasCat) targetState = nav.currentState;
+                                else targetState = 'CATEGORY_SELECT';
+                            } else {
+                                targetState = nav.currentState;
+                            }
+                        }
+                    }
+                }
+            } catch (_) {}
+
+            window.changeState(targetState);
         }
 
         initAppEAD();
